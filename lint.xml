@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <issue id="SimpleDateFormat">
+        <ignore path="src\com\zns\comicdroid\ComicView.java" />
+        <ignore path="src\com\zns\comicdroid\data\Comic.java" />
+    </issue>
+</lint>

@@ -1,0 +1,50 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <Button
+        android:id="@+id/btnScan"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:text="Scan"
+        android:onClick="scanISBN" />
+	        
+	<LinearLayout
+	    xmlns:android="http://schemas.android.com/apk/res/android"
+	    xmlns:tools="http://schemas.android.com/tools"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="horizontal" >
+	
+	    <EditText
+	        android:id="@+id/etISBN"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="1"
+	        android:ems="10"
+	        android:hint="ISBN" >
+	
+	        <requestFocus />
+	    </EditText>
+	
+	    <Button
+	        android:id="@+id/btnSearch"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="1"
+	        android:text="Sök"
+	        android:onClick="queryISBN" />		    
+	    
+	</LinearLayout>
+
+	<ListView
+	    android:id="@+id/add_lvComics"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_weight="0" >
+	</ListView>
+		
+</LinearLayout>

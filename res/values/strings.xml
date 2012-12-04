@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">ComicDroid</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_add">Add</string>
+
+    <string-array name="spinner_comics_orderby">
+        <item>Titel</item>
+        <item>Forfattare</item>
+        <item>Forlag</item>
+    </string-array>
+
+    <string name="title_activity_comic_view">Comic</string>
+
+</resources>
