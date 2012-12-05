@@ -1,8 +1,5 @@
 package com.zns.comicdroid;
 
-import java.io.IOException;
-import java.text.ParseException;
-
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;

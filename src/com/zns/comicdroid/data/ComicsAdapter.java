@@ -11,14 +11,17 @@ import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FilterQueryProvider;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 public class ComicsAdapter extends SimpleCursorAdapter
+	implements FilterQueryProvider
 {
 	private final int _layout;
 	private final LayoutInflater _layoutInflater;
-	private final Cursor _cursor;
+	private final SQLiteDatabase _db;
+	//private Cursor _cursor;	
 	
 	static class ComicHolder
 	{
@@ -33,26 +36,39 @@ public class ComicsAdapter extends SimpleCursorAdapter
 		super(context, R.layout.list_comicrow, null, null, null);
 		_layout = R.layout.list_comicrow;
 		_layoutInflater = LayoutInflater.from(context);
+
+		//Attach filter query provider
+		this.setFilterQueryProvider(this);
 		
 		//Get Cursor
 		DBHelper dbHelper = new DBHelper(context);
-		SQLiteDatabase db = dbHelper.getReadableDatabase();
-		Cursor cursor = db.rawQuery("SELECT Id AS _id, Title, Subtitle, Author, Image, Issue " +
+		_db = dbHelper.getReadableDatabase();
+		Cursor cursor = _db.rawQuery("SELECT Id AS _id, Title, Subtitle, Author, Image, Issue " +
 				"FROM tblBooks ORDER BY Title", null);
-		_cursor = cursor;
 		this.changeCursorAndColumns(cursor, new String[] { "Title" }, null);
 	}
 	
 	public int getComicId(int position)
 	{
-		if (_cursor.moveToPosition(position))
-			return _cursor.getInt(0);
+		Cursor cursor = getCursor();
+		if (cursor.moveToPosition(position))
+			return cursor.getInt(0);
 		return 0;
 	}
 	
 	@Override
+	public Cursor runQuery(CharSequence constraint)
+	{
+		String sql = "SELECT Id AS _id, Title, Subtitle, Author, Image, Issue " +
+				"FROM tblBooks WHERE Title LIKE '" + constraint + "%' ORDER BY Title";
+		Cursor cursor = _db.rawQuery(sql, null);
+		return cursor;
+	}
+	
+	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-	    if (_cursor.moveToPosition(position)) 
+		Cursor cursor = getCursor();
+	    if (cursor.moveToPosition(position)) 
 	    {
 	    	ComicHolder holder;
 	    	
@@ -72,11 +88,11 @@ public class ComicsAdapter extends SimpleCursorAdapter
 	    		holder = (ComicHolder)convertView.getTag();
 	    	}
 	    	
-			String title = _cursor.getString(1);
-			String subTitle = _cursor.getString(2);
-			String author = _cursor.getString(3);
-			byte[] image = _cursor.getBlob(4);
-			int issue = _cursor.getInt(5);
+			String title = cursor.getString(1);
+			String subTitle = cursor.getString(2);
+			String author = cursor.getString(3);
+			byte[] image = cursor.getBlob(4);
+			int issue = cursor.getInt(5);
 			
 			holder.tvTitle.setText(title + (issue > 0 && subTitle != null ? " - " + subTitle : ""));
 			holder.tvAuthor.setText(author);

@@ -1,21 +1,14 @@
 package com.zns.comicdroid;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 
 import android.os.Bundle;
-import android.app.Activity;
 import android.content.Intent;
-import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.api.services.books.model.Volume;
-import com.google.api.services.books.model.Volumes;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.zns.comicdroid.data.Comic;

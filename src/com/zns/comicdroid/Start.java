@@ -4,25 +4,32 @@ import com.zns.comicdroid.data.ComicsAdapter;
 import com.zns.comicdroid.data.DB;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.content.Intent;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Spinner;
 
 public class Start extends BaseActivity
-	implements OnItemSelectedListener
 {
 	DB comicDB;
 	ListView lvComics;
 	ComicsAdapter adapter;
-	Spinner spComicsOrder;
+	EditText etSearch;
+	Button btnClearSearch;
+	
+	Handler filterHandler;
+	Editable filterQuery;
+	Runnable filterTask;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -30,8 +37,19 @@ public class Start extends BaseActivity
 		setContentView(R.layout.activity_start);
 		
 		comicDB = new DB(this);
-		lvComics = (ListView)findViewById(R.id.lvComics);
-		spComicsOrder = (Spinner)findViewById(R.id.spComicsOrder);
+		lvComics = (ListView)findViewById(R.id.start_lvComics);
+		etSearch = (EditText)findViewById(R.id.start_etSearch);
+		btnClearSearch = (Button)findViewById(R.id.start_btnClearSearch);
+		filterHandler = new Handler();
+		
+		btnClearSearch.setOnClickListener(new OnClickListener() {			
+			@Override
+			public void onClick(View v) {
+				etSearch.setText("");
+				etSearch.clearFocus();
+			}
+		});
+		
 		lvComics.setOnItemClickListener(new android.widget.AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) 
 			{
@@ -42,52 +60,43 @@ public class Start extends BaseActivity
 			}			
 		});
 		registerForContextMenu(lvComics);
+				 
+		filterTask = new Runnable() {
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				adapter.getFilter().filter(filterQuery);
+			}
+		};
 		
-		ArrayAdapter<CharSequence> spAdapter = ArrayAdapter.createFromResource(this,
-		        R.array.spinner_comics_orderby, android.R.layout.simple_spinner_item);
-		spAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		spComicsOrder.setAdapter(spAdapter);
-		spComicsOrder.setOnItemSelectedListener(this);
+		etSearch.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void afterTextChanged(Editable s) {
+				filterQuery = s;
+				filterHandler.removeCallbacks(filterTask);
+				filterHandler.postDelayed(filterTask, 1000);
+				if (s.length() > 0)
+					btnClearSearch.setVisibility(View.VISIBLE);
+				else
+					btnClearSearch.setVisibility(View.INVISIBLE);
+			}
+			
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {}			
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}			
+		});
 		
-		//BindComics();
+		BindComics();
 	}
 
 	private void BindComics()
 	{
-		String order = (String)spComicsOrder.getSelectedItem();
 		if (adapter == null)
 			adapter = new ComicsAdapter(this);
 		lvComics.setAdapter(adapter);
+	}
 		
-		/*ArrayList<Comic> comics = comicDB.getComics(order);
-		if (comics != null && comics.size() > 0)
-		{
-			if (adapter == null)
-			{
-				adapter = new ComicArrayAdapter(this, comics);
-			}
-			else
-			{
-				adapter.clear();
-		        for (Comic comic : comics) {
-		            adapter.insert(comic, adapter.getCount());
-		        }
-		        adapter.notifyDataSetChanged();
-			}
-			lvComics.setAdapter(adapter);
-		}*/	
-	}
-	
-	@Override
-	public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-		BindComics();
-    }
-	
-	@Override
-	public void onNothingSelected(AdapterView<?> arg0) {
-		// TODO Auto-generated method stub		
-	}
-	
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
@@ -108,5 +117,10 @@ public class Start extends BaseActivity
 			}
 		}
 		return super.onContextItemSelected(item);
+	}
+	
+	@Override
+	protected void onStop() {
+	    super.onStop();  // Always call the superclass method first
 	}
 }
