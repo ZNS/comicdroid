@@ -13,5 +13,6 @@
     </string-array>
 
     <string name="title_activity_comic_view">Comic</string>
+    <string name="title_activity_authors">Authors</string>
 
 </resources>

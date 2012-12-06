@@ -1,4 +1,4 @@
-package com.zns.comicdroid;
+package com.zns.comicdroid.isbn;
 
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;

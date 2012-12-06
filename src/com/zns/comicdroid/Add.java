@@ -12,11 +12,13 @@ import android.widget.Toast;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.zns.comicdroid.data.Comic;
-import com.zns.comicdroid.data.DB;
+import com.zns.comicdroid.data.ComicArrayAdapter;
+import com.zns.comicdroid.data.DBHelper;
+import com.zns.comicdroid.isbn.BooksQueryTask;
 
-public class Add extends BaseActivity {
+public class Add extends BaseFragmentActivity {
 
-	DB comicDB;
+	DBHelper comicDB;
 	EditText etISBN;
 	ComicArrayAdapter adapter;
 	ListView lvComics;
@@ -26,7 +28,7 @@ public class Add extends BaseActivity {
         super.onCreate(savedInstanceState);               
         setContentView(R.layout.activity_add);
         
-        comicDB = new DB(this);
+        comicDB = new DBHelper(this);
         etISBN = (EditText)findViewById(R.id.etISBN);
         lvComics = (ListView)findViewById(R.id.add_lvComics);
         

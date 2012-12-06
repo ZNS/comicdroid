@@ -1,14 +1,12 @@
-package com.zns.comicdroid;
+package com.zns.comicdroid.data;
 
 import java.util.ArrayList;
 
-import com.zns.comicdroid.data.Comic;
-
+import com.zns.comicdroid.R;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.ThumbnailUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
