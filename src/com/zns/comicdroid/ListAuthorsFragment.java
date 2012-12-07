@@ -3,15 +3,19 @@ package com.zns.comicdroid;
 import com.zns.comicdroid.data.GroupedItemAdapter;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
-public class Authors extends BaseListFragmentActivity
+public class ListAuthorsFragment extends BaseListFragment
 {
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);	 
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		View view = super.onCreateView(inflater, container, savedInstanceState);	 
 
-		adapter = new GroupedItemAdapter(this);
-		listView.setAdapter(adapter);		
+		adapter = new GroupedItemAdapter(getActivity());		
+		
+		return view;
 	}
 	
 	private GroupedItemAdapter getAdapter()

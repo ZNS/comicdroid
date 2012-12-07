@@ -32,7 +32,7 @@
             android:label="@string/title_activity_comic_view" >
         </activity>
         <activity
-            android:name="com.zns.comicdroid.Authors"
+            android:name="com.zns.comicdroid.ListAuthorsFragment"
             android:label="@string/title_activity_authors" >
         </activity>
     </application>
