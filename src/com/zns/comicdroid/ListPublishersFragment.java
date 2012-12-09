@@ -7,13 +7,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class ListAuthorsFragment extends BaseListFragment
+public class ListPublishersFragment extends BaseListFragment
 {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = super.onCreateView(inflater, container, savedInstanceState);	 
 
-		adapter = new GroupedItemAdapter(getActivity());		
+		adapter = new GroupedItemAdapter(getActivity());	
 		
 		return view;
 	}
@@ -25,11 +25,11 @@ public class ListAuthorsFragment extends BaseListFragment
 	
 	@Override
 	protected String getSQLDefault() {
-		return "SELECT 0 AS _id, Author AS Name, COUNT(*) AS Count FROM tblBooks GROUP BY Author ORDER BY Author COLLATE NOCASE";
+		return "SELECT 0 AS _id, Publisher AS Name, COUNT(*) AS Count FROM tblBooks GROUP BY Publisher ORDER BY Publisher COLLATE NOCASE";
 	}
 	
 	@Override
 	protected String getSQLFilter() {
-		return "SELECT 0 AS _id, Author AS Name, COUNT(*) AS Count FROM tblBooks WHERE Author LIKE ? GROUP BY Author ORDER BY Author COLLATE NOCASE";
+		return "SELECT 0 AS _id, Publisher AS Name, COUNT(*) AS Count FROM tblBooks WHERE Publisher LIKE ? GROUP BY Publisher ORDER BY Publisher COLLATE NOCASE";
 	}	
 }

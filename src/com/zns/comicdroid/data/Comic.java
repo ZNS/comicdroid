@@ -109,14 +109,20 @@ public class Comic {
 			comic.setAuthor(Joiner.on(",").skipNulls().join(info.getAuthors()));
 		if (info.getPublisher() != null)
 			comic.setPublisher(info.getPublisher());
-		if (info.getPageCount() > 0)
-			comic.setPageCount(info.getPageCount());
+		try
+		{
+			if (info.getPageCount() > 0)
+				comic.setPageCount(info.getPageCount());
+			}
+		catch (Exception e) {}
+		
 		if (info.getPublishedDate() != null)
 		{
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");
 			Date date = dateFormat.parse(info.getPublishedDate());
 			comic.setPublishDate(date);
 		}
+		
 		if (info.getImageLinks() != null)
 		{
 			ImageLinks images = info.getImageLinks();

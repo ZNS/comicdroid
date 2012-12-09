@@ -70,7 +70,7 @@ public class ComicAdapter extends SimpleCursorAdapter
 			byte[] image = cursor.getBlob(4);
 			int issue = cursor.getInt(5);
 			
-			holder.tvTitle.setText(title + (issue > 0 && subTitle != null ? " - " + subTitle : ""));
+			holder.tvTitle.setText(title + (issue > 0 && subTitle != null && subTitle != "" ? " - " + subTitle : ""));
 			holder.tvAuthor.setText(author);
 			if (issue > 0)
 			{

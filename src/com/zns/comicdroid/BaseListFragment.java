@@ -55,4 +55,8 @@ public abstract class BaseListFragment extends SherlockFragment {
 	protected String getSQLFilter() {
 		return "";
 	} 
+	
+	protected int[] getItemIds() {
+		return null;
+	}
 }

@@ -1,6 +1,13 @@
 package com.zns.comicdroid.data;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import com.google.common.base.Joiner;
+import com.google.common.primitives.Ints;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -62,6 +69,14 @@ public class DBHelper extends SQLiteOpenHelper {
 		}
 	}*/ 
 	
+	public int GetDateStamp(String strDate) 
+			throws ParseException
+	{
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");
+		Date date = dateFormat.parse(strDate);
+		return (int)(date.getTime() / 1000L);
+	}
+	
 	public void storeComic(Comic comic)
 	{
 		ContentValues values = new ContentValues();
@@ -117,6 +132,36 @@ public class DBHelper extends SQLiteOpenHelper {
 		db.close();
 		
 		return result;
+	}
+	
+	public List<Comic> getComics(int[] ids)
+	{
+		List<Comic> list = new ArrayList<Comic>();
+		SQLiteDatabase db = getReadableDatabase();
+		Cursor cursor = db.rawQuery("SELECT Id, Title, Subtitle, Author, Publisher, PublishDate, " +
+				"AddedDate, PageCount, IsBorrowed, Borrower, Image, ISBN, Issue FROM tblBooks WHERE Id IN (" +
+				Joiner.on(",").join(Ints.asList(ids)) +
+				")", null);
+		while (cursor.moveToNext())
+		{
+			Comic comic = new Comic(cursor.getInt(0),
+					cursor.getString(1),
+					cursor.getString(2),
+					cursor.getString(3),
+					cursor.getString(4),
+					cursor.getInt(5),
+					cursor.getInt(6),
+					cursor.getInt(7),
+					cursor.getInt(8),
+					cursor.getString(9),
+					cursor.getBlob(10),
+					cursor.getString(11),
+					cursor.getInt(12));
+			list.add(comic);
+		}
+		cursor.close();
+		db.close();		
+		return list;
 	}
 	
 	public Comic getComic(int id)

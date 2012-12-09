@@ -2,11 +2,14 @@ package com.zns.comicdroid;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.Tab;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 import com.commonsware.cwac.loaderex.acl.SQLiteCursorLoader;
 import com.zns.comicdroid.data.DBHelper;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.content.Intent;
 import android.database.Cursor;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -32,6 +35,7 @@ public class Start extends BaseFragmentActivity
 	private String filterQuery;
 	private Runnable filterTask;
 	private String currentTab = "TITLES";
+	private MenuItem menuEdit;
 	
 	
 	@Override
@@ -135,6 +139,36 @@ public class Start extends BaseFragmentActivity
 		return (BaseListFragment)fragment;
 	}
 	
+	//Menu Implementation
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		com.actionbarsherlock.view.MenuInflater inflater = getSupportMenuInflater();
+		inflater.inflate(R.menu.actionbar_view, (com.actionbarsherlock.view.Menu) menu);
+		return true;
+	}		
+
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		menuEdit = menu.findItem(R.id.menu_edit);
+		menuEdit.setVisible(false);		
+		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle item selection
+	    switch (item.getItemId()) {
+        	case R.id.menu_edit:
+	        	Intent intent = new Intent(this, Edit.class);
+	        	int[] ids = getCurrentListFragment().getItemIds();
+				intent.putExtra("com.zns.comic.COMICIDS", ids);
+	        	startActivity(intent);
+	            return true;
+	    }
+	    return super.onOptionsItemSelected(item);
+	}
+	
 	//Loader Implementation
 	@Override
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
@@ -149,6 +183,12 @@ public class Start extends BaseFragmentActivity
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 		getCurrentListFragment().adapter.changeCursor(cursor);
 		getCurrentListFragment().BindList();
+		if (currentTab == "TITLES" && filterQuery != null && filterQuery != "" && cursor.getCount() > 0) {
+			menuEdit.setVisible(true);
+		}
+		else {
+			menuEdit.setVisible(false);
+		}
 	}
 
 	@Override
@@ -169,6 +209,8 @@ public class Start extends BaseFragmentActivity
 			fragment = new ListTitlesFragment();
 		else if (tag.equals("AUTHORS"))
 			fragment = new ListAuthorsFragment();
+		else if (tag.equals("PUBLISHERS"))
+			fragment = new ListPublishersFragment();
 		
 		if (fragment != null)
 		{

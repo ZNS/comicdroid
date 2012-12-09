@@ -20,6 +20,7 @@
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -34,6 +35,10 @@
         <activity
             android:name="com.zns.comicdroid.ListAuthorsFragment"
             android:label="@string/title_activity_authors" >
+        </activity>
+        <activity
+            android:name="com.zns.comicdroid.Edit"
+            android:label="@string/title_activity_edit" >
         </activity>
     </application>
 

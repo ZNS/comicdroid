@@ -1,6 +1,6 @@
 package com.zns.comicdroid.data;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import com.zns.comicdroid.R;
 import android.app.Activity;
@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 public class ComicArrayAdapter extends ArrayAdapter<Comic> {
 	  private final Context context;
-	  private final ArrayList<Comic> values;
+	  private final List<Comic> values;
 
 	  static class ComicHolder
 	  {
@@ -26,7 +26,7 @@ public class ComicArrayAdapter extends ArrayAdapter<Comic> {
 		  TextView tvIssue;
 	  }
 	  
-	  public ComicArrayAdapter(Context context, ArrayList<Comic> values) 
+	  public ComicArrayAdapter(Context context, List<Comic> values) 
 	  {
 	    super(context, R.layout.list_comicrow, values);
 	    this.context = context;

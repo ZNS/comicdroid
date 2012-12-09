@@ -1,6 +1,7 @@
 package com.zns.comicdroid;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -43,12 +44,29 @@ public class ListTitlesFragment extends BaseListFragment {
 	
 	@Override
 	protected String getSQLDefault() {
-		return "SELECT Id AS _id, Title, Subtitle, Author, Image, Issue FROM tblBooks ORDER BY Title";
+		return "SELECT Id AS _id, Title, Subtitle, Author, Image, Issue FROM tblBooks ORDER BY Title, Issue";
 	}
 	
 	@Override
 	protected String getSQLFilter() {
-		return "SELECT Id AS _id, Title, Subtitle, Author, Image, Issue FROM tblBooks WHERE Title LIKE ? ORDER BY Title";
+		return "SELECT Id AS _id, Title, Subtitle, Author, Image, Issue FROM tblBooks WHERE Title LIKE ? ORDER BY Title, Issue";
+	}
+	
+	@Override
+	protected int[] getItemIds() {
+		int[] ids = null;
+		if (adapter.getCursor() != null)
+		{
+			Cursor cursor = adapter.getCursor();
+			ids = new int[cursor.getCount()];
+			int i = 0;
+			cursor.moveToPosition(-1);
+			while(cursor.moveToNext()) {
+				ids[i] = cursor.getInt(0);
+				i++;
+			}
+		}
+		return ids;
 	}
 	
 	//Create Context Menu

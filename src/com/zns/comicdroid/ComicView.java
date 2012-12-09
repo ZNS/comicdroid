@@ -2,6 +2,8 @@ package com.zns.comicdroid;
 
 import java.text.SimpleDateFormat;
 
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 import com.zns.comicdroid.data.Comic;
 import com.zns.comicdroid.data.DBHelper;
 
@@ -87,4 +89,25 @@ public class ComicView extends BaseFragmentActivity {
 		if (comic.getImage() != null)
 			ivImage.setImageBitmap(BitmapFactory.decodeByteArray(comic.getImage(), 0, comic.getImage().length));
 	}	
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		com.actionbarsherlock.view.MenuInflater inflater = getSupportMenuInflater();
+		inflater.inflate(R.menu.actionbar_view, (com.actionbarsherlock.view.Menu) menu);
+		return true;
+	}		
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle item selection
+	    switch (item.getItemId()) {
+        	case R.id.menu_edit:
+	        	Intent intent = new Intent(this, Edit.class);
+				intent.putExtra("com.zns.comic.COMICIDS", new int[] { currentComic.getId() });
+	        	startActivity(intent);
+	            return true;
+	    }
+	    return super.onOptionsItemSelected(item);
+	}
 }
