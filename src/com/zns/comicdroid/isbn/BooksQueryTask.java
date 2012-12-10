@@ -24,7 +24,7 @@ public class BooksQueryTask extends AsyncTask<String, Void, Comic> {
         {
             Books books = new Books.Builder(httpTransport, jsonFactory, null)
         	.setApplicationName("ComicsDroid/1.0")
-        	.setGoogleClientRequestInitializer(new BooksRequestInitializer("AIzaSyBEk4GWuXFdmNUA6fJaG_6vJLqcMbNmhXM"))
+        	.setGoogleClientRequestInitializer(new BooksRequestInitializer()) //"AIzaSyBEk4GWuXFdmNUA6fJaG_6vJLqcMbNmhXM"
         	.build();
             
 			Volumes list = books.volumes().list(param[0]).execute();

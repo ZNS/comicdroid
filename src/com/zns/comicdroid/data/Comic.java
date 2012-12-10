@@ -17,6 +17,7 @@ import com.google.common.base.Joiner;
 
 public class Comic {
 	private int id;
+	private int groupId;
 	private String title;
 	private String subTitle;
 	private String author;
@@ -33,9 +34,10 @@ public class Comic {
 	public Comic() {
 	}
 	
-	public Comic(int id, String title, String subTitle, String author, String publisher, int publishDate, int addedDate, int pageCount, int isBorrowed, String borrower, byte[] image, String isbn, int issue)
+	public Comic(int id, String title, String subTitle, String author, String publisher, int publishDate, int addedDate, int pageCount, int isBorrowed, String borrower, byte[] image, String isbn, int issue, int groupId)
 	{
 		this.id = id;
+		this.groupId = groupId;
 		this.title = title;
 		this.subTitle = subTitle;
 		this.author = author;
@@ -157,6 +159,13 @@ public class Comic {
 	public void setId(int id) {
 		this.id = id;
 	}
+
+	public int getGroupId() {
+		return groupId;
+	}
+	public void setGroupId(int groupId) {
+		this.groupId = groupId;
+	}
 	
 	public String getTitle() {
 		return title;
@@ -197,6 +206,10 @@ public class Comic {
 		this.publishDate = (int)(publishDate.getTime() / 1000L);
 	}	
 	
+	public int getAddedDateTimestamp()
+	{
+		return addedDate;
+	}	
 	public Date getAddedDate() {
 		return new Date(addedDate * 1000L);
 	}	

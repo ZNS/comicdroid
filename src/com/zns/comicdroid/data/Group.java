@@ -4,6 +4,10 @@ public class Group {
 	private int id;
 	private String name;
 	private byte[] image;
+
+	public Group(int id) {
+		this.id = id;
+	}
 	
 	public Group(int id, String name, byte[] image)
 	{
@@ -33,4 +37,25 @@ public class Group {
 		this.image = image;
 	}
 	
+	@Override
+	public String toString() {
+		return getName();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == this) 
+			return true;
+		if (obj == null || obj.getClass() != this.getClass()) 
+			return false;
+		Group g = (Group)obj;
+		return g.getId() == this.getId();
+	}
+	
+	@Override
+	public int hashCode() {
+		int hash = 5;
+		hash = hash + ((Integer)this.getId()).hashCode();
+		return hash;
+	}
 }

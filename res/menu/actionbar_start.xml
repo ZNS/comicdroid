@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:id="@+id/menu_search"
+		android:title="Sök"
+		android:icon="@drawable/ic_action_search"
+		android:showAsAction="collapseActionView|ifRoom"
+		android:actionViewClass="com.actionbarsherlock.widget.SearchView" />
+    
+    <item 
+        android:id="@+id/menu_edit" 
+        android:showAsAction="ifRoom" 
+        android:icon="@drawable/ic_action_edit"
+        android:visible="false"
+        android:title="Edit" />        
+</menu>

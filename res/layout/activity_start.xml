@@ -4,13 +4,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-
+	
+    <!--      
+    
 	<RelativeLayout
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:descendantFocusability="beforeDescendants"
 		android:focusableInTouchMode="true" >	
-	        
+	    
 	    <EditText
 	        android:id="@+id/start_etSearch"
 			android:layout_width="fill_parent"
@@ -28,7 +30,8 @@
 			android:layout_centerVertical="true"
 			android:layout_marginRight="5dip" 
 			android:visibility="invisible" />    
-	    
     </RelativeLayout>
+
+    -->
     
 </LinearLayout>

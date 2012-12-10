@@ -1,6 +1,7 @@
 package com.zns.comicdroid;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import android.os.Bundle;
 import android.content.Intent;
@@ -58,6 +59,42 @@ public class Add extends BaseFragmentActivity {
     
     public void queryISBN(View view)
     {
+    	String isbn = etISBN.getText().toString().toUpperCase(Locale.ENGLISH);
+    	
+    	//Validate ISBN
+    	boolean isValid = false;
+    	if (isbn.length() == 10 || isbn.length() == 13) {
+    		if (isbn.length() == 10) {
+    			int sum = 0;
+    			for (int x = 0; x < 10; x++) {
+    				int digit = isbn.charAt(x) != 'X' ? ((int)isbn.charAt(x) & 0xF) : 10;
+    				sum += x != 9 ? digit * (10 - x) : digit;
+    			}
+    			isValid = sum % 11 == 0;
+    		}
+    		else {
+    		    int sum = 0;
+    		    for (int x = 0; x < 13; x += 2) {
+    		        sum += ((int)isbn.charAt(x) & 0xF);
+    		    }
+    		    for (int x = 1; x < 12; x += 2) {
+    		        sum += ((int)isbn.charAt(x) & 0xF) * 3;
+    		    }
+    		    isValid = sum % 10 == 0;
+    		}
+    	}
+    	if (!isValid) {
+    		Toast.makeText(this, "Invalid ISBN", Toast.LENGTH_LONG).show();
+    		return;
+    	}
+    	
+    	//Duplicate check
+    	DBHelper db = new DBHelper(this);
+    	if (db.IsDuplicate(isbn)) {
+    		Toast.makeText(this, "Boken är redan registrerad", Toast.LENGTH_LONG).show();
+    		return;
+    	}
+    	
 		try 
 		{
 			new BooksQueryTask() {
@@ -80,7 +117,7 @@ public class Add extends BaseFragmentActivity {
 							.makeText(Add.this, "Not Found", Toast.LENGTH_SHORT)
 							.show();						
 				    }				
-			}.execute("isbn:" + etISBN.getText());
+			}.execute("isbn:" + isbn);
 		} 
 		catch (Exception e) {}
     }
