@@ -22,6 +22,7 @@ public class AggregateAdapter extends SimpleCursorAdapter {
 		TextView tvAuthor;
 		ImageView ivImage;
 		TextView tvIssue;
+		ImageView ivGroupMark;
 	}
 	
 	public AggregateAdapter(Context context)
@@ -29,6 +30,14 @@ public class AggregateAdapter extends SimpleCursorAdapter {
 		super(context, R.layout.list_comicrow, null, new String[] { "Title" }, null, 0);
 		_layout = R.layout.list_comicrow;
 		_layoutInflater = LayoutInflater.from(context);		
+	}
+	
+	public Aggregate getAggregate(int position) {
+		Cursor cursor = getCursor();
+		if (cursor.moveToPosition(position)) {
+			return new Aggregate(cursor.getInt(0), cursor.getString(1), cursor.getInt(5));
+		}
+		return null;
 	}
 	
 	@Override
@@ -46,6 +55,7 @@ public class AggregateAdapter extends SimpleCursorAdapter {
 	    		holder.tvAuthor = (TextView)convertView.findViewById(R.id.tvAuthor);
 	    		holder.ivImage = (ImageView)convertView.findViewById(R.id.ivImage);
 	    		holder.tvIssue = (TextView)convertView.findViewById(R.id.tvIssue);
+	    		holder.ivGroupMark = (ImageView)convertView.findViewById(R.id.ivGroupMark);
 	    		
 	    		convertView.setTag(holder);
 	    	}
@@ -58,9 +68,20 @@ public class AggregateAdapter extends SimpleCursorAdapter {
 			String subTitle = cursor.getString(2);
 			String author = cursor.getString(3);
 			byte[] image = cursor.getBlob(4);
+			int type = cursor.getInt(5);
+			int count = cursor.getInt(6);
 			
-			holder.tvTitle.setText(title + (subTitle != null && subTitle != "" ? " - " + subTitle : ""));
+			holder.tvTitle.setText(title + (subTitle != null && !subTitle.equals("") ? " - " + subTitle : ""));
 			holder.tvAuthor.setText(author);
+			if (type == 2) {
+				holder.ivGroupMark.setVisibility(View.VISIBLE);
+				holder.tvIssue.setText("(" + count + ")");
+			}
+			else
+			{
+				holder.ivGroupMark.setVisibility(View.GONE);
+				holder.tvIssue.setText("");
+			}
 			if (image != null)
 			{
 				Bitmap bmp = BitmapFactory.decodeByteArray(image, 0, image.length);

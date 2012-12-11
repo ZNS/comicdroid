@@ -2,19 +2,18 @@ package com.zns.comicdroid;
 
 import java.text.SimpleDateFormat;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-import com.zns.comicdroid.data.Comic;
-import com.zns.comicdroid.data.DBHelper;
-
-import android.os.Bundle;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+import com.zns.comicdroid.data.Comic;
 
 public class ComicView extends BaseFragmentActivity {
 	
@@ -54,8 +53,7 @@ public class ComicView extends BaseFragmentActivity {
 	    int comicId = intent.getIntExtra("com.zns.comic.COMICID", 0);
 	    if (comicId > 0)
 	    {
-	    	DBHelper comicDB = new DBHelper(this);
-	    	currentComic = comicDB.getComic(comicId);
+	    	currentComic = getDBHelper().getComic(comicId);
 	    	BindComic(currentComic);
 	    }
 	}

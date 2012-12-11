@@ -127,14 +127,6 @@
         android:layout_marginBottom="-2dp"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
-    <!-- <EditText
-        android:id="@+id/comicEdit_etAuthor"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text=""
-        android:paddingBottom="5dp"
-        android:textAppearance="?android:attr/textAppearanceMedium" /> -->
-        
     <AutoCompleteTextView
         android:id="@+id/comicEdit_actAuthor"
         android:layout_width="fill_parent"
@@ -152,13 +144,15 @@
         android:text="Förlag"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
-    <EditText
-        android:id="@+id/comicEdit_etPublisher"
+    <AutoCompleteTextView
+        android:id="@+id/comicEdit_actPublisher"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:text=""
         android:paddingBottom="5dp"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
+        android:textAppearance="?android:attr/textAppearanceMedium" >
+    </AutoCompleteTextView>
+        
 	<!-- Publishdate -->
     <TextView
         android:layout_width="wrap_content"

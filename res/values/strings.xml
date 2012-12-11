@@ -15,5 +15,6 @@
     <string name="title_activity_comic_view">Comic</string>
     <string name="title_activity_authors">Authors</string>
     <string name="title_activity_edit">Edit</string>
+    <string name="title_activity_comics">Comics</string>
 
 </resources>

@@ -1,6 +1,7 @@
 package com.zns.comicdroid.data;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
@@ -9,6 +10,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import org.apache.http.util.ByteArrayBuffer;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 import com.google.api.services.books.model.Volume.VolumeInfo;
 import com.google.api.services.books.model.Volume.VolumeInfo.ImageLinks;
@@ -142,9 +146,20 @@ public class Comic {
 		             int current = 0;
 		             while ((current = bis.read()) != -1) {
 		                     baf.append((byte) current);
-		             }
-
-		             comic.setImage(baf.toByteArray());
+		             }		             
+		             byte[] data = baf.toByteArray();
+		             
+		             bis.close();
+		             is.close();
+		             
+		             Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
+		             ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		             bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
+		             
+		             comic.setImage(stream.toByteArray());		          
+		             
+		             stream.close();
+		             bmp = null;		             
 			     } catch (Exception e) {
 			     }
 			}

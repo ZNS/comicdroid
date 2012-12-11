@@ -6,6 +6,25 @@
     android:descendantFocusability="beforeDescendants"
 	android:focusableInTouchMode="true" >
 
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+		
+		<ImageView
+		    android:id="@+id/add_ivGroupAdd"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_alignParentRight="true"
+		    android:src="@drawable/ic_add" />
+				        
+		<Spinner
+		    android:id="@+id/add_spGroup"
+		    android:layout_width="fill_parent"
+		    android:layout_height="wrap_content"				    
+		    android:layout_toLeftOf="@id/add_ivGroupAdd" />
+		
+    </RelativeLayout>
+		        
     <Button
         android:id="@+id/btnScan"
         android:layout_width="match_parent"

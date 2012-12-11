@@ -27,12 +27,12 @@ public class GroupedItemAdapter extends SimpleCursorAdapter {
 		_layoutInflater = LayoutInflater.from(context);
 	}
 	
-	public int getGroupedItemName(int position)
+	public String getGroupedItemName(int position)
 	{
 		Cursor cursor = getCursor();
 		if (cursor.moveToPosition(position))
-			return cursor.getInt(1);
-		return 0;
+			return cursor.getString(1);
+		return null;
 	}
 	
 	@Override

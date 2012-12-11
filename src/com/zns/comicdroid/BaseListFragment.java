@@ -8,9 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.actionbarsherlock.app.SherlockFragment;
-
-public abstract class BaseListFragment extends SherlockFragment {
+public abstract class BaseListFragment extends BaseFragment {
 	
 	public interface OnFragmentStartedListener {
 		public void onStarted();

@@ -1,38 +1,68 @@
 package com.zns.comicdroid;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import android.os.Bundle;
 import android.content.Intent;
+import android.support.v4.app.DialogFragment;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.zns.comicdroid.data.Comic;
 import com.zns.comicdroid.data.ComicArrayAdapter;
-import com.zns.comicdroid.data.DBHelper;
+import com.zns.comicdroid.data.Group;
+import com.zns.comicdroid.dialogs.GroupAddDialogFragment;
 import com.zns.comicdroid.isbn.BooksQueryTask;
 
-public class Add extends BaseFragmentActivity {
+public class Add extends BaseFragmentActivity 
+	implements GroupAddDialogFragment.OnGroupAddDialogListener {
 
-	DBHelper comicDB;
-	EditText etISBN;
-	ComicArrayAdapter adapter;
-	ListView lvComics;
+	private EditText etISBN;
+	private ComicArrayAdapter adapter;
+	private ListView lvComics;
+	private ImageView ivGroupAdd;
+	private Spinner spGroup;
+	
+	
+	private ArrayAdapter<Group> adapterGroups;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);               
         setContentView(R.layout.activity_add);
         
-        comicDB = new DBHelper(this);
         etISBN = (EditText)findViewById(R.id.etISBN);
         lvComics = (ListView)findViewById(R.id.add_lvComics);
+        spGroup = (Spinner)findViewById(R.id.add_spGroup);
+        ivGroupAdd = (ImageView)findViewById(R.id.add_ivGroupAdd);
         
+    	//Spinner groups
+    	List<Group> groups = getDBHelper().getGroups();
+    	if (groups == null)
+    		groups = new ArrayList<Group>();
+    	groups.add(0, new Group(0, "Ingen grupp", null));
+    	adapterGroups = new ArrayAdapter<Group>(this, android.R.layout.simple_spinner_item, groups);
+    	spGroup.setAdapter(adapterGroups);
+    	
+    	//Dialog
+    	ivGroupAdd.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				DialogFragment dialogAddGroup = new GroupAddDialogFragment();
+				dialogAddGroup.show(getSupportFragmentManager(), "GROUPADD");
+			}
+		});
+    	
         if (adapter == null)
         {
 	        ArrayList<Comic> comics = new ArrayList<Comic>(); 
@@ -41,6 +71,15 @@ public class Add extends BaseFragmentActivity {
         }
     }
 
+	@Override
+	public void onDialogPositiveClick(DialogFragment dialog) {
+		List<Group> groups = getDBHelper().getGroups();
+		groups.add(0, new Group(0, "Ingen grupp", null));
+		adapterGroups.clear();
+		for (Group g : groups)
+			adapterGroups.add(g);
+	}
+	
     public void scanISBN(View view)
     {
     	IntentIntegrator integrator = new IntentIntegrator(this);
@@ -89,8 +128,7 @@ public class Add extends BaseFragmentActivity {
     	}
     	
     	//Duplicate check
-    	DBHelper db = new DBHelper(this);
-    	if (db.IsDuplicate(isbn)) {
+    	if (getDBHelper().isDuplicateComic(isbn)) {
     		Toast.makeText(this, "Boken är redan registrerad", Toast.LENGTH_LONG).show();
     		return;
     	}
@@ -107,7 +145,11 @@ public class Add extends BaseFragmentActivity {
 					 	
 						if (comic != null)
 						{
-							comicDB.storeComic(comic);
+							if (spGroup.getSelectedItemPosition() > 0) {
+								Group g = (Group)spGroup.getSelectedItem();
+								comic.setGroupId(g.getId());
+							}
+							getDBHelper().storeComic(comic);
 							adapter.add(comic);
 							adapter.notifyDataSetChanged();
 							return;

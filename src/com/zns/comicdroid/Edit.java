@@ -1,7 +1,5 @@
 package com.zns.comicdroid;
 
-import com.zns.comicdroid.dialogs.GroupAddDialogFragment;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
@@ -9,36 +7,32 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-import com.zns.comicdroid.data.Comic;
-import com.zns.comicdroid.data.ComicArrayAdapter;
-import com.zns.comicdroid.data.DBHelper;
-import com.zns.comicdroid.data.Group;
-
-import android.media.ThumbnailUtils;
-import android.os.Bundle;
 import android.content.ContentValues;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff.Mode;
+import android.media.ThumbnailUtils;
+import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.widget.SimpleCursorAdapter;
-import android.support.v4.widget.SimpleCursorAdapter.CursorToStringConverter;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
-import android.widget.FilterQueryProvider;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SlidingDrawer;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+import com.zns.comicdroid.data.AutoCompleteAdapter;
+import com.zns.comicdroid.data.Comic;
+import com.zns.comicdroid.data.ComicArrayAdapter;
+import com.zns.comicdroid.data.Group;
+import com.zns.comicdroid.dialogs.GroupAddDialogFragment;
 
 public class Edit extends BaseFragmentActivity
 	implements	OnClickListener, 
@@ -46,13 +40,12 @@ public class Edit extends BaseFragmentActivity
 	
 	private static final int CAMERA_REQUEST = 1888; 
 	
-	private DBHelper comicDB;
 	private List<Comic> comics;
 	private EditText etTitle;
 	private EditText etSubtitle;
 	private EditText etIssue;
 	private AutoCompleteTextView etAuthor;
-	private EditText etPublisher;
+	private AutoCompleteTextView etPublisher;
 	private EditText etPublished;
 	private EditText etAdded;
 	private EditText etPageCount;
@@ -61,11 +54,9 @@ public class Edit extends BaseFragmentActivity
 	private Spinner spGroup;
 	private ImageView ivGroupAdd;
 	
-	private ArrayAdapter<Group> adapterGroups;
-	
-	private SQLiteDatabase db;
-	private Cursor cursorAuthors;
-	private Cursor cursorPublishers;
+	private ArrayAdapter<Group> adapterGroups;		
+	private AutoCompleteAdapter adapterAuthors;
+	private AutoCompleteAdapter adapterPublisher;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +67,7 @@ public class Edit extends BaseFragmentActivity
 		etSubtitle = (EditText)findViewById(R.id.comicEdit_etSubtitle);
 		etIssue = (EditText)findViewById(R.id.comicEdit_etIssue);
 		etAuthor = (AutoCompleteTextView)findViewById(R.id.comicEdit_actAuthor);
-		etPublisher = (EditText)findViewById(R.id.comicEdit_etPublisher);
+		etPublisher = (AutoCompleteTextView)findViewById(R.id.comicEdit_actPublisher);
 		etPublished = (EditText)findViewById(R.id.comicEdit_etPublished);
 		etAdded = (EditText)findViewById(R.id.comicEdit_etAdded);
 		etPageCount = (EditText)findViewById(R.id.comicEdit_etPageCount);
@@ -88,12 +79,10 @@ public class Edit extends BaseFragmentActivity
 	    int[] comicIds = intent.getIntArrayExtra("com.zns.comic.COMICIDS");
 	    if (comicIds != null && comicIds.length > 0)
 	    {
-	    	comicDB = new DBHelper(this);	    	
-	    	comics = comicDB.getComics(comicIds);
-	    	db = comicDB.getReadableDatabase();
+	    	comics = getDBHelper().getComics(comicIds);
 	    	
 	    	//Spinner groups
-	    	List<Group> groups = comicDB.getGroups();
+	    	List<Group> groups = getDBHelper().getGroups();
 	    	if (groups == null)
 	    		groups = new ArrayList<Group>();
 	    	groups.add(0, new Group(0, "Ingen grupp", null));
@@ -109,26 +98,21 @@ public class Edit extends BaseFragmentActivity
 				}
 			});
 	    	
-			//Autocomplete
-			SimpleCursorAdapter adapterAuthor = new SimpleCursorAdapter(this,
-					android.R.layout.simple_dropdown_item_1line,
-					null,
-					new String[] { "Author" },
-					new int[] { android.R.id.text1 }, 0);			
-			adapterAuthor.setFilterQueryProvider(new FilterQueryProvider() {
-				@Override
-				public Cursor runQuery(CharSequence constraint) {
-					return getAuthorCursor(constraint);
-				}
-			});
-			adapterAuthor.setCursorToStringConverter(new CursorToStringConverter() {				
-				@Override
-				public CharSequence convertToString(Cursor cursor) {
-					return cursor.getString(1);
-				}
-			});
+			//Autocomplete author
+			adapterAuthors = new AutoCompleteAdapter(this, 
+					"SELECT DISTINCT 0 AS _id, Author FROM tblBooks WHERE Author LIKE ? ORDER BY Author", 
+					"Author", 
+					1); 	    	
 			etAuthor.setThreshold(3);
-			etAuthor.setAdapter(adapterAuthor);
+			etAuthor.setAdapter(adapterAuthors);
+						
+			//Autocomplete publisher
+			adapterPublisher = new AutoCompleteAdapter(this, 
+					"SELECT DISTINCT 0 AS _id, Publisher FROM tblBooks WHERE Publisher LIKE ? ORDER BY Publisher", 
+					"Publisher", 
+					1); 
+			etPublisher.setThreshold(3);
+			etPublisher.setAdapter(adapterPublisher);
 			
 	    	ListView lvEdit = (ListView)findViewById(R.id.comicEdit_listView);
 			SlidingDrawer drawer = (SlidingDrawer)findViewById(R.id.comicEdit_drawer);
@@ -145,17 +129,6 @@ public class Edit extends BaseFragmentActivity
 	    	
 	    	BindComics();
 	    }
-	}
-	
-	private Cursor getAuthorCursor(CharSequence constraint) {
-		if (constraint != null)
-		{
-			if (cursorAuthors != null)
-				cursorAuthors.close();
-			cursorAuthors = db.rawQuery("SELECT DISTINCT 0 AS _id, Author FROM tblBooks WHERE Author LIKE ? ORDER BY Author", new String[] { constraint.toString() + "%" });
-			return cursorAuthors;
-		}
-		return null;
 	}
 	
 	private void BindComics()
@@ -222,10 +195,15 @@ public class Edit extends BaseFragmentActivity
 		ContentValues values = new ContentValues();
 		try
 		{
+			String title = etTitle.getText().toString().trim();
+			if (title.toLowerCase().startsWith("the ")) {
+				title = title.substring(4) + ", The";
+			}
+			
 			if (comics.size() > 1)
 			{
 				if (!isEmpty(etTitle))
-					values.put("Title", etTitle.getText().toString());
+					values.put("Title", title);
 				if (!isEmpty(etSubtitle))
 					values.put("SubTitle", etSubtitle.getText().toString());
 				if (!isEmpty(etAuthor))
@@ -239,7 +217,7 @@ public class Edit extends BaseFragmentActivity
 			}
 			else
 			{
-				values.put("Title", etTitle.getText().toString());
+				values.put("Title", title);
 				values.put("SubTitle", etSubtitle.getText().toString());
 				values.put("Author", etAuthor.getText().toString());
 				values.put("Publisher", etPublisher.getText().toString());				
@@ -248,9 +226,9 @@ public class Edit extends BaseFragmentActivity
 				if (!isEmpty(etPageCount))
 					values.put("PageCount", Integer.parseInt(etPageCount.getText().toString()));
 				if (!isEmpty(etPublished))
-					values.put("PublishDate", comicDB.GetDateStamp(etPublished.getText().toString()));
+					values.put("PublishDate", getDBHelper().GetDateStamp(etPublished.getText().toString()));
 				if (!isEmpty(etAdded))
-					values.put("AddedDate", comicDB.GetDateStamp(etAdded.getText().toString()));
+					values.put("AddedDate", getDBHelper().GetDateStamp(etAdded.getText().toString()));
 				if (spGroup.getSelectedItemPosition() > 0) {
 					Group g = (Group)spGroup.getSelectedItem();
 					values.put("GroupId", g.getId());
@@ -279,10 +257,8 @@ public class Edit extends BaseFragmentActivity
 		}
 		sbWhere.setLength(sbWhere.length() - 1);
 		sbWhere.append(")");
-		
-		SQLiteDatabase db = comicDB.getWritableDatabase();	
-		db.update("tblBooks", values, sbWhere.toString(), ids);
-		db.close();
+			
+		getDBHelper().update("tblBooks", values, sbWhere.toString(), ids);
 		
 		Toast.makeText(this, "Sparat och klart!", Toast.LENGTH_LONG).show();
 	}
@@ -316,7 +292,7 @@ public class Edit extends BaseFragmentActivity
 	
 	@Override
 	public void onDialogPositiveClick(DialogFragment dialog) {
-		List<Group> groups = comicDB.getGroups();
+		List<Group> groups = getDBHelper().getGroups();
 		groups.add(0, new Group(0, "Ingen grupp", null));
 		adapterGroups.clear();
 		for (Group g : groups)
@@ -386,13 +362,9 @@ public class Edit extends BaseFragmentActivity
 
 	@Override
 	protected void onDestroy() {
-		super.onDestroy();
 		newImage = null;
-		if (cursorPublishers != null)
-			cursorPublishers.close();		
-		if (cursorAuthors != null)
-			cursorAuthors.close();
-		if (db != null)
-			db.close();
+		adapterPublisher.close();
+		adapterAuthors.close();
+		super.onDestroy();	
 	}
 }

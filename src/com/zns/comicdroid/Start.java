@@ -1,23 +1,22 @@
 package com.zns.comicdroid;
 
+import android.app.SearchManager;
+import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.Loader;
+import android.view.View;
+
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.Tab;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
 import com.commonsware.cwac.loaderex.acl.SQLiteCursorLoader;
-import com.zns.comicdroid.data.DBHelper;
-
-import android.os.Bundle;
-import android.app.SearchManager;
-import android.content.Context;
-import android.content.Intent;
-import android.database.Cursor;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.Loader;
-import android.view.View;
 
 public class Start extends BaseFragmentActivity
 	implements	LoaderCallbacks<Cursor>, 
@@ -26,13 +25,8 @@ public class Start extends BaseFragmentActivity
 	
 	private static final String LISTFRAGMENTTAG = "LISTFRAGMENT";
 	
-	private DBHelper db;
 	private SQLiteCursorLoader loader;
-	//private EditText etSearch;
-	//private Button btnClearSearch;	
-	//private Handler filterHandler;
 	private String filterQuery = "";
-	//private Runnable filterTask;
 	private String currentTab = "AGGREGATES";
 	private MenuItem menuEdit;
 	private MenuItem menuSearch;
@@ -42,47 +36,7 @@ public class Start extends BaseFragmentActivity
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_start);
-		
-		db = new DBHelper(this);
-		//filterHandler = new Handler();
-		
-		//etSearch = (EditText)findViewById(R.id.start_etSearch);
-		//btnClearSearch = (Button)findViewById(R.id.start_btnClearSearch);					
-		
-		/*btnClearSearch.setOnClickListener(new OnClickListener() {			
-			@Override
-			public void onClick(View v) {
-				etSearch.setText("");
-				etSearch.clearFocus();
-			}
-		});*/
-		
-		/*
-		filterTask = new Runnable() {
-			@Override
-			public void run() {
-				getSupportLoaderManager().restartLoader(0, null, Start.this);
-			}
-		};
-		
-		etSearch.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void afterTextChanged(Editable s) {
-				filterQuery = s.toString();
-				filterHandler.removeCallbacks(filterTask);
-				filterHandler.postDelayed(filterTask, 1000);
-				if (s.length() > 0)
-					btnClearSearch.setVisibility(View.VISIBLE);
-				else
-					btnClearSearch.setVisibility(View.INVISIBLE);
-			}			
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {}			
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}			
-		});									
-		*/
-		
+				
 		//Tabs
 		getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		
@@ -221,9 +175,9 @@ public class Start extends BaseFragmentActivity
 	@Override
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
 		if (filterQuery != null && !filterQuery.equals(""))
-			loader= new SQLiteCursorLoader(this, db, getCurrentListFragment().getSQLFilter(), new String[] { filterQuery + "%" });
+			loader = new SQLiteCursorLoader(this, getDBHelper(), getCurrentListFragment().getSQLFilter(), new String[] { filterQuery + "%" });
 		else
-			loader= new SQLiteCursorLoader(this, db, getCurrentListFragment().getSQLDefault(), null); 
+			loader = new SQLiteCursorLoader(this, getDBHelper(), getCurrentListFragment().getSQLDefault(), null); 
 		return(loader);
 	}
 
@@ -231,11 +185,14 @@ public class Start extends BaseFragmentActivity
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 		getCurrentListFragment().adapter.changeCursor(cursor);
 		getCurrentListFragment().BindList();
-		if (menuEdit != null && currentTab == "TITLES" && filterQuery != null && !filterQuery.equals("") && cursor.getCount() > 0) {
-			menuEdit.setVisible(true);
-		}
-		else {
-			menuEdit.setVisible(false);
+		if (menuEdit != null)
+		{
+			if (currentTab == "TITLES" && filterQuery != null && !filterQuery.equals("") && cursor.getCount() > 0) {
+				menuEdit.setVisible(true);
+			}
+			else {
+				menuEdit.setVisible(false);
+			}
 		}
 	}
 

@@ -6,22 +6,26 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.google.common.base.Joiner;
-import com.google.common.primitives.Ints;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.google.common.base.Joiner;
+import com.google.common.primitives.Ints;
+
 public class DBHelper extends SQLiteOpenHelper {
-	public static final int DB_VERSION = 8;
-	public static final String DB_NAME = "ComicDroid.db";
-		
-	public DBHelper(Context context) {
-		super(context, DB_NAME, null, DB_VERSION);
-	}
+	
+	private static final int DB_VERSION = 	8;
+	private static final String DB_NAME = 	"ComicDroid.db";
+	
+    private SQLiteDatabase db;
+    
+    public DBHelper(Context context) {
+        super(context, DB_NAME, null, DB_VERSION);
+        db = getWritableDatabase();
+    }
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
@@ -91,15 +95,32 @@ public class DBHelper extends SQLiteOpenHelper {
 		onCreate(db);
 	}
 	
-	/*@Override
-	public void onOpen(SQLiteDatabase db) {
-		super.onOpen(db);
-		if (!db.isReadOnly()) {
-			// Enable foreign key constraints
-			db.execSQL("PRAGMA foreign_keys=ON;");
-		}
-	}*/ 
+    @Override
+    public synchronized void close() {
+    	db.close();
+    	super.close();
+    }
 	
+    @Override
+    public SQLiteDatabase getWritableDatabase () {
+    	if (db != null)
+    		return db;
+    	return super.getWritableDatabase();
+    }
+    
+    @Override
+    public SQLiteDatabase getReadableDatabase () {
+    	return getWritableDatabase();
+    }
+    
+    public Cursor getCursor(String sql, String[] selectionArgs) {
+    	return db.rawQuery(sql, selectionArgs);
+    }
+    
+    public int update(String table, ContentValues values, String whereClause, String[] whereArgs) {
+    	return db.update(table, values, whereClause, whereArgs);
+    }
+    
 	public int GetDateStamp(String strDate) 
 			throws ParseException
 	{
@@ -111,8 +132,14 @@ public class DBHelper extends SQLiteOpenHelper {
 	public void storeComic(Comic comic)
 	{
 		ContentValues values = new ContentValues();
+		
+		String title = comic.getTitle().trim();
+		if (title.toLowerCase().startsWith("the ")) {
+			title = title.substring(4) + ", The";
+		}
+		
 		values.put("GroupId", comic.getGroupId());
-		values.put("Title", comic.getTitle());
+		values.put("Title", title);
 		values.put("Subtitle", comic.getSubTitle());
 		values.put("Publisher", comic.getPublisher());
 		values.put("Author", comic.getAuthor());
@@ -125,21 +152,18 @@ public class DBHelper extends SQLiteOpenHelper {
 		values.put("ISBN", comic.getISBN());
 		values.put("Issue", comic.getIssue());
 		
-		SQLiteDatabase db = getWritableDatabase();
 		db.insert("tblBooks", null, values);
-		db.close();
 	}
 	
-	public ArrayList<Comic> getComics(String order)
+	public List<Comic> getComics(String order)
 	{
-		ArrayList<Comic> result = new ArrayList<Comic>();
+		List<Comic> result = new ArrayList<Comic>();
 		String orderBy = "Title";
 		if (order.equalsIgnoreCase("forfattare"))
 			orderBy = "Author";
 		else if (order.equalsIgnoreCase("forlag"))
 			orderBy = "Publisher";
 		
-		SQLiteDatabase db = getReadableDatabase();
 		Cursor cursor = db.rawQuery("SELECT Id, Title, Subtitle, Author, Publisher, PublishDate, " +
 				"AddedDate, PageCount, IsBorrowed, Borrower, Image, ISBN, Issue, GroupId FROM tblBooks ORDER BY " + orderBy, null);
 		while (cursor.moveToNext())
@@ -161,7 +185,6 @@ public class DBHelper extends SQLiteOpenHelper {
 			result.add(comic);
 		}
 		cursor.close();
-		db.close();
 		
 		return result;
 	}
@@ -169,7 +192,6 @@ public class DBHelper extends SQLiteOpenHelper {
 	public List<Comic> getComics(int[] ids)
 	{
 		List<Comic> list = new ArrayList<Comic>();
-		SQLiteDatabase db = getReadableDatabase();
 		Cursor cursor = db.rawQuery("SELECT Id, Title, Subtitle, Author, Publisher, PublishDate, " +
 				"AddedDate, PageCount, IsBorrowed, Borrower, Image, ISBN, Issue, GroupId FROM tblBooks WHERE Id IN (" +
 				Joiner.on(",").join(Ints.asList(ids)) +
@@ -193,14 +215,12 @@ public class DBHelper extends SQLiteOpenHelper {
 			list.add(comic);
 		}
 		cursor.close();
-		db.close();		
 		return list;
 	}
 	
 	public Comic getComic(int id)
 	{
 		Comic comic = null;
-		SQLiteDatabase db = getReadableDatabase();
 		Cursor cursor = db.rawQuery("SELECT Id, Title, Subtitle, Author, Publisher, PublishDate, " +
 				"AddedDate, PageCount, IsBorrowed, Borrower, Image, ISBN, Issue, GroupId FROM tblBooks WHERE Id = ?", new String[] { Integer.toString(id) });
 		if (cursor.moveToNext())
@@ -220,23 +240,18 @@ public class DBHelper extends SQLiteOpenHelper {
 					cursor.getInt(12),
 					cursor.getInt(13));					
 		}
-		cursor.close();
-		db.close();
-		
+		cursor.close();		
 		return comic;
 	}
 	
 	public void deleteComic(int id)
 	{
-		SQLiteDatabase db = getWritableDatabase();
 		db.delete("tblBooks", "Id=?", new String[] { Integer.toString(id) });
-		db.close();
 	}
 	
 	public List<Group> getGroups()
 	{
 		List<Group> groups = new ArrayList<Group>();
-		SQLiteDatabase db = getReadableDatabase();
 		Cursor cursor = db.rawQuery("SELECT Id,  Name, Image FROM tblGroups ORDER BY Name", null);
 		while (cursor.moveToNext()) {			
 			groups.add(new Group(cursor.getInt(0),
@@ -244,7 +259,6 @@ public class DBHelper extends SQLiteOpenHelper {
 					cursor.getBlob(2)));
 		}
 		cursor.close();
-		db.close();
 		return groups;
 	}
 	
@@ -253,7 +267,6 @@ public class DBHelper extends SQLiteOpenHelper {
 		ContentValues values = new ContentValues();
 		values.put("Name", name);
 
-		SQLiteDatabase db = getWritableDatabase();		
 		//Dupecheck
 		Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM tblGroups WHERE Name = ? COLLATE NOCASE", new String[] { name });
 		if (cursor.moveToFirst() && cursor.getInt(0) > 0)
@@ -264,21 +277,11 @@ public class DBHelper extends SQLiteOpenHelper {
 			db.insert("tblGroups", null, values);
 		}
 		
-		db.close();		
 		return isValid;
 	}
-	
-	public void getArchiveList()
-	{
-		String sql = "SELECT Id, Title AS Name, Image, 1 AS ItemType FROM tblBooks WHERE GroupId = 0" +
-				"UNION" +
-				"SELECT Id, Name, Image, 2 AS ItemType FROM tblGroups" +
-				"ORDER BY Name";
-	}
-	
-	public boolean IsDuplicate(String isbn) {
+		
+	public boolean isDuplicateComic(String isbn) {
 		boolean duplicate = false;
-		SQLiteDatabase db = getReadableDatabase();		
 		Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM tblBooks WHERE ISBN = ?", new String[] { isbn });
 		if (cursor.moveToFirst())
 		{
@@ -286,7 +289,6 @@ public class DBHelper extends SQLiteOpenHelper {
 			duplicate = count > 0;
 		}
 		cursor.close();
-		db.close();
 		return duplicate;
 	}
 }

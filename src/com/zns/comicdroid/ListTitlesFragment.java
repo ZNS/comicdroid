@@ -4,16 +4,15 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import com.zns.comicdroid.data.ComicAdapter;
-import com.zns.comicdroid.data.DBHelper;
 
 public class ListTitlesFragment extends BaseListFragment {
 
@@ -30,7 +29,7 @@ public class ListTitlesFragment extends BaseListFragment {
 				Intent intent = new Intent(getActivity(), ComicView.class);
 				intent.putExtra("com.zns.comic.COMICID", comicId);
 				startActivity(intent);
-			}			
+			}
 		});		
 		registerForContextMenu(listView);
 		
@@ -86,8 +85,7 @@ public class ListTitlesFragment extends BaseListFragment {
 			switch (item.getItemId()) {
 				case R.id.start_context_delete:
 					listView.removeViews((int)info.id, 1);
-					DBHelper db = new DBHelper(getActivity());
-					db.deleteComic(comicId);
+					getDBHelper().deleteComic(comicId);
 					return true;
 			}
 		}
