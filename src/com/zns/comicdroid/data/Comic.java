@@ -1,23 +1,15 @@
 package com.zns.comicdroid.data;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.net.URL;
-import java.net.URLConnection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import org.apache.http.util.ByteArrayBuffer;
-
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-
 import com.google.api.services.books.model.Volume.VolumeInfo;
 import com.google.api.services.books.model.Volume.VolumeInfo.ImageLinks;
 import com.google.api.services.books.model.Volume.VolumeInfo.IndustryIdentifiers;
 import com.google.common.base.Joiner;
+import com.zns.comicdroid.util.ImageHandler;
 
 public class Comic {
 	private int id;
@@ -31,14 +23,14 @@ public class Comic {
 	private int pageCount;
 	private int isBorrowed;
 	private String borrower;
-	private byte[] image;
+	private String image;
 	private String ISBN;
 	private int issue;
 	
 	public Comic() {
 	}
 	
-	public Comic(int id, String title, String subTitle, String author, String publisher, int publishDate, int addedDate, int pageCount, int isBorrowed, String borrower, byte[] image, String isbn, int issue, int groupId)
+	public Comic(int id, String title, String subTitle, String author, String publisher, int publishDate, int addedDate, int pageCount, int isBorrowed, String borrower, String image, String isbn, int issue, int groupId)
 	{
 		this.id = id;
 		this.groupId = groupId;
@@ -56,7 +48,7 @@ public class Comic {
 		this.issue = issue;
 	}
 
-	public static Comic fromVolumeInfo(VolumeInfo info)
+	public static Comic fromVolumeInfo(VolumeInfo info, String imageDirectory)
 			throws ParseException
 	{
 		if (info == null || info.getTitle() == null)
@@ -137,29 +129,8 @@ public class Comic {
 			{
 				try {
 		             URL url = new URL(imageUrl);
-		             URLConnection ucon = url.openConnection();
-
-		             InputStream is = ucon.getInputStream();
-		             BufferedInputStream bis = new BufferedInputStream(is);
-
-		             ByteArrayBuffer baf = new ByteArrayBuffer(500);
-		             int current = 0;
-		             while ((current = bis.read()) != -1) {
-		                     baf.append((byte) current);
-		             }		             
-		             byte[] data = baf.toByteArray();
-		             
-		             bis.close();
-		             is.close();
-		             
-		             Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
-		             ByteArrayOutputStream stream = new ByteArrayOutputStream();
-		             bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
-		             
-		             comic.setImage(stream.toByteArray());		          
-		             
-		             stream.close();
-		             bmp = null;		             
+		             String filePath = ImageHandler.storeImage(url, imageDirectory);
+		             comic.setImage(filePath);
 			     } catch (Exception e) {
 			     }
 			}
@@ -253,11 +224,11 @@ public class Comic {
 		this.borrower = borrower;
 	}
 
-	public byte[] getImage() {
+	public String getImage() {
 		return image;
 	}
 
-	public void setImage(byte[] image) {
+	public void setImage(String image) {
 		this.image = image;
 	}
 

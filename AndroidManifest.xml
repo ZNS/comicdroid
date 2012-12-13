@@ -10,7 +10,9 @@
         android:targetSdkVersion="16" />
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -40,7 +42,8 @@
         </activity>
         <activity
             android:name="com.zns.comicdroid.ComicView"
-            android:label="@string/title_activity_comic_view" >
+            android:label="@string/title_activity_comic_view"
+			android:windowSoftInputMode="adjustPan" >
         </activity>
         <activity
             android:name="com.zns.comicdroid.ListAuthorsFragment"

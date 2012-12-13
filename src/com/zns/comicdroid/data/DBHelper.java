@@ -17,14 +17,15 @@ import com.google.common.primitives.Ints;
 
 public class DBHelper extends SQLiteOpenHelper {
 	
-	private static final int DB_VERSION = 	8;
+	private static final int DB_VERSION = 	16;
 	private static final String DB_NAME = 	"ComicDroid.db";
 	
     private SQLiteDatabase db;
     
     public DBHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
-        db = getWritableDatabase();
+        if (db == null)
+        	db = getWritableDatabase();
     }
 
 	@Override
@@ -36,11 +37,11 @@ public class DBHelper extends SQLiteOpenHelper {
 				"Subtitle TEXT," +
 				"Publisher TEXT," +
 				"Author TEXT," +
-				"Image BLOB," +
+				"Image TEXT," +
 				"PublishDate INTEGER," +
 				"AddedDate INTEGER," +
 				"PageCount INTEGER," +
-				"IsBorrowed INTEGER," +
+				"IsBorrowed INTEGER DEFAULT 0," +
 				"Borrower TEXT," +
 				"BorrowedDate INTEGER," +
 				"ISBN TEXT," +
@@ -51,7 +52,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				"Id INTEGER PRIMARY KEY AUTOINCREMENT," +
 				"Name TEXT," +
 				"Image BLOB," +
-				"BookCount INTEGER" +
+				"BookCount INTEGER DEFAULT 0" +
 				")";
 		
 		db.execSQL(tblBooks);
@@ -85,14 +86,17 @@ public class DBHelper extends SQLiteOpenHelper {
 		db.execSQL(triggerGroupId);
 		db.execSQL(triggerGroupId2);
 		db.execSQL(triggerGroupId3);
-		db.execSQL(triggerGroupId4);
+		db.execSQL(triggerGroupId4);	
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		db.execSQL("DROP TABLE tblBooks");
 		db.execSQL("DROP TABLE tblGroups");
-		onCreate(db);
+		onCreate(db);		
+		/*for (int i = 0; i < 500; i++) {
+			db.execSQL("INSERT INTO tblBooks (Title,Subtitle,Publisher,Author,Image) SELECT Title,Subtitle,Publisher,Author,Image FROM tblBooks LIMIT 1");
+		}*/		
 	}
 	
     @Override
@@ -103,9 +107,9 @@ public class DBHelper extends SQLiteOpenHelper {
 	
     @Override
     public SQLiteDatabase getWritableDatabase () {
-    	if (db != null)
-    		return db;
-    	return super.getWritableDatabase();
+    	if (db == null)
+    		db = super.getWritableDatabase();
+    	return db;
     }
     
     @Override
@@ -178,7 +182,7 @@ public class DBHelper extends SQLiteOpenHelper {
 					cursor.getInt(7),
 					cursor.getInt(8),
 					cursor.getString(9),
-					cursor.getBlob(10),
+					cursor.getString(10),
 					cursor.getString(11),
 					cursor.getInt(12),
 					cursor.getInt(13));
@@ -208,7 +212,7 @@ public class DBHelper extends SQLiteOpenHelper {
 					cursor.getInt(7),
 					cursor.getInt(8),
 					cursor.getString(9),
-					cursor.getBlob(10),
+					cursor.getString(10),
 					cursor.getString(11),
 					cursor.getInt(12),
 					cursor.getInt(13));
@@ -235,7 +239,7 @@ public class DBHelper extends SQLiteOpenHelper {
 					cursor.getInt(7),
 					cursor.getInt(8),
 					cursor.getString(9),
-					cursor.getBlob(10),
+					cursor.getString(10),
 					cursor.getString(11),
 					cursor.getInt(12),
 					cursor.getInt(13));					
@@ -249,6 +253,20 @@ public class DBHelper extends SQLiteOpenHelper {
 		db.delete("tblBooks", "Id=?", new String[] { Integer.toString(id) });
 	}
 	
+	public void setComicBorrowed(int comicId, String borrower) {
+		ContentValues values = new ContentValues();
+		values.put("Borrower", borrower);
+		if (borrower == null || borrower.equals("")) {
+			values.put("IsBorrowed", false);
+			values.put("BorrowedDate", "");
+		}
+		else {
+			values.put("IsBorrowed", true);
+			values.put("BorrowedDate", (int)(System.currentTimeMillis() / 1000L));			
+		}
+		db.update("tblBooks", values, "Id = ?", new String[] { Integer.toString(comicId) });
+	}
+
 	public List<Group> getGroups()
 	{
 		List<Group> groups = new ArrayList<Group>();

@@ -33,7 +33,9 @@ public class BooksQueryTask extends AsyncTask<String, Void, Comic> {
 			{
 				Volume item = list.getItems().get(0);
 				Volume.VolumeInfo info = item.getVolumeInfo();				
-				comic = Comic.fromVolumeInfo(info);				
+				comic = Comic.fromVolumeInfo(info, param[1]);
+				if (comic.getISBN() == null || comic.getISBN().equals(""))
+					comic.setISBN(param[2]);
 			}
 		} 
         catch (Exception e) {

@@ -1,7 +1,8 @@
 package com.zns.comicdroid;
 
-import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -9,11 +10,11 @@ import java.util.List;
 
 import android.content.ContentValues;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff.Mode;
-import android.media.ThumbnailUtils;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.DialogFragment;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -22,6 +23,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.SlidingDrawer;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -33,6 +35,8 @@ import com.zns.comicdroid.data.Comic;
 import com.zns.comicdroid.data.ComicArrayAdapter;
 import com.zns.comicdroid.data.Group;
 import com.zns.comicdroid.dialogs.GroupAddDialogFragment;
+import com.zns.comicdroid.util.ImageHandler;
+import com.zns.comicdroid.util.ImageHandler.MediaNotReadyException;
 
 public class Edit extends BaseFragmentActivity
 	implements	OnClickListener, 
@@ -50,9 +54,13 @@ public class Edit extends BaseFragmentActivity
 	private EditText etAdded;
 	private EditText etPageCount;
 	private ImageView ivImage;
-	private Bitmap newImage;
+	private String newImage = null;
 	private Spinner spGroup;
 	private ImageView ivGroupAdd;
+	private RelativeLayout rowIssue;
+	private RelativeLayout rowPublishDate;
+	private RelativeLayout rowAdded;
+	private RelativeLayout rowPageCount;
 	
 	private ArrayAdapter<Group> adapterGroups;		
 	private AutoCompleteAdapter adapterAuthors;
@@ -74,6 +82,10 @@ public class Edit extends BaseFragmentActivity
 		ivImage = (ImageView)findViewById(R.id.comicEdit_ivImage);		
 		spGroup = (Spinner)findViewById(R.id.comicEdit_spGroup);
 		ivGroupAdd = (ImageView)findViewById(R.id.comicEdit_ivGroupAdd);
+		rowIssue = (RelativeLayout)findViewById(R.id.comicEdit_issue);
+		rowPublishDate = (RelativeLayout)findViewById(R.id.comicEdit_publishDate);
+		rowAdded = (RelativeLayout)findViewById(R.id.comicEdit_added);
+		rowPageCount = (RelativeLayout)findViewById(R.id.comicEdit_pageCount);	
 		
 		Intent intent = getIntent();
 	    int[] comicIds = intent.getIntArrayExtra("com.zns.comic.COMICIDS");
@@ -87,6 +99,7 @@ public class Edit extends BaseFragmentActivity
 	    		groups = new ArrayList<Group>();
 	    	groups.add(0, new Group(0, "Ingen grupp", null));
 	    	adapterGroups = new ArrayAdapter<Group>(this, android.R.layout.simple_spinner_item, groups);
+	    	adapterGroups.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 	    	spGroup.setAdapter(adapterGroups);
 
 	    	//Dialog
@@ -119,12 +132,14 @@ public class Edit extends BaseFragmentActivity
 	    	if (comicIds.length > 1)
 	    	{
 	    		drawer.setVisibility(View.VISIBLE);
+	    		drawer.getHandle().setVisibility(View.VISIBLE);
 		    	ComicArrayAdapter adapter = new ComicArrayAdapter(this, comics);		    	
-		    	lvEdit.setAdapter(adapter);		    			    	
+		    	lvEdit.setAdapter(adapter);
 	    	}
 	    	else {
 	    		ivImage.setOnClickListener(this);
 	    		drawer.setVisibility(View.GONE);
+	    		drawer.getHandle().setVisibility(View.GONE);
 	    	}
 	    	
 	    	BindComics();
@@ -139,26 +154,31 @@ public class Edit extends BaseFragmentActivity
 		if (comics.size() == 1)
 		{
 			Comic comic = comics.get(0);
-			setTextField(etTitle, comic.getTitle(), true);
-			setTextField(etSubtitle, comic.getSubTitle(), true);
-			setTextField(etIssue, comic.getIssue() > 0 ? Integer.toString(comic.getIssue()) : "", true);
-			setTextField(etAuthor, comic.getAuthor(), true);
-			setTextField(etPublisher, comic.getPublisher(), true);
+			rowIssue.setVisibility(View.VISIBLE);
+			rowPublishDate.setVisibility(View.VISIBLE);
+			rowAdded.setVisibility(View.VISIBLE);
+			rowPageCount.setVisibility(View.VISIBLE);
+			
+			setTextField(etTitle, comic.getTitle(), false);
+			setTextField(etSubtitle, comic.getSubTitle(), false);
+			setTextField(etIssue, comic.getIssue() > 0 ? Integer.toString(comic.getIssue()) : "", false);
+			setTextField(etAuthor, comic.getAuthor(), false);
+			setTextField(etPublisher, comic.getPublisher(), false);
 			
 			if (comic.getPublishDateTimestamp() > 0)
-				setTextField(etPublished, new SimpleDateFormat("yyyy-MM-dd").format(comic.getPublishDate()), true);
+				setTextField(etPublished, new SimpleDateFormat("yyyy-MM-dd").format(comic.getPublishDate()), false);
 			else
-				setTextField(etPublished, "", true);
+				setTextField(etPublished, "", false);
 			
 			if (comic.getAddedDateTimestamp() > 0)
-				setTextField(etAdded, new SimpleDateFormat("yyyy-MM-dd").format(comic.getAddedDate()), true);
+				setTextField(etAdded, new SimpleDateFormat("yyyy-MM-dd").format(comic.getAddedDate()), false);
 			else
-				setTextField(etAdded, "", true);
+				setTextField(etAdded, "", false);
 			
 			if (comic.getPageCount() > 0)
-				setTextField(etPageCount, Integer.toString(comic.getPageCount()), true);
+				setTextField(etPageCount, Integer.toString(comic.getPageCount()), false);
 			else
-				setTextField(etPageCount, "", true);
+				setTextField(etPageCount, "", false);
 
 			if (comic.getGroupId() > 0) {
 				int pos = adapterGroups.getPosition(new Group(comic.getGroupId()));
@@ -167,20 +187,20 @@ public class Edit extends BaseFragmentActivity
 			
 			ivImage.setVisibility(View.VISIBLE);
 			if (comic.getImage() != null)
-				ivImage.setImageBitmap(BitmapFactory.decodeByteArray(comic.getImage(), 0, comic.getImage().length));
+				ivImage.setImageBitmap(BitmapFactory.decodeFile(comic.getImage()));
 		}
 		else
 		{
 			//Multi edit
 			Comic comic = comics.get(0);
-			setTextField(etTitle, comic.getTitle(), true, true);
-			setTextField(etSubtitle, comic.getSubTitle(), true, true);
-			setTextField(etIssue, "", false);
-			setTextField(etAuthor, comic.getAuthor(), true, true);
-			setTextField(etPublisher, comic.getPublisher(), true, true);
-			setTextField(etPublished, "", false);
-			setTextField(etAdded, "", false);
-			setTextField(etPageCount, "", false);
+			rowIssue.setVisibility(View.GONE);
+			rowPublishDate.setVisibility(View.GONE);
+			rowAdded.setVisibility(View.GONE);
+			rowPageCount.setVisibility(View.GONE);		
+			setTextField(etTitle, comic.getTitle(), true);
+			setTextField(etSubtitle, comic.getSubTitle(), true);			
+			setTextField(etAuthor, comic.getAuthor(), true);
+			setTextField(etPublisher, comic.getPublisher(), true);
 			int groupId = getCommonGroupId(comics);
 			if (groupId > 0) {
 				int pos = adapterGroups.getPosition(new Group(groupId));
@@ -233,19 +253,15 @@ public class Edit extends BaseFragmentActivity
 					Group g = (Group)spGroup.getSelectedItem();
 					values.put("GroupId", g.getId());
 				}
-				if (newImage != null) {			
-		        	ByteArrayOutputStream stream = new ByteArrayOutputStream();
-		        	if (newImage.compress(Bitmap.CompressFormat.PNG, 100, stream))
-		        	{
-			        	byte[] byteArray = stream.toByteArray();
-						values.put("Image", byteArray);	        	
-		        	}
-		        	stream.close();
+				if (newImage != null) {
+					ImageHandler.resizeOnDisk(newImage);
+					values.put("Image", newImage);
 				}
 			}
 		}
 		catch (ParseException e) {}
-		catch (IOException e) {}
+		catch (IOException e) {} 
+		catch (MediaNotReadyException e) {}
 		
 		StringBuilder sbWhere = new StringBuilder("Id IN (");
 		String[] ids = new String[comics.size()];
@@ -286,9 +302,13 @@ public class Edit extends BaseFragmentActivity
 	public void onClick(View v) {
 		if (v.getId() == R.id.comicEdit_ivImage) {
 			Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE); 
-            startActivityForResult(cameraIntent, CAMERA_REQUEST); 			
+			String fileName = "thumb" + comics.get(0).getISBN().hashCode() + ".jpg";
+			File file = new File(getExternalFilesDir(null), fileName);
+			newImage = file.toString();
+			cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
+            startActivityForResult(cameraIntent, CAMERA_REQUEST);
 		}
-	}	
+	}
 	
 	@Override
 	public void onDialogPositiveClick(DialogFragment dialog) {
@@ -301,22 +321,10 @@ public class Edit extends BaseFragmentActivity
 	}
 	
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    	try
-    	{
-	        if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
-	        	Bitmap photo = (Bitmap)data.getExtras().get("data"); 
-	        	if (photo != null)
-	        	{
-		        	int width = photo.getWidth();
-		        	int height = photo.getHeight();
-		        	double thumbHeight = ((double)height / (double)width) * 128.0d;
-		        	newImage = ThumbnailUtils.extractThumbnail(photo, 128, (int)thumbHeight);
-		        	photo = null;
-	        	}
-	        }
-    	}
-    	catch (Exception e) {}
-    }	
+        if (requestCode == CAMERA_REQUEST && resultCode != RESULT_OK) {
+        	newImage = null;
+        }
+    }
     
     private int getCommonGroupId(List<Comic> comics) {
     	int groupId = comics.get(0).getGroupId();
@@ -333,12 +341,7 @@ public class Edit extends BaseFragmentActivity
     	return et.getText().toString().trim().length() == 0;
     }
 
-    private void setTextField(EditText view, String text, boolean enabled)
-    {
-    	setTextField(view, text, enabled, false);
-    }
-    
-	private void setTextField(EditText view, String text, boolean enabled, boolean asHint)
+	private void setTextField(EditText view, String text, boolean asHint)
 	{
 		if (!asHint) {
 			view.setText(text);
@@ -347,22 +350,10 @@ public class Edit extends BaseFragmentActivity
 			view.setText("");
 			view.setHint(text);
 		}
-		view.setEnabled(enabled);
-		view.setFocusable(enabled);
-		if (enabled) {
-			view.getBackground().setColorFilter(null);
-			if (view.getHint() != null && view.getHint().equals("Ej Redigerbar"))
-				view.setHint("");
-		}
-		else {
-			view.getBackground().setColorFilter(0xFFFFDDDD, Mode.MULTIPLY);
-			view.setHint("Ej Redigerbar");
-		}
 	}
 
 	@Override
 	protected void onDestroy() {
-		newImage = null;
 		adapterPublisher.close();
 		adapterAuthors.close();
 		super.onDestroy();	

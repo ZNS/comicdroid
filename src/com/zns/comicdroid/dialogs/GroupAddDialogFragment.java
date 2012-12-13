@@ -7,11 +7,10 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
-import android.webkit.WebView.FindListener;
 import android.widget.EditText;
 
+import com.zns.comicdroid.BaseFragmentActivity;
 import com.zns.comicdroid.R;
-import com.zns.comicdroid.data.DBHelper;
 
 public class GroupAddDialogFragment extends DialogFragment {
     
@@ -44,8 +43,8 @@ public class GroupAddDialogFragment extends DialogFragment {
 				AlertDialog ad = (AlertDialog)dialog;
 				EditText etName = (EditText)ad.findViewById(R.id.dialogAddGroup_etName);
 				
-				DBHelper db = new DBHelper(getActivity());
-				db.addGroup(etName.getText().toString());
+				BaseFragmentActivity activity = (BaseFragmentActivity)getActivity();
+				activity.getDBHelper().addGroup(etName.getText().toString());
 
 				if (groupAddCallback != null)
 					groupAddCallback.onDialogPositiveClick(GroupAddDialogFragment.this);

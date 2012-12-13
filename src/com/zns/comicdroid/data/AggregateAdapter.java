@@ -1,28 +1,34 @@
 package com.zns.comicdroid.data;
 
-import com.zns.comicdroid.R;
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.zns.comicdroid.R;
+import com.zns.comicdroid.util.ImageWorker;
 
 public class AggregateAdapter extends SimpleCursorAdapter {
 	private final int _layout;
 	private final LayoutInflater _layoutInflater;
+	private final ImageWorker imageWorker = new ImageWorker();
+	private int colorDefault;
+	private int colorIsBorrowed;
 	
 	static class AggregateHolder
 	{
 		TextView tvTitle;
 		TextView tvAuthor;
 		ImageView ivImage;
-		TextView tvIssue;
+		TextView tvCount;
 		ImageView ivGroupMark;
+		RelativeLayout rlRow;
 	}
 	
 	public AggregateAdapter(Context context)
@@ -30,6 +36,9 @@ public class AggregateAdapter extends SimpleCursorAdapter {
 		super(context, R.layout.list_comicrow, null, new String[] { "Title" }, null, 0);
 		_layout = R.layout.list_comicrow;
 		_layoutInflater = LayoutInflater.from(context);		
+		Resources res = context.getResources();
+		colorDefault = res.getColor(R.color.contentBg);
+		colorIsBorrowed = res.getColor(R.color.listViewBorrowed);		
 	}
 	
 	public Aggregate getAggregate(int position) {
@@ -54,8 +63,9 @@ public class AggregateAdapter extends SimpleCursorAdapter {
 	    		holder.tvTitle = (TextView)convertView.findViewById(R.id.tvTitle);
 	    		holder.tvAuthor = (TextView)convertView.findViewById(R.id.tvAuthor);
 	    		holder.ivImage = (ImageView)convertView.findViewById(R.id.ivImage);
-	    		holder.tvIssue = (TextView)convertView.findViewById(R.id.tvIssue);
+	    		holder.tvCount = (TextView)convertView.findViewById(R.id.tvCount);
 	    		holder.ivGroupMark = (ImageView)convertView.findViewById(R.id.ivGroupMark);
+	    		holder.rlRow = (RelativeLayout)convertView.findViewById(R.id.rlRow);
 	    		
 	    		convertView.setTag(holder);
 	    	}
@@ -67,31 +77,38 @@ public class AggregateAdapter extends SimpleCursorAdapter {
 			String title = cursor.getString(1);
 			String subTitle = cursor.getString(2);
 			String author = cursor.getString(3);
-			byte[] image = cursor.getBlob(4);
+			String image = cursor.getString(4);
 			int type = cursor.getInt(5);
 			int count = cursor.getInt(6);
+			boolean isBorrowed = cursor.getInt(7) == 1;
 			
 			holder.tvTitle.setText(title + (subTitle != null && !subTitle.equals("") ? " - " + subTitle : ""));
 			holder.tvAuthor.setText(author);
 			if (type == 2) {
 				holder.ivGroupMark.setVisibility(View.VISIBLE);
-				holder.tvIssue.setText("(" + count + ")");
+				holder.tvCount.setText("(" + count + ")");
 			}
 			else
 			{
 				holder.ivGroupMark.setVisibility(View.GONE);
-				holder.tvIssue.setText("");
+				holder.tvCount.setText("");
 			}
 			if (image != null)
 			{
-				Bitmap bmp = BitmapFactory.decodeByteArray(image, 0, image.length);
-				holder.ivImage.setImageBitmap(bmp);
+				imageWorker.load(image, holder.ivImage);
 				holder.ivImage.setVisibility(View.VISIBLE);
 			}
 			else
 			{
 				holder.ivImage.setVisibility(View.GONE);
-			}			    	
+			}
+			
+			if (isBorrowed) {
+				holder.rlRow.setBackgroundColor(colorIsBorrowed);
+			}
+			else {
+				holder.rlRow.setBackgroundColor(colorDefault);
+			}			
 	    }
 	    
 		return convertView;	    

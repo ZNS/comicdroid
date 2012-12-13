@@ -1,8 +1,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rlRow"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="5dp"
-    android:background="#F0FFFF" >
+    android:background="@color/contentBg" >
 
     <ImageView
         android:id="@+id/ivImage"
@@ -35,6 +36,14 @@
 	        
 	</LinearLayout>
 
+	<TextView
+	    android:id="@+id/tvCount"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentRight="true"
+	    android:layout_alignParentTop="true"
+	    android:textAppearance="?android:attr/textAppearanceSmall" />
+		
 	<TextView
 	    android:id="@+id/tvIssue"
 	    android:layout_width="wrap_content"

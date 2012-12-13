@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
+import android.text.InputType;
 import android.view.View;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -128,6 +129,7 @@ public class Start extends BaseFragmentActivity
 	    SearchManager searchManager = (SearchManager)getSystemService(Context.SEARCH_SERVICE);
 	    searchView = (SearchView)menu.findItem(R.id.menu_search).getActionView();
 	    searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+	    searchView.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
 	    searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
 			@Override
 			public void onFocusChange(View v, boolean hasFocus) {
@@ -175,7 +177,7 @@ public class Start extends BaseFragmentActivity
 	@Override
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
 		if (filterQuery != null && !filterQuery.equals(""))
-			loader = new SQLiteCursorLoader(this, getDBHelper(), getCurrentListFragment().getSQLFilter(), new String[] { filterQuery + "%" });
+			loader = new SQLiteCursorLoader(this, getDBHelper(), getCurrentListFragment().getSQLFilter(), new String[] { filterQuery + "%", filterQuery + "%" });
 		else
 			loader = new SQLiteCursorLoader(this, getDBHelper(), getCurrentListFragment().getSQLDefault(), null); 
 		return(loader);

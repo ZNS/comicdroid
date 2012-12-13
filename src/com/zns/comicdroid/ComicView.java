@@ -2,10 +2,16 @@ package com.zns.comicdroid;
 
 import java.text.SimpleDateFormat;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -28,8 +34,8 @@ public class ComicView extends BaseFragmentActivity {
 	private TextView tvAdded;
 	private TextView tvPageCount;
 	private EditText etBorrower;
-	private CheckBox cbIsBorrowed;
 	private ImageView ivImage;
+	private boolean textChangeInitiated = false;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -46,9 +52,23 @@ public class ComicView extends BaseFragmentActivity {
 		tvAdded = (TextView)findViewById(R.id.comicView_txtAdded);
 		tvPageCount = (TextView)findViewById(R.id.comicView_txtPageCount);
 		etBorrower = (EditText)findViewById(R.id.comicView_etBorrower);
-		cbIsBorrowed = (CheckBox)findViewById(R.id.comicView_cbIsBorrowed);
 		ivImage = (ImageView)findViewById(R.id.comicView_ivImage);		
 		
+		etBorrower.setOnEditorActionListener(new TextView.OnEditorActionListener() {			
+			@Override
+			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+		        if (actionId == EditorInfo.IME_ACTION_DONE) {
+		            InputMethodManager imm = (InputMethodManager)v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+		            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+		            
+		            getDBHelper().setComicBorrowed(currentComic.getId(), etBorrower.getText().toString());
+		            
+		            return true;
+		        }
+		        return false;
+			}
+		});
+	    
 		Intent intent = getIntent();
 	    int comicId = intent.getIntExtra("com.zns.comic.COMICID", 0);
 	    if (comicId > 0)
@@ -83,11 +103,11 @@ public class ComicView extends BaseFragmentActivity {
 		tvAdded.setText(new SimpleDateFormat("yyyy-MM-dd").format(comic.getAddedDate()));
 		tvPageCount.setText(Integer.toString(comic.getPageCount()));
 		etBorrower.setText(comic.getBorrower());
-		cbIsBorrowed.setChecked(comic.getIsBorrowed());
 		if (comic.getImage() != null)
-			ivImage.setImageBitmap(BitmapFactory.decodeByteArray(comic.getImage(), 0, comic.getImage().length));
+			ivImage.setImageBitmap(BitmapFactory.decodeFile(comic.getImage()));		
 	}	
-	
+		
+	//Menu
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);

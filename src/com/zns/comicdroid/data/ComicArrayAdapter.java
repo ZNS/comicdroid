@@ -77,9 +77,12 @@ public class ComicArrayAdapter extends ArrayAdapter<Comic> {
 		  }
 		  if (comic.getImage() != null)
 		  {
-			  Bitmap bmp = BitmapFactory.decodeByteArray(comic.getImage(), 0, comic.getImage().length);
-			  holder.ivImage.setImageBitmap(bmp);
-			  holder.ivImage.setVisibility(View.VISIBLE);
+			  Bitmap bmp = BitmapFactory.decodeFile(comic.getImage());
+			  if (bmp != null)
+			  {
+				  holder.ivImage.setImageBitmap(bmp);
+				  holder.ivImage.setVisibility(View.VISIBLE);
+			  }
 		  }
 		  else
 		  {

@@ -15,7 +15,7 @@
         android:paddingTop="5dp"
         android:layout_marginBottom="1dp"
         android:textColor="#333333"
-        android:background="#F0FFFF"
+        android:background="@color/contentBg"
         android:textSize="25sp"
         android:textStyle="bold" />
 
