@@ -1,5 +1,8 @@
 package com.zns.comicdroid;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -176,10 +179,18 @@ public class Start extends BaseFragmentActivity
 	//Loader Implementation
 	@Override
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-		if (filterQuery != null && !filterQuery.equals(""))
-			loader = new SQLiteCursorLoader(this, getDBHelper(), getCurrentListFragment().getSQLFilter(), new String[] { filterQuery + "%", filterQuery + "%" });
-		else
+		if (filterQuery != null && !filterQuery.equals("")) {
+			String sql = getCurrentListFragment().getSQLFilter();
+			List<String> params = new ArrayList<String>();
+			int paramIndex = -1;
+			while((paramIndex = sql.indexOf("?", paramIndex + 1)) > -1) {
+				params.add(filterQuery + "%");
+			}
+			loader = new SQLiteCursorLoader(this, getDBHelper(), getCurrentListFragment().getSQLFilter(), params.toArray(new String[params.size()]));
+		}
+		else {
 			loader = new SQLiteCursorLoader(this, getDBHelper(), getCurrentListFragment().getSQLDefault(), null); 
+		}
 		return(loader);
 	}
 

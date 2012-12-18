@@ -1,71 +1,108 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"		
-    android:descendantFocusability="beforeDescendants"
-	android:focusableInTouchMode="true" >
+    android:padding="5dp" 
+    tools:context=".Add">
+       
+	<LinearLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:orientation="vertical"
+	    android:background="@color/contentBg"
+	    android:padding="5dp" >
 
-    <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
-		
-		<ImageView
-		    android:id="@+id/add_ivGroupAdd"
+		<TextView
 		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"
-		    android:layout_alignParentRight="true"
-		    android:src="@drawable/ic_add" />
-				        
-		<Spinner
-		    android:id="@+id/add_spGroup"
+		    android:layout_marginBottom="-3dp"
+		    android:layout_marginTop="-3dp"
+		    android:text="Lägg tillagda serier till grupp:" />
+
+	    <RelativeLayout
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_marginBottom="10dp" >
+			
+			<ImageView
+			    android:id="@+id/add_ivGroupAdd"
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:layout_alignParentRight="true"
+			    android:src="@drawable/ic_add" />
+					        
+			<Spinner
+			    android:id="@+id/add_spGroup"
+			    android:layout_width="fill_parent"
+			    android:layout_height="wrap_content"				    
+			    android:layout_toLeftOf="@id/add_ivGroupAdd" />
+			
+	    </RelativeLayout>
+			        	
+		<RelativeLayout
 		    android:layout_width="fill_parent"
-		    android:layout_height="wrap_content"				    
-		    android:layout_toLeftOf="@id/add_ivGroupAdd" />
+		    android:layout_height="wrap_content"
+		    android:layout_marginBottom="10dp" >
 		
-    </RelativeLayout>
-		        
-    <Button
-        android:id="@+id/btnScan"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0"
-        android:text="Scan"
-        android:onClick="scanISBN" />
-	        
-	<LinearLayout
-	    xmlns:android="http://schemas.android.com/apk/res/android"
-	    xmlns:tools="http://schemas.android.com/tools"
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    android:orientation="horizontal" >
+		    <Button
+		        android:id="@+id/btnSearch"
+		        style="@style/ButtonText"
+		        android:layout_width="wrap_content"
+		        android:layout_height="35dp"
+		        android:layout_alignParentRight="true"
+		        android:background="@drawable/button"
+		        android:onClick="queryISBN"
+		        android:text="Sök" />
+		    
+		    <EditText
+		        android:id="@+id/etISBN"
+		        android:layout_width="fill_parent"
+		        android:layout_height="wrap_content"
+		        android:layout_toLeftOf="@id/btnSearch"
+		        android:hint="ISBN" />
+		    	    
+		</RelativeLayout>
 	
-	    <EditText
-	        android:id="@+id/etISBN"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_weight="1"
-	        android:ems="10"
-	        android:hint="ISBN" >
-	
-	        <requestFocus />
-	    </EditText>
-	
-	    <Button
-	        android:id="@+id/btnSearch"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_weight="1"
-	        android:text="Sök"
-	        android:onClick="queryISBN" />		    
-	    
+		<LinearLayout
+		    android:layout_width="fill_parent"
+		    android:layout_height="wrap_content"
+		    android:orientation="horizontal"
+		    android:weightSum="1"
+		    android:layout_marginBottom="10dp" >	
+		
+			<Button
+		        android:id="@+id/btnScan"
+		        style="@style/ButtonText"
+		        android:layout_width="0dip"
+		        android:layout_height="35dp"
+		        android:layout_weight=".65"
+		        android:layout_marginRight="2.5dp"
+		        android:background="@drawable/button"
+		        android:onClick="scanISBN"
+		        android:text="Scanna ISBN" />
+				
+			<Button
+		        android:id="@+id/btnAdd"
+		        style="@style/ButtonText"
+		        android:layout_width="0dip"
+		        android:layout_height="35dp"
+		        android:layout_weight=".35"
+		        android:layout_marginLeft="2.5dp"
+		        android:background="@drawable/button"
+		        android:onClick="create"
+		        android:text="Skapa" />
+						
+		</LinearLayout>
+		
+		<ListView
+		    android:id="@+id/add_lvComics"
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content"
+	        android:padding="5dp"
+	        android:divider="@android:color/transparent"
+	        android:dividerHeight="5dp" >
+		</ListView>
+		
 	</LinearLayout>
 
-	<ListView
-	    android:id="@+id/add_lvComics"
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    android:layout_weight="0" >
-	</ListView>
-		
-</LinearLayout>
+</FrameLayout>

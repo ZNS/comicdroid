@@ -2,7 +2,6 @@ package com.zns.comicdroid;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -11,7 +10,6 @@ import java.util.List;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.graphics.PorterDuff.Mode;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -44,7 +42,7 @@ public class Edit extends BaseFragmentActivity
 	
 	private static final int CAMERA_REQUEST = 1888; 
 	
-	private List<Comic> comics;
+	private List<Comic> comics = null;
 	private EditText etTitle;
 	private EditText etSubtitle;
 	private EditText etIssue;
@@ -86,63 +84,66 @@ public class Edit extends BaseFragmentActivity
 		rowPublishDate = (RelativeLayout)findViewById(R.id.comicEdit_publishDate);
 		rowAdded = (RelativeLayout)findViewById(R.id.comicEdit_added);
 		rowPageCount = (RelativeLayout)findViewById(R.id.comicEdit_pageCount);	
+		SlidingDrawer drawer = (SlidingDrawer)findViewById(R.id.comicEdit_drawer);
 		
 		Intent intent = getIntent();
 	    int[] comicIds = intent.getIntArrayExtra("com.zns.comic.COMICIDS");
+	    
+    	//Spinner groups
+    	List<Group> groups = getDBHelper().getGroups();
+    	if (groups == null)
+    		groups = new ArrayList<Group>();
+    	groups.add(0, new Group(0, "Ingen grupp", null));
+    	adapterGroups = new ArrayAdapter<Group>(this, android.R.layout.simple_spinner_item, groups);
+    	adapterGroups.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    	spGroup.setAdapter(adapterGroups);
+
+    	//Dialog
+    	ivGroupAdd.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				DialogFragment dialogAddGroup = new GroupAddDialogFragment();
+				dialogAddGroup.show(getSupportFragmentManager(), "GROUPADD");
+			}
+		});
+    	
+		//Autocomplete author
+		adapterAuthors = new AutoCompleteAdapter(this, 
+				"SELECT DISTINCT 0 AS _id, Author FROM tblBooks WHERE Author LIKE ? ORDER BY Author", 
+				"Author", 
+				1); 	    	
+		etAuthor.setThreshold(3);
+		etAuthor.setAdapter(adapterAuthors);
+					
+		//Autocomplete publisher
+		adapterPublisher = new AutoCompleteAdapter(this, 
+				"SELECT DISTINCT 0 AS _id, Publisher FROM tblBooks WHERE Publisher LIKE ? ORDER BY Publisher", 
+				"Publisher", 
+				1); 
+		etPublisher.setThreshold(3);
+		etPublisher.setAdapter(adapterPublisher);
+		
 	    if (comicIds != null && comicIds.length > 0)
 	    {
 	    	comics = getDBHelper().getComics(comicIds);
-	    	
-	    	//Spinner groups
-	    	List<Group> groups = getDBHelper().getGroups();
-	    	if (groups == null)
-	    		groups = new ArrayList<Group>();
-	    	groups.add(0, new Group(0, "Ingen grupp", null));
-	    	adapterGroups = new ArrayAdapter<Group>(this, android.R.layout.simple_spinner_item, groups);
-	    	adapterGroups.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-	    	spGroup.setAdapter(adapterGroups);
-
-	    	//Dialog
-	    	ivGroupAdd.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					DialogFragment dialogAddGroup = new GroupAddDialogFragment();
-					dialogAddGroup.show(getSupportFragmentManager(), "GROUPADD");
-				}
-			});
-	    	
-			//Autocomplete author
-			adapterAuthors = new AutoCompleteAdapter(this, 
-					"SELECT DISTINCT 0 AS _id, Author FROM tblBooks WHERE Author LIKE ? ORDER BY Author", 
-					"Author", 
-					1); 	    	
-			etAuthor.setThreshold(3);
-			etAuthor.setAdapter(adapterAuthors);
-						
-			//Autocomplete publisher
-			adapterPublisher = new AutoCompleteAdapter(this, 
-					"SELECT DISTINCT 0 AS _id, Publisher FROM tblBooks WHERE Publisher LIKE ? ORDER BY Publisher", 
-					"Publisher", 
-					1); 
-			etPublisher.setThreshold(3);
-			etPublisher.setAdapter(adapterPublisher);
-			
-	    	ListView lvEdit = (ListView)findViewById(R.id.comicEdit_listView);
-			SlidingDrawer drawer = (SlidingDrawer)findViewById(R.id.comicEdit_drawer);
+	    				
+	    	ListView lvEdit = (ListView)findViewById(R.id.comicEdit_listView);			
 	    	if (comicIds.length > 1)
 	    	{
 	    		drawer.setVisibility(View.VISIBLE);
-	    		drawer.getHandle().setVisibility(View.VISIBLE);
 		    	ComicArrayAdapter adapter = new ComicArrayAdapter(this, comics);		    	
 		    	lvEdit.setAdapter(adapter);
 	    	}
 	    	else {
 	    		ivImage.setOnClickListener(this);
 	    		drawer.setVisibility(View.GONE);
-	    		drawer.getHandle().setVisibility(View.GONE);
 	    	}
 	    	
 	    	BindComics();
+	    }
+	    else {
+	    	ivImage.setOnClickListener(this);
+	    	drawer.setVisibility(View.GONE);
 	    }
 	}
 	
@@ -220,7 +221,7 @@ public class Edit extends BaseFragmentActivity
 				title = title.substring(4) + ", The";
 			}
 			
-			if (comics.size() > 1)
+			if (comics != null && comics.size() > 1)
 			{
 				if (!isEmpty(etTitle))
 					values.put("Title", title);
@@ -263,19 +264,34 @@ public class Edit extends BaseFragmentActivity
 		catch (IOException e) {} 
 		catch (MediaNotReadyException e) {}
 		
-		StringBuilder sbWhere = new StringBuilder("Id IN (");
-		String[] ids = new String[comics.size()];
-		int i = 0;
-		for (Comic c : comics) {
-			sbWhere.append("?,");
-			ids[i] = Integer.toString(c.getId());
-			i++;
+		if (comics != null)
+		{
+			StringBuilder sbWhere = new StringBuilder("_id IN (");
+			String[] ids = new String[comics.size()];
+			int i = 0;
+			for (Comic c : comics) {
+				sbWhere.append("?,");
+				ids[i] = Integer.toString(c.getId());
+				i++;
+			}
+			sbWhere.setLength(sbWhere.length() - 1);
+			sbWhere.append(")");
+				
+			getDBHelper().update("tblBooks", values, sbWhere.toString(), ids);
 		}
-		sbWhere.setLength(sbWhere.length() - 1);
-		sbWhere.append(")");
-			
-		getDBHelper().update("tblBooks", values, sbWhere.toString(), ids);
-		
+		else
+		{
+			if (!values.containsKey("AddedDate") || values.get("AddedDate") == null) {
+				values.remove("AddedDate");
+				values.put("AddedDate", (int)(System.currentTimeMillis() / 1000L));
+			}
+			long id = getDBHelper().insert("tblBooks", values);
+			Comic comic = getDBHelper().getComic((int)id);
+			if (comic != null){
+				comics = new ArrayList<Comic>();
+				comics.add(comic);
+			}
+		}
 		Toast.makeText(this, "Sparat och klart!", Toast.LENGTH_LONG).show();
 	}
 	
@@ -301,8 +317,12 @@ public class Edit extends BaseFragmentActivity
 	@Override
 	public void onClick(View v) {
 		if (v.getId() == R.id.comicEdit_ivImage) {
+			if (comics == null) {
+				Toast.makeText(Edit.this, "Du måste spara innan du kan lägga till en bild.", Toast.LENGTH_LONG).show();
+				return;
+			}
 			Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE); 
-			String fileName = "thumb" + comics.get(0).getISBN().hashCode() + ".jpg";
+			String fileName = "thumb" + comics.get(0).hashCode() + ".jpg";
 			File file = new File(getExternalFilesDir(null), fileName);
 			newImage = file.toString();
 			cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));

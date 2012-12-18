@@ -47,6 +47,9 @@ public class BaseFragmentActivity extends com.actionbarsherlock.app.SherlockFrag
 	        	intent = new Intent(this, Add.class);
 	        	startActivity(intent);	        	
 	            return true;
+	        case R.id.menu_settings:
+	        	intent = new Intent(this, Settings.class);
+	        	startActivity(intent);
 	        default:
 	            return super.onOptionsItemSelected(item);
 	    }

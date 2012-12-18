@@ -24,13 +24,14 @@ public class Comic {
 	private int isBorrowed;
 	private String borrower;
 	private String image;
+	private String imageUrl;
 	private String ISBN;
 	private int issue;
 	
 	public Comic() {
 	}
 	
-	public Comic(int id, String title, String subTitle, String author, String publisher, int publishDate, int addedDate, int pageCount, int isBorrowed, String borrower, String image, String isbn, int issue, int groupId)
+	public Comic(int id, String title, String subTitle, String author, String publisher, int publishDate, int addedDate, int pageCount, int isBorrowed, String borrower, String image, String isbn, int issue, int groupId, String imageUrl)
 	{
 		this.id = id;
 		this.groupId = groupId;
@@ -44,6 +45,7 @@ public class Comic {
 		this.isBorrowed = isBorrowed;
 		this.borrower = borrower;
 		this.image = image;
+		this.imageUrl = imageUrl;
 		this.ISBN = isbn;
 		this.issue = issue;
 	}
@@ -127,11 +129,14 @@ public class Comic {
 			String imageUrl = images.getThumbnail();
 			if (imageUrl != null)
 			{
+				comic.setImageUrl(imageUrl);
 				try {
 		             URL url = new URL(imageUrl);
 		             String filePath = ImageHandler.storeImage(url, imageDirectory);
 		             comic.setImage(filePath);
 			     } catch (Exception e) {
+			    	 if (e != null)
+			    		 System.out.println(e.getMessage());
 			     }
 			}
 		}
@@ -232,6 +237,14 @@ public class Comic {
 		this.image = image;
 	}
 
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+
 	public String getISBN() {
 		return ISBN;
 	}
@@ -246,5 +259,24 @@ public class Comic {
 
 	public void setIssue(int issue) {
 		this.issue = issue;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == this) 
+			return true;
+		if (obj == null || obj.getClass() != this.getClass()) 
+			return false;
+		Comic c = (Comic)obj;
+		return c.getId() == this.getId();
+	}
+	
+	@Override
+	public int hashCode() {
+		if (this.getISBN() != null && !this.getISBN().equals(""))
+			return this.getISBN().hashCode();
+		if (this.getId() > 0)
+			return this.getId();
+		return 0;
 	}
 }

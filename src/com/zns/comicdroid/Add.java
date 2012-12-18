@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import android.os.Bundle;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -29,11 +29,8 @@ public class Add extends BaseFragmentActivity
 
 	private EditText etISBN;
 	private ComicArrayAdapter adapter;
-	private ListView lvComics;
-	private ImageView ivGroupAdd;
 	private Spinner spGroup;
-	
-	
+		
 	private ArrayAdapter<Group> adapterGroups;
 	
     @Override
@@ -41,10 +38,28 @@ public class Add extends BaseFragmentActivity
         super.onCreate(savedInstanceState);               
         setContentView(R.layout.activity_add);
         
-        etISBN = (EditText)findViewById(R.id.etISBN);
-        lvComics = (ListView)findViewById(R.id.add_lvComics);
+        etISBN = (EditText)findViewById(R.id.etISBN);        
         spGroup = (Spinner)findViewById(R.id.add_spGroup);
-        ivGroupAdd = (ImageView)findViewById(R.id.add_ivGroupAdd);
+        ListView lvComics = (ListView)findViewById(R.id.add_lvComics);
+        ImageView ivGroupAdd = (ImageView)findViewById(R.id.add_ivGroupAdd);
+        
+        /*btnRenderHtml.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				try {
+					SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(Add.this);
+					String tokenKey = prefs.getString("DROPBOX_KEY", null);
+					String tokenSecret = prefs.getString("DROPBOX_SECRET", null);
+					
+					HtmlHandler.WriteAndPublish(getResources(),
+							getDBHelper(),
+							new AccessTokenPair(tokenKey, tokenSecret),
+							getExternalFilesDir(null).toString() + "/html");
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		})*/;
         
     	//Spinner groups
     	List<Group> groups = getDBHelper().getGroups();
@@ -52,6 +67,7 @@ public class Add extends BaseFragmentActivity
     		groups = new ArrayList<Group>();
     	groups.add(0, new Group(0, "Ingen grupp", null));
     	adapterGroups = new ArrayAdapter<Group>(this, android.R.layout.simple_spinner_item, groups);
+    	adapterGroups.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     	spGroup.setAdapter(adapterGroups);
     	
     	//Dialog
@@ -78,6 +94,12 @@ public class Add extends BaseFragmentActivity
 		adapterGroups.clear();
 		for (Group g : groups)
 			adapterGroups.add(g);
+	}
+	
+	public void create(View view)
+	{
+    	Intent intent = new Intent(this, Edit.class);
+    	startActivity(intent);		
 	}
 	
     public void scanISBN(View view)
@@ -129,7 +151,7 @@ public class Add extends BaseFragmentActivity
     	
     	//Duplicate check
     	if (getDBHelper().isDuplicateComic(isbn)) {
-    		Toast.makeText(this, "Boken är redan registrerad", Toast.LENGTH_LONG).show();
+    		Toast.makeText(this, "Boken är redan tillagd", Toast.LENGTH_LONG).show();
     		return;
     	}
     	
@@ -150,13 +172,13 @@ public class Add extends BaseFragmentActivity
 								comic.setGroupId(g.getId());
 							}
 							getDBHelper().storeComic(comic);
-							adapter.add(comic);
+							adapter.insert(comic, 0);
 							adapter.notifyDataSetChanged();
 							return;
 						}
 						
 						Toast
-							.makeText(Add.this, "Not Found", Toast.LENGTH_SHORT)
+							.makeText(Add.this, "Kunde tyvärr inte hitta boken", Toast.LENGTH_LONG)
 							.show();						
 				    }				
 			}.execute("isbn:" + isbn, getExternalFilesDir(null).toString(), isbn);

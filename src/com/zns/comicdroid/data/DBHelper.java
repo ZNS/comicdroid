@@ -17,7 +17,7 @@ import com.google.common.primitives.Ints;
 
 public class DBHelper extends SQLiteOpenHelper {
 	
-	private static final int DB_VERSION = 	16;
+	private static final int DB_VERSION = 	20;
 	private static final String DB_NAME = 	"ComicDroid.db";
 	
     private SQLiteDatabase db;
@@ -31,13 +31,14 @@ public class DBHelper extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		String tblBooks = "CREATE TABLE tblBooks (" +
-				"Id INTEGER PRIMARY KEY AUTOINCREMENT," +
-				"GroupId INTEGER," +
+				"_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+				"GroupId INTEGER DEFAULT 0," +
 				"Title TEXT," +
 				"Subtitle TEXT," +
 				"Publisher TEXT," +
 				"Author TEXT," +
 				"Image TEXT," +
+				"ImageUrl TEXT," +
 				"PublishDate INTEGER," +
 				"AddedDate INTEGER," +
 				"PageCount INTEGER," +
@@ -49,9 +50,10 @@ public class DBHelper extends SQLiteOpenHelper {
 				")";
 		
 		String tblGroups = "CREATE TABLE tblGroups (" +
-				"Id INTEGER PRIMARY KEY AUTOINCREMENT," +
+				"_id INTEGER PRIMARY KEY AUTOINCREMENT," +
 				"Name TEXT," +
-				"Image BLOB," +
+				"Image TEXT," +
+				"ImageUrl TEXT," +
 				"BookCount INTEGER DEFAULT 0" +
 				")";
 		
@@ -61,26 +63,26 @@ public class DBHelper extends SQLiteOpenHelper {
 		String triggerGroupId = "CREATE TRIGGER update_boook_groupid_image AFTER UPDATE OF GroupId ON tblBooks " +
 				"WHEN new.Issue = 1 " +
 				"BEGIN " +
-				"UPDATE tblGroups SET Image = new.Image WHERE new.GroupId <> 0 AND Id = new.GroupId; " +
+				"UPDATE tblGroups SET Image = new.Image, ImageUrl = new.ImageUrl WHERE new.GroupId <> 0 AND _id = new.GroupId; " +
 				"END;";
 		
 		String triggerGroupId4 = "CREATE TRIGGER insert_boook_groupid_image AFTER INSERT ON tblBooks " +
 				"WHEN new.Issue = 1 " +
 				"BEGIN " +
-				"UPDATE tblGroups SET Image = new.Image WHERE new.GroupId <> 0 AND Id = new.GroupId; " +
+				"UPDATE tblGroups SET Image = new.Image, ImageUrl = new.ImageUrl WHERE new.GroupId <> 0 AND _id = new.GroupId; " +
 				"END;";
 		
 		String triggerGroupId2 = "CREATE TRIGGER update_book_groupid_count AFTER UPDATE OF GroupId ON tblBooks " +
 				"WHEN new.GroupId <> old.GroupId " +
 				"BEGIN " +
-				"UPDATE tblGroups SET BookCount=BookCount+1 WHERE new.GroupId <> 0 AND Id = new.GroupId; " +
-				"UPDATE tblGroups SET BookCount=BookCount-1 WHERE old.GroupId <> 0 AND Id = old.GroupId; " +
+				"UPDATE tblGroups SET BookCount=BookCount+1 WHERE new.GroupId <> 0 AND _id = new.GroupId; " +
+				"UPDATE tblGroups SET BookCount=BookCount-1 WHERE old.GroupId <> 0 AND _id = old.GroupId; " +
 				"END;";
 		
 		String triggerGroupId3 = "CREATE TRIGGER insert_book_groupid_count AFTER INSERT ON tblBooks " +
 				"WHEN new.GroupId > 0 " +
 				"BEGIN " +
-				"UPDATE tblGroups SET BookCount=BookCount+1 WHERE Id = new.GroupId; " +
+				"UPDATE tblGroups SET BookCount=BookCount+1 WHERE _id = new.GroupId; " +
 				"END;";
 		
 		db.execSQL(triggerGroupId);
@@ -125,6 +127,10 @@ public class DBHelper extends SQLiteOpenHelper {
     	return db.update(table, values, whereClause, whereArgs);
     }
     
+    public long insert(String table, ContentValues values) {
+    	return db.insert(table, null, values);
+    }
+    
 	public int GetDateStamp(String strDate) 
 			throws ParseException
 	{
@@ -155,6 +161,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		values.put("Image", comic.getImage());
 		values.put("ISBN", comic.getISBN());
 		values.put("Issue", comic.getIssue());
+		values.put("ImageUrl", comic.getImageUrl());
 		
 		db.insert("tblBooks", null, values);
 	}
@@ -168,8 +175,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		else if (order.equalsIgnoreCase("forlag"))
 			orderBy = "Publisher";
 		
-		Cursor cursor = db.rawQuery("SELECT Id, Title, Subtitle, Author, Publisher, PublishDate, " +
-				"AddedDate, PageCount, IsBorrowed, Borrower, Image, ISBN, Issue, GroupId FROM tblBooks ORDER BY " + orderBy, null);
+		Cursor cursor = db.rawQuery("SELECT _id, Title, Subtitle, Author, Publisher, PublishDate, " +
+				"AddedDate, PageCount, IsBorrowed, Borrower, Image, ISBN, Issue, GroupId, ImageUrl FROM tblBooks ORDER BY " + orderBy, null);
 		while (cursor.moveToNext())
 		{
 			Comic comic = new Comic(cursor.getInt(0),
@@ -185,7 +192,8 @@ public class DBHelper extends SQLiteOpenHelper {
 					cursor.getString(10),
 					cursor.getString(11),
 					cursor.getInt(12),
-					cursor.getInt(13));
+					cursor.getInt(13),
+					cursor.getString(14));
 			result.add(comic);
 		}
 		cursor.close();
@@ -196,8 +204,8 @@ public class DBHelper extends SQLiteOpenHelper {
 	public List<Comic> getComics(int[] ids)
 	{
 		List<Comic> list = new ArrayList<Comic>();
-		Cursor cursor = db.rawQuery("SELECT Id, Title, Subtitle, Author, Publisher, PublishDate, " +
-				"AddedDate, PageCount, IsBorrowed, Borrower, Image, ISBN, Issue, GroupId FROM tblBooks WHERE Id IN (" +
+		Cursor cursor = db.rawQuery("SELECT _id, Title, Subtitle, Author, Publisher, PublishDate, " +
+				"AddedDate, PageCount, IsBorrowed, Borrower, Image, ISBN, Issue, GroupId, ImageUrl FROM tblBooks WHERE _id IN (" +
 				Joiner.on(",").join(Ints.asList(ids)) +
 				")", null);
 		while (cursor.moveToNext())
@@ -215,7 +223,38 @@ public class DBHelper extends SQLiteOpenHelper {
 					cursor.getString(10),
 					cursor.getString(11),
 					cursor.getInt(12),
-					cursor.getInt(13));
+					cursor.getInt(13),
+					cursor.getString(14));
+			list.add(comic);
+		}
+		cursor.close();
+		return list;
+	}
+	
+	public List<Comic> getComics(int groupId)
+	{
+		List<Comic> list = new ArrayList<Comic>();
+		Cursor cursor = db.rawQuery("SELECT _id, Title, Subtitle, Author, Publisher, PublishDate, " +
+				"AddedDate, PageCount, IsBorrowed, Borrower, Image, ISBN, Issue, GroupId, ImageUrl FROM tblBooks " +
+				"WHERE GroupId = ? " +
+				"ORDER BY Issue", new String[] { Integer.toString(groupId) });
+		while (cursor.moveToNext())
+		{
+			Comic comic = new Comic(cursor.getInt(0),
+					cursor.getString(1),
+					cursor.getString(2),
+					cursor.getString(3),
+					cursor.getString(4),
+					cursor.getInt(5),
+					cursor.getInt(6),
+					cursor.getInt(7),
+					cursor.getInt(8),
+					cursor.getString(9),
+					cursor.getString(10),
+					cursor.getString(11),
+					cursor.getInt(12),
+					cursor.getInt(13),
+					cursor.getString(14));
 			list.add(comic);
 		}
 		cursor.close();
@@ -225,8 +264,8 @@ public class DBHelper extends SQLiteOpenHelper {
 	public Comic getComic(int id)
 	{
 		Comic comic = null;
-		Cursor cursor = db.rawQuery("SELECT Id, Title, Subtitle, Author, Publisher, PublishDate, " +
-				"AddedDate, PageCount, IsBorrowed, Borrower, Image, ISBN, Issue, GroupId FROM tblBooks WHERE Id = ?", new String[] { Integer.toString(id) });
+		Cursor cursor = db.rawQuery("SELECT _id, Title, Subtitle, Author, Publisher, PublishDate, " +
+				"AddedDate, PageCount, IsBorrowed, Borrower, Image, ISBN, Issue, GroupId, ImageUrl FROM tblBooks WHERE _id = ?", new String[] { Integer.toString(id) });
 		if (cursor.moveToNext())
 		{
 			comic = new Comic(cursor.getInt(0),
@@ -242,7 +281,8 @@ public class DBHelper extends SQLiteOpenHelper {
 					cursor.getString(10),
 					cursor.getString(11),
 					cursor.getInt(12),
-					cursor.getInt(13));					
+					cursor.getInt(13),
+					cursor.getString(14));					
 		}
 		cursor.close();		
 		return comic;
@@ -250,7 +290,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	
 	public void deleteComic(int id)
 	{
-		db.delete("tblBooks", "Id=?", new String[] { Integer.toString(id) });
+		db.delete("tblBooks", "_id=?", new String[] { Integer.toString(id) });
 	}
 	
 	public void setComicBorrowed(int comicId, String borrower) {
@@ -264,13 +304,13 @@ public class DBHelper extends SQLiteOpenHelper {
 			values.put("IsBorrowed", true);
 			values.put("BorrowedDate", (int)(System.currentTimeMillis() / 1000L));			
 		}
-		db.update("tblBooks", values, "Id = ?", new String[] { Integer.toString(comicId) });
+		db.update("tblBooks", values, "_id = ?", new String[] { Integer.toString(comicId) });
 	}
 
 	public List<Group> getGroups()
 	{
 		List<Group> groups = new ArrayList<Group>();
-		Cursor cursor = db.rawQuery("SELECT Id,  Name, Image FROM tblGroups ORDER BY Name", null);
+		Cursor cursor = db.rawQuery("SELECT _id,  Name, Image FROM tblGroups ORDER BY Name", null);
 		while (cursor.moveToNext()) {			
 			groups.add(new Group(cursor.getInt(0),
 					cursor.getString(1),

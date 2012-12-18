@@ -6,13 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -35,7 +32,6 @@ public class ComicView extends BaseFragmentActivity {
 	private TextView tvPageCount;
 	private EditText etBorrower;
 	private ImageView ivImage;
-	private boolean textChangeInitiated = false;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

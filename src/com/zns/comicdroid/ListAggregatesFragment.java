@@ -50,17 +50,17 @@ public class ListAggregatesFragment extends BaseListFragment {
 	
 	@Override
 	protected String getSQLDefault() {
-		return "SELECT Id AS _id, Title, Subtitle, Author, Image, 1 AS ItemType, 0 AS BookCount, IsBorrowed FROM tblBooks WHERE GroupId = 0 OR ifnull(GroupId, '') = '' " +
+		return "SELECT _id, Title, Subtitle, Author, Image, 1 AS ItemType, 0 AS BookCount, IsBorrowed FROM tblBooks WHERE GroupId = 0 OR ifnull(GroupId, '') = '' " +
 				"UNION " +
-				"SELECT Id AS _id, Name AS Title, '' AS Subtitle, '' AS Author, Image, 2 AS ItemType, BookCount, 0 AS IsBorrowed FROM tblGroups " +
+				"SELECT _id, Name AS Title, '' AS Subtitle, '' AS Author, Image, 2 AS ItemType, BookCount, 0 AS IsBorrowed FROM tblGroups " +
 				"ORDER BY Title";
 	}
 	
 	@Override
 	protected String getSQLFilter() {
-		return "SELECT Id AS _id, Title, Subtitle, Author, Image, 1 AS ItemType, 0 AS BookCount, IsBorrowed FROM tblBooks WHERE (GroupId = 0 OR ifnull(GroupId, '') = '') AND Title LIKE ? " +
+		return "SELECT _id, Title, Subtitle, Author, Image, 1 AS ItemType, 0 AS BookCount, IsBorrowed FROM tblBooks WHERE (GroupId = 0 OR ifnull(GroupId, '') = '') AND Title LIKE ? " +
 				"UNION " +
-				"SELECT Id AS _id, Name AS Title, '' AS Subtitle, '' AS Author, Image, 2 AS ItemType, BookCount, 0 AS IsBorrowed FROM tblGroups WHERE Title LIKE ? " +
+				"SELECT _id AS _id, Name AS Title, '' AS Subtitle, '' AS Author, Image, 2 AS ItemType, BookCount, 0 AS IsBorrowed FROM tblGroups WHERE Title LIKE ? " +
 				"ORDER BY Title";
 	}	
 }
