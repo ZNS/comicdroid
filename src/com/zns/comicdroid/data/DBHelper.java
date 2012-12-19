@@ -17,17 +17,31 @@ import com.google.common.primitives.Ints;
 
 public class DBHelper extends SQLiteOpenHelper {
 	
-	private static final int DB_VERSION = 	20;
+	private static final int DB_VERSION = 	21;
 	private static final String DB_NAME = 	"ComicDroid.db";
 	
+	private static DBHelper instance;
     private SQLiteDatabase db;
     
-    public DBHelper(Context context) {
-        super(context, DB_NAME, null, DB_VERSION);
+    private DBHelper(Context context) {
+    	super(context, DB_NAME, null, DB_VERSION);
         if (db == null)
-        	db = getWritableDatabase();
+        	db = getWritableDatabase();    	
     }
 
+    public static synchronized DBHelper getHelper(Context context) {
+    	if (instance == null)
+    		instance = new DBHelper(context.getApplicationContext());
+    	return instance;
+    }
+    
+    public void finalize() throws Throwable {
+    	if (db != null)
+    		db.close();
+    	db = null;
+        super.finalize();
+    }
+    
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		String tblBooks = "CREATE TABLE tblBooks (" +
@@ -103,12 +117,14 @@ public class DBHelper extends SQLiteOpenHelper {
 	
     @Override
     public synchronized void close() {
-    	db.close();
+    	if (db != null)
+    		db.close();
+    	db = null;
     	super.close();
     }
 	
     @Override
-    public SQLiteDatabase getWritableDatabase () {
+    public synchronized SQLiteDatabase getWritableDatabase () {
     	if (db == null)
     		db = super.getWritableDatabase();
     	return db;

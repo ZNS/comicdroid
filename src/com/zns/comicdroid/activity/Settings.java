@@ -1,4 +1,4 @@
-package com.zns.comicdroid;
+package com.zns.comicdroid.activity;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -12,7 +12,9 @@ import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.android.AndroidAuthSession;
 import com.dropbox.client2.session.AccessTokenPair;
 import com.dropbox.client2.session.AppKeyPair;
-import com.zns.comicdroid.dropbox.DropboxHandler;
+import com.zns.comicdroid.Application;
+import com.zns.comicdroid.BaseFragmentActivity;
+import com.zns.comicdroid.R;
 
 public class Settings extends BaseFragmentActivity
 	implements OnCheckedChangeListener {
@@ -26,8 +28,8 @@ public class Settings extends BaseFragmentActivity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_settings);
 
-		AppKeyPair appKeys = new AppKeyPair(DropboxHandler.DROPBOX_KEY, DropboxHandler.DROPBOX_SECRET);
-		AndroidAuthSession session = new AndroidAuthSession(appKeys, DropboxHandler.ACCESS_TYPE);
+		AppKeyPair appKeys = new AppKeyPair(Application.DROPBOX_KEY, Application.DROPBOX_SECRET);
+		AndroidAuthSession session = new AndroidAuthSession(appKeys, Application.DROPBOX_ACCESS_TYPE);
 		dbApi = new DropboxAPI<AndroidAuthSession>(session);
 	
 		tbDropbox = (ToggleButton)findViewById(R.id.settings_tbDropbox);		

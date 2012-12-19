@@ -1,4 +1,4 @@
-package com.zns.comicdroid;
+package com.zns.comicdroid.activity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,18 +18,27 @@ import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+import com.zns.comicdroid.BaseFragmentActivity;
+import com.zns.comicdroid.R;
+import com.zns.comicdroid.adapter.ComicArrayAdapter;
 import com.zns.comicdroid.data.Comic;
-import com.zns.comicdroid.data.ComicArrayAdapter;
 import com.zns.comicdroid.data.Group;
-import com.zns.comicdroid.dialogs.GroupAddDialogFragment;
-import com.zns.comicdroid.isbn.BooksQueryTask;
+import com.zns.comicdroid.dialog.GroupAddDialogFragment;
+import com.zns.comicdroid.service.DropboxService;
+import com.zns.comicdroid.task.BooksQueryResult;
+import com.zns.comicdroid.task.BooksQueryTask;
+
+import de.greenrobot.event.EventBus;
 
 public class Add extends BaseFragmentActivity 
 	implements GroupAddDialogFragment.OnGroupAddDialogListener {
 
+	private final static String STATE_COMICS = "COMICS";
+	
 	private EditText etISBN;
 	private ComicArrayAdapter adapter;
 	private Spinner spGroup;
+	private boolean isScanning = false;
 		
 	private ArrayAdapter<Group> adapterGroups;
 	
@@ -37,30 +46,14 @@ public class Add extends BaseFragmentActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);               
         setContentView(R.layout.activity_add);
-        
+                
         etISBN = (EditText)findViewById(R.id.etISBN);        
         spGroup = (Spinner)findViewById(R.id.add_spGroup);
         ListView lvComics = (ListView)findViewById(R.id.add_lvComics);
         ImageView ivGroupAdd = (ImageView)findViewById(R.id.add_ivGroupAdd);
         
-        /*btnRenderHtml.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				try {
-					SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(Add.this);
-					String tokenKey = prefs.getString("DROPBOX_KEY", null);
-					String tokenSecret = prefs.getString("DROPBOX_SECRET", null);
-					
-					HtmlHandler.WriteAndPublish(getResources(),
-							getDBHelper(),
-							new AccessTokenPair(tokenKey, tokenSecret),
-							getExternalFilesDir(null).toString() + "/html");
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		})*/;
-        
+		EventBus.getDefault().register(this, "onBookQueryComplete", BooksQueryResult.class);
+		
     	//Spinner groups
     	List<Group> groups = getDBHelper().getGroups();
     	if (groups == null)
@@ -79,14 +72,20 @@ public class Add extends BaseFragmentActivity
 			}
 		});
     	
-        if (adapter == null)
-        {
-	        ArrayList<Comic> comics = new ArrayList<Comic>(); 
-	        adapter = new ComicArrayAdapter(this, comics);
-	        lvComics.setAdapter(adapter);
-        }
+	    ArrayList<Comic> comics = new ArrayList<Comic>();
+	    if (savedInstanceState != null && savedInstanceState.containsKey(STATE_COMICS)) {
+	    	comics = savedInstanceState.getParcelableArrayList(STATE_COMICS);
+	    }
+        adapter = new ComicArrayAdapter(this, comics);
+        lvComics.setAdapter(adapter);
     }
 
+    @Override
+	protected void onSaveInstanceState(Bundle state) {
+		super.onSaveInstanceState(state);		
+		state.putParcelableArrayList(STATE_COMICS, new ArrayList<Comic>(adapter.getAll()));
+	}   
+    
 	@Override
 	public void onDialogPositiveClick(DialogFragment dialog) {
 		List<Group> groups = getDBHelper().getGroups();
@@ -94,6 +93,25 @@ public class Add extends BaseFragmentActivity
 		adapterGroups.clear();
 		for (Group g : groups)
 			adapterGroups.add(g);
+	}
+		
+	@Override
+	public void onStop() {
+		if (!isScanning)
+		{
+			if (adapter != null && adapter.getCount() > 0) {
+				//Sync with dropbox
+				Intent intent = new Intent(this, DropboxService.class);
+				startService(intent);
+			}
+		}
+		super.onStop();
+	}
+	
+	@Override
+	public void onDestroy() {		
+		EventBus.getDefault().unregister(this);
+		super.onDestroy();
 	}
 	
 	public void create(View view)
@@ -104,19 +122,42 @@ public class Add extends BaseFragmentActivity
 	
     public void scanISBN(View view)
     {
+    	isScanning = true;
     	IntentIntegrator integrator = new IntentIntegrator(this);
     	integrator.initiateScan();
     }
     
     public void onActivityResult(int requestCode, int resultCode, Intent intent) 
     {
-	  IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
-	  if (scanResult != null) 
-	  {
-		  etISBN.setText(scanResult.getContents());
-		  queryISBN(null);
-	  }
+    	if (requestCode == IntentIntegrator.REQUEST_CODE)
+    	{
+			IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
+			if (scanResult != null) 
+			{
+				etISBN.setText(scanResult.getContents());
+				queryISBN(null);
+			}
+			isScanning = false;
+    	}    	
 	}
+    
+    public void onBookQueryCompleteMainThread(BooksQueryResult result) {
+		if (result.success)
+		{														
+			if (spGroup.getSelectedItemPosition() > 0) {
+				Group g = (Group)spGroup.getSelectedItem();
+				result.comic.setGroupId(g.getId());
+			}
+			getDBHelper().storeComic(result.comic);
+			adapter.insert(result.comic, 0);
+			adapter.notifyDataSetChanged();
+			return;
+		}
+		
+		Toast
+			.makeText(Add.this, "Kunde tyvärr inte hitta boken", Toast.LENGTH_LONG)
+			.show();
+    }
     
     public void queryISBN(View view)
     {
@@ -155,34 +196,7 @@ public class Add extends BaseFragmentActivity
     		return;
     	}
     	
-		try 
-		{
-			new BooksQueryTask() {
-				 public void onPostExecute(Comic comic)
-				    {
-					 	if (this.exception != null)
-					 	{
-					 		System.out.println(this.exception.getMessage());
-					 	}
-					 	
-						if (comic != null)
-						{
-							if (spGroup.getSelectedItemPosition() > 0) {
-								Group g = (Group)spGroup.getSelectedItem();
-								comic.setGroupId(g.getId());
-							}
-							getDBHelper().storeComic(comic);
-							adapter.insert(comic, 0);
-							adapter.notifyDataSetChanged();
-							return;
-						}
-						
-						Toast
-							.makeText(Add.this, "Kunde tyvärr inte hitta boken", Toast.LENGTH_LONG)
-							.show();						
-				    }				
-			}.execute("isbn:" + isbn, getExternalFilesDir(null).toString(), isbn);
-		} 
-		catch (Exception e) {}
+    	//Fire query
+		new BooksQueryTask().execute("isbn:" + isbn, getExternalFilesDir(null).toString(), isbn);
     }
 }

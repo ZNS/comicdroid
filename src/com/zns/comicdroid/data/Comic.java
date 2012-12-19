@@ -5,13 +5,19 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.api.services.books.model.Volume.VolumeInfo;
 import com.google.api.services.books.model.Volume.VolumeInfo.ImageLinks;
 import com.google.api.services.books.model.Volume.VolumeInfo.IndustryIdentifiers;
 import com.google.common.base.Joiner;
 import com.zns.comicdroid.util.ImageHandler;
 
-public class Comic {
+public class Comic
+	implements Parcelable {
+   
 	private int id;
 	private int groupId;
 	private String title;
@@ -30,7 +36,25 @@ public class Comic {
 	
 	public Comic() {
 	}
-	
+
+	private Comic(Parcel in) {
+		this.id = in.readInt();
+		this.groupId = in.readInt();
+		this.title = in.readString();
+		this.subTitle = in.readString();
+		this.author = in.readString();
+		this.publisher = in.readString();
+		this.publishDate = in.readInt();
+		this.addedDate = in.readInt();
+		this.pageCount = in.readInt();
+		this.isBorrowed = in.readInt();
+		this.borrower = in.readString();
+		this.image = in.readString();
+		this.imageUrl = in.readString();
+		this.ISBN = in.readString();
+		this.issue = in.readInt();
+	}
+	 
 	public Comic(int id, String title, String subTitle, String author, String publisher, int publishDate, int addedDate, int pageCount, int isBorrowed, String borrower, String image, String isbn, int issue, int groupId, String imageUrl)
 	{
 		this.id = id;
@@ -159,28 +183,28 @@ public class Comic {
 	}
 	
 	public String getTitle() {
-		return title;
+		return title != null ? title : "";
 	}
 	public void setTitle(String title) {
 		this.title = title;
 	}
 	
 	public String getSubTitle() {
-		return subTitle;
+		return subTitle != null ? subTitle : "";
 	}
 	public void setSubTitle(String subTitle) {
 		this.subTitle = subTitle;
 	}
 	
 	public String getAuthor() {
-		return author;
+		return author != null ? author : "";
 	}
 	public void setAuthor(String author) {
 		this.author = author;
 	}
 	
 	public String getPublisher() {
-		return publisher;
+		return publisher != null ? publisher : "";
 	}
 	public void setPublisher(String publisher) {
 		this.publisher = publisher;
@@ -223,14 +247,14 @@ public class Comic {
 	}
 	
 	public String getBorrower() {
-		return borrower;
+		return borrower != null ? borrower : "";
 	}
 	public void setBorrower(String borrower) {
 		this.borrower = borrower;
 	}
 
 	public String getImage() {
-		return image;
+		return image != null ? image : "";
 	}
 
 	public void setImage(String image) {
@@ -279,4 +303,38 @@ public class Comic {
 			return this.getId();
 		return 0;
 	}
+
+	@Override
+	public int describeContents() {
+		return hashCode();
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeInt(id);
+		dest.writeInt(groupId);
+		dest.writeString(title);
+		dest.writeString(subTitle);
+		dest.writeString(author);
+		dest.writeString(publisher);
+		dest.writeInt(publishDate);
+		dest.writeInt(addedDate);
+		dest.writeInt(pageCount);
+		dest.writeInt(isBorrowed);
+		dest.writeString(borrower);
+		dest.writeString(image);
+		dest.writeString(imageUrl);
+		dest.writeString(ISBN);
+		dest.writeInt(issue);
+	}
+	
+    public static final Parcelable.Creator<Comic> CREATOR = new Parcelable.Creator<Comic>() {
+		public Comic createFromParcel(Parcel in) {
+		    return new Comic(in);
+		}
+		
+		public Comic[] newArray(int size) {
+		    return new Comic[size];
+		}
+    };	
 }

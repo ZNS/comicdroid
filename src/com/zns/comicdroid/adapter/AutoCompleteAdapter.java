@@ -1,4 +1,4 @@
-package com.zns.comicdroid.data;
+package com.zns.comicdroid.adapter;
 
 import com.zns.comicdroid.BaseFragmentActivity;
 
@@ -68,5 +68,5 @@ public class AutoCompleteAdapter extends SimpleCursorAdapter
 	public void close() {
 		if (cursorPublishers != null && !cursorPublishers.isClosed())
 			cursorPublishers.close();
-	}	
+	}
 }

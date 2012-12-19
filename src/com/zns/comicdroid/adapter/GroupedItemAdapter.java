@@ -1,4 +1,4 @@
-package com.zns.comicdroid.data;
+package com.zns.comicdroid.adapter;
 
 import android.content.Context;
 import android.database.Cursor;

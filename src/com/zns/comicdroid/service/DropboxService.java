@@ -1,31 +1,61 @@
-package com.zns.comicdroid.dropbox;
+package com.zns.comicdroid.service;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
-import android.content.res.Resources;
+import android.app.IntentService;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.preference.PreferenceManager;
+import android.util.Log;
 
+import com.dropbox.client2.DropboxAPI;
+import com.dropbox.client2.android.AndroidAuthSession;
+import com.dropbox.client2.exception.DropboxException;
+import com.dropbox.client2.exception.DropboxUnlinkedException;
 import com.dropbox.client2.session.AccessTokenPair;
+import com.dropbox.client2.session.AppKeyPair;
+import com.zns.comicdroid.Application;
 import com.zns.comicdroid.R;
 import com.zns.comicdroid.data.Comic;
 import com.zns.comicdroid.data.DBHelper;
 
-public final class HtmlHandler {
+public class DropboxService extends IntentService {
 	
-	private HtmlHandler() {}
-	
-	public static void WriteAndPublish(Resources resources, DBHelper db, AccessTokenPair accessToken, String outPath) 
-			throws IOException {
-				
+	public DropboxService() {
+		super("DropboxService");
+	}
+
+	@Override
+	protected void onHandleIntent(Intent intent) {
+
+		//Dropbox check		
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		String tokenKey = prefs.getString("DROPBOX_KEY", null);
+		String tokenSecret = prefs.getString("DROPBOX_SECRET", null);
+
+		//If user has not authenticated with dropbox, stop this now 
+		if (tokenKey == null || tokenSecret == null) {
+			stopSelf();
+			return;
+		}
+		
+		//Get some more stuff from context
+		DBHelper db = DBHelper.getHelper(getApplicationContext());			
+		String outPath = getApplicationContext().getExternalFilesDir(null).toString() + "/html";
+		
+		//Let's get started
 		File fileOut = new File(outPath);
 		fileOut.mkdirs();
-		fileOut = new File(outPath, "index.html");
+		fileOut = new File(outPath, "index.html");		
 		
 		BufferedReader reader = null;
 		BufferedWriter writer = null;
@@ -42,7 +72,7 @@ public final class HtmlHandler {
 			
 			//Read template
 			StringBuilder sbTemplate = new StringBuilder();
-			reader = new BufferedReader(new InputStreamReader(resources.openRawResource(R.raw.listtemplate)));
+			reader = new BufferedReader(new InputStreamReader(getResources().openRawResource(R.raw.listtemplate)));
 			while ((line = reader.readLine()) != null)
 			{
 				sbTemplate.append(line);
@@ -51,7 +81,7 @@ public final class HtmlHandler {
 			
 			//Write HTML
 			writer = new BufferedWriter(new FileWriter(fileOut));
-			reader = new BufferedReader(new InputStreamReader(resources.openRawResource(R.raw.framework)));			
+			reader = new BufferedReader(new InputStreamReader(getResources().openRawResource(R.raw.framework)));			
 			while ((line = reader.readLine()) != null)
 			{
 				if (line.trim().equals("#LISTCOMICS#")) {
@@ -59,8 +89,14 @@ public final class HtmlHandler {
 						int id = cursor.getInt(0);
 						String title = cursor.getString(1);
 						String subTitle = cursor.getString(2);
+						if (subTitle == null)
+							subTitle = "";
 						String author = cursor.getString(3);
+						if (author == null)
+							author = "";
 						String imageUrl = cursor.getString(4);
+						if (imageUrl == null)
+							imageUrl = "";
 						int type = cursor.getInt(5);
 						StringBuilder sbChildren = new StringBuilder();
 						
@@ -96,17 +132,46 @@ public final class HtmlHandler {
 				}
 			}
 		}
+		catch (IOException e) {
+			stopSelf();
+			return;
+		}
 		finally {
 			if (cursor != null)
 				cursor.close();
-			if (writer != null)
-				writer.close();
-			if (reader != null)
-				reader.close();
+			try {
+				if (writer != null)
+					writer.close();
+				if (reader != null)
+					reader.close();
+			}
+			catch (IOException e) {}
 		}
 		
-		//Upload to dropbox
-		DropboxHandler dbHandler = new DropboxHandler(accessToken);
-		dbHandler.uploadFile(fileOut);
+		//Upload to Dropbox
+		AppKeyPair appKeys = new AppKeyPair(Application.DROPBOX_KEY, Application.DROPBOX_SECRET);
+		AndroidAuthSession session = new AndroidAuthSession(appKeys, Application.DROPBOX_ACCESS_TYPE);
+		DropboxAPI<AndroidAuthSession> dbApi = new DropboxAPI<AndroidAuthSession>(session);
+		dbApi.getSession().setAccessTokenPair(new AccessTokenPair(tokenKey, tokenSecret));
+		
+		FileInputStream inputStream = null;
+		try {
+		    inputStream = new FileInputStream(fileOut);
+		    dbApi.putFileOverwrite("/index.html", inputStream, fileOut.length(), null);
+		} catch (DropboxUnlinkedException e) {
+		    // User has unlinked, ask them to link again here.
+		} catch (DropboxException e) {
+		    Log.e("DbExampleLog", "Something went wrong while uploading.");
+		} catch (FileNotFoundException e) {
+		    Log.e("DbExampleLog", "File not found.");
+		} finally {
+		    if (inputStream != null) {
+		        try {
+		            inputStream.close();
+		        } catch (IOException e) {}
+		    }
+		    stopSelf();
+		}		
 	}
+
 }

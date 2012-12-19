@@ -15,7 +15,7 @@ public abstract class BaseListFragment extends BaseFragment {
 	}
 	
 	public OnFragmentStartedListener fragmentStartedCallback = null;
-	protected SimpleCursorAdapter adapter;	
+	public SimpleCursorAdapter adapter;	
 	protected ListView listView;
 
 	@Override
@@ -46,15 +46,15 @@ public abstract class BaseListFragment extends BaseFragment {
 		listView.setAdapter(adapter);
 	}
 	
-	protected String getSQLDefault() {
+	public String getSQLDefault() {
 		return "";
 	}
 	
-	protected String getSQLFilter() {
+	public String getSQLFilter() {
 		return "";
 	} 
 	
-	protected int[] getItemIds() {
+	public int[] getItemIds() {
 		return null;
 	}
 }

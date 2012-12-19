@@ -1,4 +1,4 @@
-package com.zns.comicdroid;
+package com.zns.comicdroid.activity;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -11,10 +11,16 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.commonsware.cwac.loaderex.acl.SQLiteCursorLoader;
-import com.zns.comicdroid.data.ComicAdapter;
+import com.zns.comicdroid.BaseFragmentActivity;
+import com.zns.comicdroid.R;
+import com.zns.comicdroid.adapter.ComicAdapter;
 
 public class Comics extends BaseFragmentActivity
 	implements	LoaderCallbacks<Cursor> {
+	
+	public static final String INTENT_COMICS_TYPE = "com.zns.comic.COMICS_TYPE";
+	public static final String INTENT_COMICS_VALUE = "com.zns.comic.COMICS_VALUE";
+	public static final String INTENT_COMICS_HEADING = "com.zns.comic.COMICS_HEADING";
 	
 	public static final int VIEWTYPE_GROUP = 1;
 	public static final int VIEWTYPE_AUTHOR = 2;
@@ -49,9 +55,9 @@ public class Comics extends BaseFragmentActivity
 		});
 		
 		Intent intent = getIntent();
-	    viewType = intent.getIntExtra("com.zns.comic.COMICS_TYPE", 0);
-	    viewWhereValue = intent.getCharSequenceExtra("com.zns.comic.COMICS_VALUE").toString();
-	    String heading = intent.getCharSequenceExtra("com.zns.comic.COMICS_HEADING").toString();
+	    viewType = intent.getIntExtra(INTENT_COMICS_TYPE, 0);
+	    viewWhereValue = intent.getCharSequenceExtra(INTENT_COMICS_VALUE).toString();
+	    String heading = intent.getCharSequenceExtra(INTENT_COMICS_HEADING).toString();
 	    tvHeading.setText(heading);
 	    
 	    getSupportLoaderManager().initLoader(0, null, this);

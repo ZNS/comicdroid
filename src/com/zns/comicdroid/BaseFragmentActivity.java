@@ -1,30 +1,18 @@
 package com.zns.comicdroid;
 
 import android.content.Intent;
-import android.os.Bundle;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.zns.comicdroid.activity.Add;
+import com.zns.comicdroid.activity.Settings;
+import com.zns.comicdroid.activity.Start;
 import com.zns.comicdroid.data.DBHelper;
 
 public class BaseFragmentActivity extends com.actionbarsherlock.app.SherlockFragmentActivity {
-   
-	private DBHelper helper;
-	
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        helper = new DBHelper(this);
-    }
-    
-    @Override 
-    protected void onDestroy() {
-    	helper.close();
-    	super.onDestroy();    	
-    }
-    
+          
     public DBHelper getDBHelper() {
-    	return helper;
+    	return DBHelper.getHelper(this);
     }
     
 	@Override

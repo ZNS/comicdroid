@@ -1,4 +1,4 @@
-package com.zns.comicdroid;
+package com.zns.comicdroid.activity.fragment;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -12,7 +12,10 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
-import com.zns.comicdroid.data.ComicAdapter;
+import com.zns.comicdroid.BaseListFragment;
+import com.zns.comicdroid.R;
+import com.zns.comicdroid.activity.ComicView;
+import com.zns.comicdroid.adapter.ComicAdapter;
 
 public class ListTitlesFragment extends BaseListFragment {
 
@@ -27,7 +30,7 @@ public class ListTitlesFragment extends BaseListFragment {
 			{
 				int comicId = getAdapter().getComicId(position);
 				Intent intent = new Intent(getActivity(), ComicView.class);
-				intent.putExtra("com.zns.comic.COMICID", comicId);
+				intent.putExtra(ComicView.INTENT_COMIC_ID, comicId);
 				startActivity(intent);
 			}
 		});		
@@ -42,17 +45,17 @@ public class ListTitlesFragment extends BaseListFragment {
 	}
 	
 	@Override
-	protected String getSQLDefault() {
+	public String getSQLDefault() {
 		return "SELECT _id, Title, Subtitle, Author, Image, Issue, IsBorrowed FROM tblBooks ORDER BY Title, Issue";
 	}
 	
 	@Override
-	protected String getSQLFilter() {
+	public String getSQLFilter() {
 		return "SELECT _id, Title, Subtitle, Author, Image, Issue, IsBorrowed FROM tblBooks WHERE Title LIKE ? ORDER BY Title, Issue";
 	}
 	
 	@Override
-	protected int[] getItemIds() {
+	public int[] getItemIds() {
 		int[] ids = null;
 		if (adapter.getCursor() != null)
 		{
@@ -84,8 +87,8 @@ public class ListTitlesFragment extends BaseListFragment {
 		{
 			switch (item.getItemId()) {
 				case R.id.start_context_delete:
-					listView.removeViews((int)info.id, 1);
 					getDBHelper().deleteComic(comicId);
+					adapter.notifyDataSetChanged();
 					return true;
 			}
 		}

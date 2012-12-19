@@ -1,4 +1,4 @@
-package com.zns.comicdroid;
+package com.zns.comicdroid.activity;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,11 +28,13 @@ import android.widget.Toast;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.zns.comicdroid.data.AutoCompleteAdapter;
+import com.zns.comicdroid.BaseFragmentActivity;
+import com.zns.comicdroid.R;
+import com.zns.comicdroid.adapter.AutoCompleteAdapter;
+import com.zns.comicdroid.adapter.ComicArrayAdapter;
 import com.zns.comicdroid.data.Comic;
-import com.zns.comicdroid.data.ComicArrayAdapter;
 import com.zns.comicdroid.data.Group;
-import com.zns.comicdroid.dialogs.GroupAddDialogFragment;
+import com.zns.comicdroid.dialog.GroupAddDialogFragment;
 import com.zns.comicdroid.util.ImageHandler;
 import com.zns.comicdroid.util.ImageHandler.MediaNotReadyException;
 
@@ -40,6 +42,7 @@ public class Edit extends BaseFragmentActivity
 	implements	OnClickListener, 
 				GroupAddDialogFragment.OnGroupAddDialogListener {
 	
+	public static final String INTENT_COMIC_IDS = "com.zns.comic.COMICIDS";
 	private static final int CAMERA_REQUEST = 1888; 
 	
 	private List<Comic> comics = null;
@@ -87,7 +90,7 @@ public class Edit extends BaseFragmentActivity
 		SlidingDrawer drawer = (SlidingDrawer)findViewById(R.id.comicEdit_drawer);
 		
 		Intent intent = getIntent();
-	    int[] comicIds = intent.getIntArrayExtra("com.zns.comic.COMICIDS");
+	    int[] comicIds = intent.getIntArrayExtra(INTENT_COMIC_IDS);
 	    
     	//Spinner groups
     	List<Group> groups = getDBHelper().getGroups();
@@ -266,6 +269,7 @@ public class Edit extends BaseFragmentActivity
 		
 		if (comics != null)
 		{
+			//UPDATE
 			StringBuilder sbWhere = new StringBuilder("_id IN (");
 			String[] ids = new String[comics.size()];
 			int i = 0;
@@ -281,6 +285,7 @@ public class Edit extends BaseFragmentActivity
 		}
 		else
 		{
+			//INSERT
 			if (!values.containsKey("AddedDate") || values.get("AddedDate") == null) {
 				values.remove("AddedDate");
 				values.put("AddedDate", (int)(System.currentTimeMillis() / 1000L));

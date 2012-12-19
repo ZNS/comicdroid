@@ -1,4 +1,4 @@
-package com.zns.comicdroid.dialogs;
+package com.zns.comicdroid.dialog;
 
 import android.app.Activity;
 import android.app.AlertDialog;

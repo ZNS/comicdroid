@@ -1,6 +1,8 @@
-package com.zns.comicdroid;
+package com.zns.comicdroid.activity.fragment;
 
-import com.zns.comicdroid.data.GroupedItemAdapter;
+import com.zns.comicdroid.BaseListFragment;
+import com.zns.comicdroid.activity.Comics;
+import com.zns.comicdroid.adapter.GroupedItemAdapter;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -24,9 +26,9 @@ public class ListAuthorsFragment extends BaseListFragment
 				if (name != null)
 				{
 					Intent intent = new Intent(getActivity(), Comics.class);
-					intent.putExtra("com.zns.comic.COMICS_TYPE", Comics.VIEWTYPE_AUTHOR);
-					intent.putExtra("com.zns.comic.COMICS_VALUE", name);
-					intent.putExtra("com.zns.comic.COMICS_HEADING", name);
+					intent.putExtra(Comics.INTENT_COMICS_TYPE, Comics.VIEWTYPE_AUTHOR);
+					intent.putExtra(Comics.INTENT_COMICS_VALUE, name);
+					intent.putExtra(Comics.INTENT_COMICS_HEADING, name);
 					startActivity(intent);
 				}
 			}			
@@ -41,12 +43,12 @@ public class ListAuthorsFragment extends BaseListFragment
 	}
 	
 	@Override
-	protected String getSQLDefault() {
+	public String getSQLDefault() {
 		return "SELECT 0 AS _id, Author AS Name, COUNT(*) AS Count FROM tblBooks GROUP BY Author ORDER BY Author COLLATE NOCASE";
 	}
 	
 	@Override
-	protected String getSQLFilter() {
+	public String getSQLFilter() {
 		return "SELECT 0 AS _id, Author AS Name, COUNT(*) AS Count FROM tblBooks WHERE Author LIKE ? GROUP BY Author ORDER BY Author COLLATE NOCASE";
 	}	
 }

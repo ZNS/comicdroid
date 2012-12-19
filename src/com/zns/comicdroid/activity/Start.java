@@ -1,4 +1,4 @@
-package com.zns.comicdroid;
+package com.zns.comicdroid.activity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +21,13 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
 import com.commonsware.cwac.loaderex.acl.SQLiteCursorLoader;
+import com.zns.comicdroid.BaseFragmentActivity;
+import com.zns.comicdroid.BaseListFragment;
+import com.zns.comicdroid.R;
+import com.zns.comicdroid.activity.fragment.ListAggregatesFragment;
+import com.zns.comicdroid.activity.fragment.ListAuthorsFragment;
+import com.zns.comicdroid.activity.fragment.ListPublishersFragment;
+import com.zns.comicdroid.activity.fragment.ListTitlesFragment;
 
 public class Start extends BaseFragmentActivity
 	implements	LoaderCallbacks<Cursor>, 
@@ -28,10 +35,14 @@ public class Start extends BaseFragmentActivity
 				BaseListFragment.OnFragmentStartedListener {
 	
 	private static final String LISTFRAGMENTTAG = "LISTFRAGMENT";
+	private static final String TAB_AGGREGATES = "AGGREGATES";
+	private static final String TAB_TITLES= "TITLES";
+	private static final String TAB_AUTHORS = "AUTHORS";
+	private static final String TAB_PUBLISHERS = "PUBLISHERS";
 	
 	private SQLiteCursorLoader loader;
 	private String filterQuery = "";
-	private String currentTab = "AGGREGATES";
+	private String currentTab = TAB_AGGREGATES;
 	private MenuItem menuEdit;
 	private MenuItem menuSearch;
 	private SearchView searchView;
@@ -46,25 +57,25 @@ public class Start extends BaseFragmentActivity
 		
 		ActionBar.Tab tab0 = getSupportActionBar().newTab();
 		tab0.setText("Serier");
-		tab0.setTag("AGGREGATES");
+		tab0.setTag(TAB_AGGREGATES);
 		tab0.setTabListener(this);
 		getSupportActionBar().addTab(tab0);
 		
 		ActionBar.Tab tab1 = getSupportActionBar().newTab();
 		tab1.setText("Titlar");
-		tab1.setTag("TITLES");
+		tab1.setTag(TAB_TITLES);
 		tab1.setTabListener(this);
 		getSupportActionBar().addTab(tab1);
 		
 		ActionBar.Tab tab2 = getSupportActionBar().newTab();
 		tab2.setText("Författare");
-		tab2.setTag("AUTHORS");
+		tab2.setTag(TAB_AUTHORS);
 		tab2.setTabListener(this);
 		getSupportActionBar().addTab(tab2);		
 				
 		ActionBar.Tab tab3 = getSupportActionBar().newTab();
 		tab3.setText("Förlag");
-		tab3.setTag("PUBLISHERS");
+		tab3.setTag(TAB_PUBLISHERS);
 		tab3.setTabListener(this);
 		getSupportActionBar().addTab(tab3);
 		
@@ -169,7 +180,7 @@ public class Start extends BaseFragmentActivity
         	case R.id.menu_edit:
 	        	Intent intent = new Intent(this, Edit.class);
 	        	int[] ids = getCurrentListFragment().getItemIds();
-				intent.putExtra("com.zns.comic.COMICIDS", ids);
+				intent.putExtra(Edit.INTENT_COMIC_IDS, ids);
 	        	startActivity(intent);
 	            return true;
 	    }
@@ -200,7 +211,7 @@ public class Start extends BaseFragmentActivity
 		getCurrentListFragment().BindList();
 		if (menuEdit != null)
 		{
-			if (currentTab == "TITLES" && filterQuery != null && !filterQuery.equals("") && cursor.getCount() > 0) {
+			if (currentTab == TAB_TITLES && filterQuery != null && !filterQuery.equals("") && cursor.getCount() > 0) {
 				menuEdit.setVisible(true);
 			}
 			else {
@@ -223,13 +234,13 @@ public class Start extends BaseFragmentActivity
 			return;
 
 		BaseListFragment fragment = null;
-		if (tag.equals("AGGREGATES"))
+		if (tag.equals(TAB_AGGREGATES))
 			fragment = new ListAggregatesFragment();
-		else if (tag.equals("TITLES"))
+		else if (tag.equals(TAB_TITLES))
 			fragment = new ListTitlesFragment();
-		else if (tag.equals("AUTHORS"))
+		else if (tag.equals(TAB_AUTHORS))
 			fragment = new ListAuthorsFragment();
-		else if (tag.equals("PUBLISHERS"))
+		else if (tag.equals(TAB_PUBLISHERS))
 			fragment = new ListPublishersFragment();
 		
 		if (fragment != null)

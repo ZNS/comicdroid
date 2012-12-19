@@ -1,8 +1,10 @@
-package com.zns.comicdroid.data;
+package com.zns.comicdroid.adapter;
 
 import java.util.List;
 
 import com.zns.comicdroid.R;
+import com.zns.comicdroid.data.Comic;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -40,11 +42,15 @@ public class ComicArrayAdapter extends ArrayAdapter<Comic> {
 		  return null;
 	  }
 	  
+	  public List<Comic> getAll(){
+		return this.values;  
+	  }
+	  
 	  public View getView(int position, View convertView, ViewGroup parent) 
 	  {		  
 		  View row = convertView;
 		  ComicHolder holder = null;
-		  
+
 		  if (row == null)
 		  {
 			  LayoutInflater inflater = ((Activity)context).getLayoutInflater();

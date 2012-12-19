@@ -1,7 +1,8 @@
-package com.zns.comicdroid;
+package com.zns.comicdroid.activity;
 
 import java.text.SimpleDateFormat;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
@@ -16,9 +17,14 @@ import android.widget.TextView;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.zns.comicdroid.BaseFragmentActivity;
+import com.zns.comicdroid.R;
 import com.zns.comicdroid.data.Comic;
 
+@SuppressLint("SimpleDateFormat")
 public class ComicView extends BaseFragmentActivity {
+	
+	public final static String INTENT_COMIC_ID = "com.zns.comic.COMICID";
 	
 	private Comic currentComic;
 	private TextView tvTitle;
@@ -66,7 +72,7 @@ public class ComicView extends BaseFragmentActivity {
 		});
 	    
 		Intent intent = getIntent();
-	    int comicId = intent.getIntExtra("com.zns.comic.COMICID", 0);
+	    int comicId = intent.getIntExtra(INTENT_COMIC_ID, 0);
 	    if (comicId > 0)
 	    {
 	    	currentComic = getDBHelper().getComic(comicId);
@@ -118,7 +124,7 @@ public class ComicView extends BaseFragmentActivity {
 	    switch (item.getItemId()) {
         	case R.id.menu_edit:
 	        	Intent intent = new Intent(this, Edit.class);
-				intent.putExtra("com.zns.comic.COMICIDS", new int[] { currentComic.getId() });
+				intent.putExtra(Edit.INTENT_COMIC_IDS, new int[] { currentComic.getId() });
 	        	startActivity(intent);
 	            return true;
 	    }
