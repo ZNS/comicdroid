@@ -84,8 +84,8 @@ public class ComicView extends BaseFragmentActivity {
 	{
 		if (comic == null)
 			return;
-				
-		tvTitle.setText(comic.getTitle() + (comic.getIssue() > 0 ? " - Vol. " + comic.getIssue() : ""));
+						
+		tvTitle.setText(comic.getTitle() + (comic.getIssue() > 0 ? " - " + getResources().getString(R.string.comicview_issueshort) + " " + comic.getIssue() : ""));
 		if (comic.getSubTitle() != null)
 		{
 			tvSubtitleHeading.setVisibility(View.VISIBLE);

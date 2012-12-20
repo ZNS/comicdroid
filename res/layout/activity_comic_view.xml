@@ -37,7 +37,7 @@
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
 			        android:layout_marginBottom="-2dp"
-			        android:text="Titel"
+			        android:text="@string/comic_title"
 			        android:textAppearance="?android:attr/textAppearanceSmall" />
 			
 			    <TextView
@@ -53,12 +53,13 @@
 			    	android:background="@android:color/darker_gray"/>
 			
 				<!-- Subtitle -->
+
 			    <TextView
 			        android:id="@+id/comicView_tvSubtitleHeading"
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
-			        android:text="Subtitel"
 			        android:layout_marginBottom="-2dp"
+			        android:text="@string/comic_subtitle"
 			        android:textAppearance="?android:attr/textAppearanceSmall" />
 			
 			    <TextView
@@ -76,11 +77,12 @@
 			    	android:background="@android:color/darker_gray"/>
 					
 				<!-- AUTHOR -->
+
 			    <TextView
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
-			        android:text="Författare"
 			        android:layout_marginBottom="-2dp"
+			        android:text="@string/comic_author"
 			        android:textAppearance="?android:attr/textAppearanceSmall" />
 			
 			    <TextView
@@ -99,11 +101,11 @@
 		</LinearLayout>
 		
 		<!-- Publisher -->
-	    <TextView
+	    <TextView
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:layout_marginBottom="-2dp"
-	        android:text="Förlag"
+	        android:text="@string/comic_publisher"
 	        android:textAppearance="?android:attr/textAppearanceSmall" />
 	
 	    <TextView
@@ -119,11 +121,11 @@
 	    	android:background="@android:color/darker_gray"/>
 		
 		<!-- Publishdate -->
-	    <TextView
+	    <TextView
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:layout_marginBottom="-2dp"
-	        android:text="Publicerad"
+	        android:text="@string/comic_datepublished"
 	        android:textAppearance="?android:attr/textAppearanceSmall" />
 	
 	    <TextView
@@ -139,11 +141,11 @@
 	    	android:background="@android:color/darker_gray"/>
 		
 		<!-- Added -->
-	    <TextView
+	    <TextView
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:layout_marginBottom="-2dp"
-	        android:text="Tillagd"
+	        android:text="@string/comic_dateadded"
 	        android:textAppearance="?android:attr/textAppearanceSmall" />
 	
 	    <TextView
@@ -159,11 +161,11 @@
 	    	android:background="@android:color/darker_gray"/>
 		
 		<!-- Pagecount -->
-	    <TextView
+	    <TextView
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:layout_marginBottom="-2dp"
-	        android:text="Antal sidor"
+	        android:text="@string/comic_pagecount"
 	        android:textAppearance="?android:attr/textAppearanceSmall" />
 	
 	    <TextView
@@ -179,19 +181,21 @@
 	    	android:background="@android:color/darker_gray"/>
 		
 		<!-- Borrowed -->
-	    <TextView
+	    <TextView
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:layout_marginBottom="-2dp"
-	        android:text="Utlånad"
+	        android:text="@string/comicview_borrowed"
 	        android:textAppearance="?android:attr/textAppearanceSmall" />
 	
 		<EditText
 		    android:id="@+id/comicView_etBorrower"
 		    android:layout_width="fill_parent"
 		    android:layout_height="wrap_content"
-		    android:singleLine="true"
-			android:imeOptions="actionDone" >
+		    android:imeOptions="actionDone"
+		    android:inputType="text|textPersonName"
+		    android:singleLine="true" >
+
 		</EditText>
 						
 	</LinearLayout>

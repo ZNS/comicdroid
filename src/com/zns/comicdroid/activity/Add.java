@@ -89,7 +89,7 @@ public class Add extends BaseFragmentActivity
 	@Override
 	public void onDialogPositiveClick(DialogFragment dialog) {
 		List<Group> groups = getDBHelper().getGroups();
-		groups.add(0, new Group(0, "Ingen grupp", null));
+		groups.add(0, new Group(0, getResources().getString(R.string.common_nogroup), null));
 		adapterGroups.clear();
 		for (Group g : groups)
 			adapterGroups.add(g);
@@ -155,7 +155,7 @@ public class Add extends BaseFragmentActivity
 		}
 		
 		Toast
-			.makeText(Add.this, "Kunde tyvärr inte hitta boken", Toast.LENGTH_LONG)
+			.makeText(Add.this, getResources().getString(R.string.add_search_notfound), Toast.LENGTH_LONG)
 			.show();
     }
     
@@ -186,13 +186,13 @@ public class Add extends BaseFragmentActivity
     		}
     	}
     	if (!isValid) {
-    		Toast.makeText(this, "Invalid ISBN", Toast.LENGTH_LONG).show();
+    		Toast.makeText(this, getResources().getString(R.string.add_search_invalidisbn), Toast.LENGTH_LONG).show();
     		return;
     	}
     	
     	//Duplicate check
     	if (getDBHelper().isDuplicateComic(isbn)) {
-    		Toast.makeText(this, "Boken är redan tillagd", Toast.LENGTH_LONG).show();
+    		Toast.makeText(this, getResources().getString(R.string.add_search_isduplicate), Toast.LENGTH_LONG).show();
     		return;
     	}
     	

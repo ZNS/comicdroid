@@ -96,7 +96,7 @@ public class Edit extends BaseFragmentActivity
     	List<Group> groups = getDBHelper().getGroups();
     	if (groups == null)
     		groups = new ArrayList<Group>();
-    	groups.add(0, new Group(0, "Ingen grupp", null));
+    	groups.add(0, new Group(0, getResources().getString(R.string.common_nogroup), null));
     	adapterGroups = new ArrayAdapter<Group>(this, android.R.layout.simple_spinner_item, groups);
     	adapterGroups.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     	spGroup.setAdapter(adapterGroups);
@@ -297,7 +297,7 @@ public class Edit extends BaseFragmentActivity
 				comics.add(comic);
 			}
 		}
-		Toast.makeText(this, "Sparat och klart!", Toast.LENGTH_LONG).show();
+		Toast.makeText(this, getResources().getString(R.string.edit_done), Toast.LENGTH_LONG).show();
 	}
 	
 	@Override
@@ -323,7 +323,7 @@ public class Edit extends BaseFragmentActivity
 	public void onClick(View v) {
 		if (v.getId() == R.id.comicEdit_ivImage) {
 			if (comics == null) {
-				Toast.makeText(Edit.this, "Du måste spara innan du kan lägga till en bild.", Toast.LENGTH_LONG).show();
+				Toast.makeText(Edit.this, getResources().getString(R.string.edit_needtosave), Toast.LENGTH_LONG).show();
 				return;
 			}
 			Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE); 
@@ -338,7 +338,7 @@ public class Edit extends BaseFragmentActivity
 	@Override
 	public void onDialogPositiveClick(DialogFragment dialog) {
 		List<Group> groups = getDBHelper().getGroups();
-		groups.add(0, new Group(0, "Ingen grupp", null));
+		groups.add(0, new Group(0, getResources().getString(R.string.common_nogroup), null));
 		adapterGroups.clear();
 		for (Group g : groups)
 			adapterGroups.add(g);

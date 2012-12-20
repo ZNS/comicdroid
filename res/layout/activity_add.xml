@@ -17,7 +17,7 @@
 		    android:layout_height="wrap_content"
 		    android:layout_marginBottom="-3dp"
 		    android:layout_marginTop="-3dp"
-		    android:text="Lägg tillagda serier till grupp:" />
+		    android:text="@string/common_addtogroup" />
 
 	    <RelativeLayout
 	        android:layout_width="fill_parent"
@@ -52,7 +52,7 @@
 		        android:layout_alignParentRight="true"
 		        android:background="@drawable/button"
 		        android:onClick="queryISBN"
-		        android:text="Sök" />
+		        android:text="@string/common_search" />
 		    
 		    <EditText
 		        android:id="@+id/etISBN"
@@ -79,7 +79,7 @@
 		        android:layout_marginRight="2.5dp"
 		        android:background="@drawable/button"
 		        android:onClick="scanISBN"
-		        android:text="Scanna ISBN" />
+		        android:text="@string/add_btnscan" />
 				
 			<Button
 		        android:id="@+id/btnAdd"
@@ -90,7 +90,7 @@
 		        android:layout_marginLeft="2.5dp"
 		        android:background="@drawable/button"
 		        android:onClick="create"
-		        android:text="Skapa" />
+		        android:text="@string/add_btnadd" />
 						
 		</LinearLayout>
 		

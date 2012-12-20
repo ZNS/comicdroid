@@ -6,6 +6,7 @@ import java.util.List;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -52,29 +53,31 @@ public class Start extends BaseFragmentActivity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_start);
 				
+		Resources res = getResources();
+		
 		//Tabs
 		getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		
 		ActionBar.Tab tab0 = getSupportActionBar().newTab();
-		tab0.setText("Serier");
+		tab0.setText(res.getString(R.string.start_tab_aggregates));
 		tab0.setTag(TAB_AGGREGATES);
 		tab0.setTabListener(this);
 		getSupportActionBar().addTab(tab0);
 		
 		ActionBar.Tab tab1 = getSupportActionBar().newTab();
-		tab1.setText("Titlar");
+		tab1.setText(res.getString(R.string.start_tab_comics));
 		tab1.setTag(TAB_TITLES);
 		tab1.setTabListener(this);
 		getSupportActionBar().addTab(tab1);
 		
 		ActionBar.Tab tab2 = getSupportActionBar().newTab();
-		tab2.setText("Författare");
+		tab2.setText(res.getString(R.string.start_tab_authors));
 		tab2.setTag(TAB_AUTHORS);
 		tab2.setTabListener(this);
 		getSupportActionBar().addTab(tab2);		
 				
 		ActionBar.Tab tab3 = getSupportActionBar().newTab();
-		tab3.setText("Förlag");
+		tab3.setText(res.getString(R.string.start_tab_publishers));
 		tab3.setTag(TAB_PUBLISHERS);
 		tab3.setTabListener(this);
 		getSupportActionBar().addTab(tab3);

@@ -43,7 +43,7 @@
 				        android:layout_width="wrap_content"
 				        android:layout_height="wrap_content"
 				        android:layout_marginBottom="-2dp"
-				        android:text="Grupp"
+				        android:text="@string/common_group"
 				        android:textAppearance="?android:attr/textAppearanceSmall" />
 				    	    
 				    <RelativeLayout
@@ -66,11 +66,11 @@
 				    </RelativeLayout>
 			        
 				    <!-- Title -->
-				    <TextView
+				    <TextView
 				        android:layout_width="wrap_content"
 				        android:layout_height="wrap_content"
 				        android:layout_marginBottom="-2dp"
-				        android:text="Titel"
+				        android:text="@string/comic_title"
 				        android:textAppearance="?android:attr/textAppearanceSmall" />
 				
 				    <EditText
@@ -83,10 +83,10 @@
 						
 					<!-- Subtitle -->
 					<RelativeLayout android:id="@+id/comicEdit_subtitle" android:layout_width="fill_parent" android:layout_height="wrap_content">					
-				    <TextView
+				    <TextView
 				        android:layout_width="wrap_content"
 				        android:layout_height="wrap_content"
-				        android:text="Subtitel"
+				        android:text="@string/comic_subtitle"
 				        android:textAppearance="?android:attr/textAppearanceSmall" />
 				
 				    <EditText
@@ -104,10 +104,10 @@
 		
 			<!-- ISSUE -->
 			<RelativeLayout android:id="@+id/comicEdit_issue" android:layout_width="fill_parent" android:layout_height="wrap_content">
-		    <TextView
+		    <TextView
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
-		        android:text="Volym"
+		        android:text="@string/comic_issue"
 		        android:textAppearance="?android:attr/textAppearanceSmall" />
 		
 		    <EditText
@@ -121,11 +121,12 @@
 		    </RelativeLayout>
 		    
 			<!-- AUTHOR -->
+
 		    <TextView
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
-		        android:text="Författare"
 		        android:layout_marginBottom="-2dp"
+		        android:text="@string/comic_author"
 		        android:textAppearance="?android:attr/textAppearanceSmall" />
 		
 		    <AutoCompleteTextView
@@ -139,11 +140,11 @@
 		    </AutoCompleteTextView>        
 			    	
 			<!-- Publisher -->
-		    <TextView
+		    <TextView
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
 		        android:layout_marginBottom="-2dp"
-		        android:text="Förlag"
+		        android:text="@string/comic_publisher"
 		        android:textAppearance="?android:attr/textAppearanceSmall" />
 		
 		    <AutoCompleteTextView
@@ -158,10 +159,10 @@
 		        
 			<!-- Publishdate -->
 			<RelativeLayout android:id="@+id/comicEdit_publishDate" android:layout_width="fill_parent" android:layout_height="wrap_content">
-		    <TextView
+		    <TextView
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
-		        android:text="Publicerad"
+		        android:text="@string/comic_datepublished"
 		        android:textAppearance="?android:attr/textAppearanceSmall" />
 		
 		    <EditText
@@ -175,10 +176,10 @@
 			
 			<RelativeLayout android:id="@+id/comicEdit_added" android:layout_width="fill_parent" android:layout_height="wrap_content">
 			<!-- Added -->
-		    <TextView
+		    <TextView
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
-		        android:text="Tillagd"
+		        android:text="@string/comic_dateadded"
 		        android:textAppearance="?android:attr/textAppearanceSmall" />
 		
 		    <EditText
@@ -192,10 +193,10 @@
 			
 			<!-- Pagecount -->
 			<RelativeLayout android:id="@+id/comicEdit_pageCount" android:layout_width="fill_parent" android:layout_height="wrap_content">
-		    <TextView
+		    <TextView
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
-		        android:text="Antal sidor"
+		        android:text="@string/comic_pagecount"
 		        android:textAppearance="?android:attr/textAppearanceSmall" />
 		
 		    <EditText
@@ -241,8 +242,15 @@
             android:layout_width="fill_parent" 
             android:layout_height="wrap_content" 
             android:background="@drawable/slidingdrawer_handle">            
-			<TextView android:id="@+id/comicEdit_handleText" android:layout_centerInParent="true" android:layout_width="wrap_content" android:layout_height="wrap_content"
-			    android:textColor="#ffffff" android:text="Serier som redigeras..." />       
+
+			<TextView
+			    android:id="@+id/comicEdit_handleText"
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:layout_centerInParent="true"
+			    android:text="@string/edit_listhandle"
+			    android:textColor="#ffffff" />
+       
 			<ImageView android:layout_toLeftOf="@id/comicEdit_handleText" android:layout_width="23dp" android:layout_height="23dp" android:src="@drawable/collections"></ImageView>     
         </RelativeLayout>
     </SlidingDrawer>
