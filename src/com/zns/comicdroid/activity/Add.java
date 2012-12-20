@@ -58,7 +58,7 @@ public class Add extends BaseFragmentActivity
     	List<Group> groups = getDBHelper().getGroups();
     	if (groups == null)
     		groups = new ArrayList<Group>();
-    	groups.add(0, new Group(0, "Ingen grupp", null));
+    	groups.add(0, new Group(0, getResources().getString(R.string.common_nogroup), null));
     	adapterGroups = new ArrayAdapter<Group>(this, android.R.layout.simple_spinner_item, groups);
     	adapterGroups.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     	spGroup.setAdapter(adapterGroups);
