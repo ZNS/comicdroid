@@ -1,27 +1,27 @@
-package com.zns.comicdroid.activity;
+	package com.zns.comicdroid.activity;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.Loader;
+import android.support.v4.view.ViewPager;
 import android.text.InputType;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.Tab;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
-import com.commonsware.cwac.loaderex.acl.SQLiteCursorLoader;
 import com.zns.comicdroid.BaseFragmentActivity;
 import com.zns.comicdroid.BaseListFragment;
 import com.zns.comicdroid.R;
@@ -31,30 +31,29 @@ import com.zns.comicdroid.activity.fragment.ListPublishersFragment;
 import com.zns.comicdroid.activity.fragment.ListTitlesFragment;
 
 public class Start extends BaseFragmentActivity
-	implements	LoaderCallbacks<Cursor>, 
-				ActionBar.TabListener, 
-				BaseListFragment.OnFragmentStartedListener {
+	implements	BaseListFragment.OnListLoadedListener, 
+				ActionBar.TabListener {
 	
-	private static final String LISTFRAGMENTTAG = "LISTFRAGMENT";
+	private static final int TAB_COUNT = 4;
 	private static final String TAB_AGGREGATES = "AGGREGATES";
 	private static final String TAB_TITLES= "TITLES";
 	private static final String TAB_AUTHORS = "AUTHORS";
 	private static final String TAB_PUBLISHERS = "PUBLISHERS";
 	
-	private SQLiteCursorLoader loader;
-	private String filterQuery = "";
 	private String currentTab = TAB_AGGREGATES;
 	private MenuItem menuEdit;
 	private MenuItem menuSearch;
 	private SearchView searchView;
-	
+	private ViewPager viewPager;
+	private TabFragmentAdapter fragmentAdapter;
+		
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_start);
 				
 		Resources res = getResources();
-		
+				
 		//Tabs
 		getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		
@@ -82,27 +81,18 @@ public class Start extends BaseFragmentActivity
 		tab3.setTabListener(this);
 		getSupportActionBar().addTab(tab3);
 		
-		//Load fragment
-        if (findViewById(R.id.start_fragmentcontainer) != null) {
-
-            // However, if we're being restored from a previous state,
-            // then we don't need to do anything and should return or else
-            // we could end up with overlapping fragments.
-            if (savedInstanceState != null) {
-                return;
-            }
-
-            // Create an instance of ExampleFragment
-            ListAggregatesFragment fragment = new ListAggregatesFragment();
-            
-            // Add the fragment to the 'fragment_container' FrameLayout
-            getSupportFragmentManager()
-            	.beginTransaction()
-                .add(R.id.start_fragmentcontainer, fragment, LISTFRAGMENTTAG)
-                .commit();
-        }
+		//View pager
+		fragmentAdapter = new TabFragmentAdapter(getSupportFragmentManager());
+		viewPager = (ViewPager)findViewById(R.id.start_viewPager);		
+		viewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+			@Override
+			public void onPageSelected(int position) {
+				getSupportActionBar().setSelectedNavigationItem(position);
+			}
+		});	
+		viewPager.setAdapter(fragmentAdapter);
 	}	
-
+	
 	@Override
 	protected void onNewIntent(Intent intent) {
 		handleIntent(intent);
@@ -112,30 +102,12 @@ public class Start extends BaseFragmentActivity
     private void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
-            filterQuery = query;
             if (menuSearch != null)
             	menuSearch.collapseActionView();
-            getSupportLoaderManager().restartLoader(0, null, Start.this);
+            fragmentAdapter.getFragment(viewPager.getCurrentItem()).setFilter(query);
         }
     }
     
-	//List fragment is started
-	@Override
-	public void onStarted() {
-		//Initiate sqlite cursor loader
-		filterQuery = "";
-		if (getSupportLoaderManager().getLoader(0) == null)
-			getSupportLoaderManager().initLoader(0,  null, this);
-		else
-			getSupportLoaderManager().restartLoader(0,  null, this);
-	}
-	
-	public BaseListFragment getCurrentListFragment()
-	{
-		Fragment fragment = getSupportFragmentManager().findFragmentByTag(LISTFRAGMENTTAG);
-		return (BaseListFragment)fragment;
-	}
-	
 	//Menu Implementation
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -153,14 +125,14 @@ public class Start extends BaseFragmentActivity
 				if (!hasFocus) {
 					String query = searchView.getQuery().toString();
 					if (query.trim().length() == 0) {
-						filterQuery = "";
 						menuSearch.collapseActionView();
-						getSupportLoaderManager().restartLoader(0, null, Start.this);
+			            fragmentAdapter.getFragment(viewPager.getCurrentItem()).clearFilter();
 					}
 				}
 				else {
-					if (filterQuery != null && filterQuery.length() > 0) {
-						searchView.setQuery(filterQuery, false);
+					String filter = fragmentAdapter.getFragment(viewPager.getCurrentItem()).getFilter();
+					if (filter != null && filter.length() > 0) {
+						searchView.setQuery(filter, false);
 					}	
 				}
 			}
@@ -182,7 +154,8 @@ public class Start extends BaseFragmentActivity
 	    switch (item.getItemId()) {
         	case R.id.menu_edit:
 	        	Intent intent = new Intent(this, Edit.class);
-	        	int[] ids = getCurrentListFragment().getItemIds();
+	        	BaseListFragment fragment = fragmentAdapter.getFragment(viewPager.getCurrentItem());
+	        	int[] ids = fragment.getItemIds();
 				intent.putExtra(Edit.INTENT_COMIC_IDS, ids);
 	        	startActivity(intent);
 	            return true;
@@ -190,43 +163,18 @@ public class Start extends BaseFragmentActivity
 	    return super.onOptionsItemSelected(item);
 	}
 	
-	//Loader Implementation
 	@Override
-	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-		if (filterQuery != null && !filterQuery.equals("")) {
-			String sql = getCurrentListFragment().getSQLFilter();
-			List<String> params = new ArrayList<String>();
-			int paramIndex = -1;
-			while((paramIndex = sql.indexOf("?", paramIndex + 1)) > -1) {
-				params.add(filterQuery + "%");
-			}
-			loader = new SQLiteCursorLoader(this, getDBHelper(), getCurrentListFragment().getSQLFilter(), params.toArray(new String[params.size()]));
-		}
-		else {
-			loader = new SQLiteCursorLoader(this, getDBHelper(), getCurrentListFragment().getSQLDefault(), null); 
-		}
-		return(loader);
-	}
-
-	@Override
-	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-		getCurrentListFragment().adapter.changeCursor(cursor);
-		getCurrentListFragment().BindList();
-		if (menuEdit != null)
+	public void onListLoaded() {
+		BaseListFragment fragment = fragmentAdapter.getFragment(viewPager.getCurrentItem());
+		if (fragment != null && menuEdit != null)
 		{
-			if (currentTab == TAB_TITLES && filterQuery != null && !filterQuery.equals("") && cursor.getCount() > 0) {
+			if (currentTab == TAB_TITLES && fragment.getFilter() != null && !fragment.getFilter().equals("") && fragment.adapter.getCount() > 0) {
 				menuEdit.setVisible(true);
 			}
 			else {
 				menuEdit.setVisible(false);
 			}
 		}
-	}
-
-	@Override
-	public void onLoaderReset(Loader<Cursor> loader) {
-		getCurrentListFragment().adapter.changeCursor(null);
-		getCurrentListFragment().BindList();
 	}
 	
 	//Tab Implementation
@@ -235,31 +183,8 @@ public class Start extends BaseFragmentActivity
 		String tag = (String)tab.getTag();
 		if (tag.equals(currentTab))
 			return;
-
-		BaseListFragment fragment = null;
-		if (tag.equals(TAB_AGGREGATES))
-			fragment = new ListAggregatesFragment();
-		else if (tag.equals(TAB_TITLES))
-			fragment = new ListTitlesFragment();
-		else if (tag.equals(TAB_AUTHORS))
-			fragment = new ListAuthorsFragment();
-		else if (tag.equals(TAB_PUBLISHERS))
-			fragment = new ListPublishersFragment();
-		
-		if (fragment != null)
-		{
-			FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-	
-			// Replace whatever is in the fragment_container view with this fragment,
-			// and add the transaction to the back stack so the user can navigate back
-			transaction.replace(R.id.start_fragmentcontainer, fragment, LISTFRAGMENTTAG);
-			transaction.addToBackStack(null);
-	
-			// Commit the transaction
-			transaction.commit();
-			
-			currentTab = tag;
-		}
+		viewPager.setCurrentItem(tab.getPosition());
+		currentTab = tag;
 	}
 
 	@Override
@@ -273,4 +198,48 @@ public class Start extends BaseFragmentActivity
 		// TODO Auto-generated method stub
 		
 	}		
+	
+	class TabFragmentAdapter extends FragmentStatePagerAdapter {
+		private Map<Integer, BaseListFragment> mPageReferenceMap = new HashMap<Integer, BaseListFragment>();
+		
+		public TabFragmentAdapter(FragmentManager fm) {
+			super(fm);
+		}
+
+		@Override
+		public Fragment getItem(int pos) {
+			//pos = pos - 1;
+			String tag = (String)getSupportActionBar().getTabAt(pos).getTag();
+			BaseListFragment fragment = null;
+							
+			if (tag.equals(TAB_TITLES))
+				fragment = ListTitlesFragment.newInstance(pos);
+			else if (tag.equals(TAB_AUTHORS))
+				fragment = ListAuthorsFragment.newInstance(pos);
+			else if (tag.equals(TAB_PUBLISHERS))
+				fragment = ListPublishersFragment.newInstance(pos);
+			else
+				fragment = ListAggregatesFragment.newInstance(pos);
+			
+			mPageReferenceMap.put(Integer.valueOf(pos), fragment);
+			
+			return fragment;
+		}
+
+		@Override
+		public void destroyItem(ViewGroup container, int position, Object object) {
+			super.destroyItem(container, position, object);
+			mPageReferenceMap.remove(Integer.valueOf(position));
+		}
+		
+		@Override
+		public int getCount() {
+			return TAB_COUNT;
+		}
+		
+		public BaseListFragment getFragment(int pos) {
+			BaseListFragment fragment = mPageReferenceMap.get(pos);
+			return fragment;
+		}
+	}
 }

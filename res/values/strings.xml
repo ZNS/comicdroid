@@ -2,40 +2,42 @@
 <resources>
 
     <string name="app_name">ComicDroid</string>
-    <string name="menu_settings">Settings</string>
-    <string name="title_activity_add">Add</string>
-
-    <string name="title_activity_comic_view">Comic</string>
-    <string name="title_activity_authors">Authors</string>
-    <string name="title_activity_edit">Edit</string>
-    <string name="title_activity_comics">Comics</string>
-    <string name="title_activity_settings">Settings</string>
-    
+    <string name="title_activity_add">Lägg till</string>
+    <string name="title_activity_comic_view">Serie</string>
+    <string name="title_activity_authors">Författare</string>
+    <string name="title_activity_edit">Redigera</string>
+    <string name="title_activity_comics">Serier</string>
+    <string name="title_activity_settings">Inställningar</string>
+    <string name="menu_start">Arkivet</string>
+    <string name="menu_add">Lägg till</string>
+    <string name="menu_add_short">Ny</string>
+    <string name="menu_borrow">Låna ut</string>
+    <string name="menu_borrowed">Utlånat</string>
+    <string name="menu_settings">Inställningar</string>
     <string name="common_addtogroup">Lägg tillagda serier till grupp:</string>
     <string name="common_search">Sök</string>
     <string name="common_group">Grupp</string>
     <string name="common_nogroup">Ingen grupp</string>
-    
+    <string name="common_cancel">Ångra</string>
+    <string name="common_save">Spara</string>
+    <string name="common_edit">Redigera</string>
+    <string name="common_delete">Radera</string>
     <string name="start_tab_aggregates">Serier</string>
     <string name="start_tab_comics">Titlar</string>
     <string name="start_tab_authors">Författare</string>
     <string name="start_tab_publishers">Förlag</string>
-    
     <string name="add_btnscan">Scanna ISBN</string>
     <string name="add_btnadd">Skapa</string>
     <string name="add_search_notfound">Kunde tyvärr inte hitta boken</string>
     <string name="add_search_invalidisbn">Ogiltigt ISBN</string>
     <string name="add_search_isduplicate">Boken är redan tillagd</string>
-    
     <string name="edit_listhandle">Serier som redigeras</string>
     <string name="edit_done">Sparat och klart!</string>
     <string name="edit_needtosave">Du måste spara innan du kan lägga till en bild.</string>
-            
     <string name="comicview_issueshort">Vol.</string>
     <string name="comicview_borrowed">Utlånad</string>
-    
-    <string name="dialog_groupadd_label">Ange namn för grupp</string>
-    
+    <string name="dialog_groupadd_label">Ange namn för grupp:</string>
+    <string name="dialog_rename_label">Byt namn till:</string>
     <string name="comic_title">Titel</string>
     <string name="comic_subtitle">Undertitel</string>
     <string name="comic_author">Författare</string>
@@ -44,5 +46,13 @@
     <string name="comic_dateadded">Tillagd</string>
     <string name="comic_pagecount">Antal sidor</string>
     <string name="comic_issue">Volym</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_borrow">Låna ut</string>
+    <string name="borrow_etBorrower">Utlånad till..</string>
+    <string name="borrow_btnClear">Rensa</string>
+    <string name="borrow_notadded">Efterfrågad bok är inte tillagd</string>
+    <string name="borrow_success">Böckerna är nu markerade som utlånade</string>
+    <string name="dialog_group_create">Skapa grupp</string>
+    <string name="title_activity_borrowed">Borrowed</string>
 
 </resources>

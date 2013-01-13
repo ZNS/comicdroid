@@ -1,0 +1,61 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="5dp" 
+    tools:context=".Borrow">
+       
+	<LinearLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:orientation="vertical"
+	    android:background="@color/contentBg"
+	    android:padding="5dp" >
+	    
+	    <EditText
+	        android:id="@+id/borrow_etBorrower"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:hint="@string/borrow_etBorrower" />
+	    
+		<LinearLayout
+		    android:layout_width="fill_parent"
+		    android:layout_height="wrap_content"
+		    android:orientation="horizontal"
+		    android:weightSum="1"
+		    android:layout_marginBottom="10dp" >
+		
+			<Button
+		        android:id="@+id/borrow_btnScan"
+		        style="@style/ButtonText"
+		        android:layout_width="0dip"
+		        android:layout_height="35dp"
+		        android:layout_weight=".65"
+		        android:layout_marginRight="2.5dp"
+		        android:background="@drawable/button"
+		        android:onClick="scanISBN_click"
+		        android:text="@string/add_btnscan" />
+				
+			<Button
+		        android:id="@+id/borrow_btnClear"
+		        style="@style/ButtonText"
+		        android:layout_width="0dip"
+		        android:layout_height="35dp"
+		        android:layout_weight=".35"
+		        android:layout_marginLeft="2.5dp"
+		        android:background="@drawable/button"
+		        android:onClick="clear_click"
+		        android:text="@string/borrow_btnClear" />	    
+		    
+		</LinearLayout>	    
+		
+		<ListView
+		    android:id="@+id/borrow_lvComics"
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content"
+	        android:padding="5dp"
+	        android:divider="@android:color/transparent"
+	        android:dividerHeight="5dp" >
+		</ListView>	
+	</LinearLayout>
+</FrameLayout>

@@ -19,12 +19,20 @@ import com.zns.comicdroid.adapter.ComicAdapter;
 
 public class ListTitlesFragment extends BaseListFragment {
 
+	public static ListTitlesFragment newInstance(int index)
+	{
+		ListTitlesFragment fragment = new ListTitlesFragment();
+		Bundle b = new Bundle();
+		b.putInt("index", index);
+		fragment.setArguments(b);
+		return fragment;
+	}
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = super.onCreateView(inflater, container, savedInstanceState);
 		
-		adapter = new ComicAdapter(getActivity());		
-		
+		adapter = new ComicAdapter(getActivity());
 		listView.setOnItemClickListener(new android.widget.AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) 
 			{
@@ -82,7 +90,7 @@ public class ListTitlesFragment extends BaseListFragment {
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo)item.getMenuInfo();
-		int comicId = getAdapter().getComicId((int)info.id);
+		int comicId = getAdapter().getComicId((int)info.position);
 		if (comicId > 0)
 		{
 			switch (item.getItemId()) {

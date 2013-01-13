@@ -29,6 +29,7 @@ public class Comic
 	private int pageCount;
 	private int isBorrowed;
 	private String borrower;
+	private int borrowedDate;
 	private String image;
 	private String imageUrl;
 	private String ISBN;
@@ -49,13 +50,14 @@ public class Comic
 		this.pageCount = in.readInt();
 		this.isBorrowed = in.readInt();
 		this.borrower = in.readString();
+		this.borrowedDate = in.readInt();
 		this.image = in.readString();
 		this.imageUrl = in.readString();
 		this.ISBN = in.readString();
 		this.issue = in.readInt();
 	}
 	 
-	public Comic(int id, String title, String subTitle, String author, String publisher, int publishDate, int addedDate, int pageCount, int isBorrowed, String borrower, String image, String isbn, int issue, int groupId, String imageUrl)
+	public Comic(int id, String title, String subTitle, String author, String publisher, int publishDate, int addedDate, int pageCount, int isBorrowed, String borrower, String image, String isbn, int issue, int groupId, String imageUrl, int borrowedDate)
 	{
 		this.id = id;
 		this.groupId = groupId;
@@ -68,6 +70,7 @@ public class Comic
 		this.pageCount = pageCount;
 		this.isBorrowed = isBorrowed;
 		this.borrower = borrower;
+		this.borrowedDate = borrowedDate;
 		this.image = image;
 		this.imageUrl = imageUrl;
 		this.ISBN = isbn;
@@ -142,7 +145,7 @@ public class Comic
 		
 		if (info.getPublishedDate() != null)
 		{
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 			Date date = dateFormat.parse(info.getPublishedDate());
 			comic.setPublishDate(date);
 		}
@@ -230,6 +233,17 @@ public class Comic
 	}	
 	public void setAddedDate(Date addedDate) {
 		this.addedDate = (int)(addedDate.getTime() / 1000L);
+	}
+	
+	public int getBorrowedDateTimestamp()
+	{
+		return borrowedDate;
+	}
+	public Date getBorrowedDate() {
+		return new Date(borrowedDate * 1000L);
+	}
+	public void setBorrowedDate(Date borrowedDate) {
+		this.borrowedDate = (int)(borrowedDate.getTime() / 1000L);
 	}
 	
 	public int getPageCount() {
@@ -322,6 +336,7 @@ public class Comic
 		dest.writeInt(pageCount);
 		dest.writeInt(isBorrowed);
 		dest.writeString(borrower);
+		dest.writeInt(borrowedDate);
 		dest.writeString(image);
 		dest.writeString(imageUrl);
 		dest.writeString(ISBN);

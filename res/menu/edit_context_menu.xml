@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item android:id="@+id/start_context_delete" android:title="@string/common_delete"></item>
+    <item android:id="@+id/context_edit" android:title="@string/common_edit"></item>
 </menu>

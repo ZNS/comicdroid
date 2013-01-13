@@ -37,7 +37,7 @@ public class GroupAddDialogFragment extends DialogFragment {
 		builder
 		.setView(inflater.inflate(R.layout.dialog_groupadd, null))
 		
-		.setPositiveButton("Skapa grupp", new DialogInterface.OnClickListener() {			
+		.setPositiveButton(getResources().getString(R.string.dialog_group_create), new DialogInterface.OnClickListener() {			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				AlertDialog ad = (AlertDialog)dialog;
@@ -51,7 +51,7 @@ public class GroupAddDialogFragment extends DialogFragment {
 			}
 		})
 		
-		.setNegativeButton("Ångra", new DialogInterface.OnClickListener() {			
+		.setNegativeButton(getResources().getString(R.string.common_cancel), new DialogInterface.OnClickListener() {			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				GroupAddDialogFragment.this.getDialog().cancel();

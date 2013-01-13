@@ -1,9 +1,7 @@
 package com.zns.comicdroid.adapter;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
-
-import com.zns.comicdroid.R;
-import com.zns.comicdroid.data.Comic;
 
 import android.app.Activity;
 import android.content.Context;
@@ -16,20 +14,24 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class ComicArrayAdapter extends ArrayAdapter<Comic> {
+import com.zns.comicdroid.R;
+import com.zns.comicdroid.data.Comic;
+
+public class BorrowedAdapter extends ArrayAdapter<Comic> {
 	  private final List<Comic> values;
 
 	  static class ComicHolder
 	  {
 		  TextView tvTitle;
-		  TextView tvAuthor;
 		  ImageView ivImage;
 		  TextView tvIssue;
+		  TextView tvBorrower;
+		  TextView tvBorrowedDate;
 	  }
 	  
-	  public ComicArrayAdapter(Context context, List<Comic> values) 
+	  public BorrowedAdapter(Context context, List<Comic> values) 
 	  {
-	    super(context, R.layout.list_comicrow, values);
+	    super(context, R.layout.list_borrowedrow, values);
 	    this.values = values;
 	  }
 	  
@@ -40,10 +42,6 @@ public class ComicArrayAdapter extends ArrayAdapter<Comic> {
 		  return null;
 	  }
 	  
-	  public List<Comic> getAll(){
-		return this.values;  
-	  }
-	  
 	  public View getView(int position, View convertView, ViewGroup parent) 
 	  {		  
 		  View row = convertView;
@@ -52,13 +50,14 @@ public class ComicArrayAdapter extends ArrayAdapter<Comic> {
 		  if (row == null)
 		  {
 			  LayoutInflater inflater = ((Activity)getContext()).getLayoutInflater();
-			  row = inflater.inflate(R.layout.list_comicrow, parent, false);
+			  row = inflater.inflate(R.layout.list_borrowedrow, parent, false);
 			  
 			  holder = new ComicHolder();
 			  holder.tvTitle = (TextView)row.findViewById(R.id.tvTitle);
-			  holder.tvAuthor = (TextView)row.findViewById(R.id.tvAuthor);
 			  holder.ivImage = (ImageView)row.findViewById(R.id.ivImage);
 			  holder.tvIssue = (TextView)row.findViewById(R.id.tvIssue);
+			  holder.tvBorrower = (TextView)row.findViewById(R.id.tvBorrower);
+			  holder.tvBorrowedDate = (TextView)row.findViewById(R.id.tvBorrowedDate);
 			  
 			  row.setTag(holder);
 		  }
@@ -69,7 +68,9 @@ public class ComicArrayAdapter extends ArrayAdapter<Comic> {
 		  
 		  Comic comic = values.get(position);
 		  holder.tvTitle.setText(comic.getTitle() + (comic.getIssue() > 0 && comic.getSubTitle() != null ? " - " + comic.getSubTitle() : ""));
-		  holder.tvAuthor.setText(comic.getAuthor());
+		  holder.tvBorrower.setText(comic.getBorrower());
+		  SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		  holder.tvBorrowedDate.setText(dateFormat.format(comic.getBorrowedDate()));
 		  if (comic.getIssue() > 0)
 		  {
 			  holder.tvIssue.setText("Vol. " + Integer.toString(comic.getIssue()));
@@ -79,6 +80,7 @@ public class ComicArrayAdapter extends ArrayAdapter<Comic> {
 		  {
 			  holder.tvIssue.setVisibility(View.GONE);
 		  }
+		  
 		  if (comic.getImage() != null)
 		  {
 			  Bitmap bmp = BitmapFactory.decodeFile(comic.getImage());

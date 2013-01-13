@@ -49,7 +49,7 @@ public class Comics extends BaseFragmentActivity
 			{
 				int comicId = adapter.getComicId(position);
 				Intent intent = new Intent(Comics.this, ComicView.class);
-				intent.putExtra("com.zns.comic.COMICID", comicId);
+				intent.putExtra(ComicView.INTENT_COMIC_ID, comicId);
 				startActivity(intent);
 			}
 		});

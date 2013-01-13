@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
     <item 
         android:id="@+id/menu_done" 
-        android:title="Spara" 
+        android:title="@string/common_save" 
         android:showAsAction="ifRoom|withText"
-        android:icon="@drawable/ic_action_done" android:titleCondensed="Spara"/>
+        android:icon="@drawable/ic_action_done" android:titleCondensed="@string/common_save"/>
 </menu>

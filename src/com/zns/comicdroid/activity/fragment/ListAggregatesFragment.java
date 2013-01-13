@@ -14,6 +14,16 @@ import com.zns.comicdroid.adapter.AggregateAdapter;
 import com.zns.comicdroid.data.Aggregate;
 
 public class ListAggregatesFragment extends BaseListFragment {
+		
+	public static ListAggregatesFragment newInstance(int index)
+	{
+		ListAggregatesFragment fragment = new ListAggregatesFragment();
+		Bundle b = new Bundle();
+		b.putInt("index", index);
+		fragment.setArguments(b);
+		return fragment;
+	}
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = super.onCreateView(inflater, container, savedInstanceState);	 

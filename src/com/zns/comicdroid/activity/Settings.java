@@ -33,7 +33,7 @@ public class Settings extends BaseFragmentActivity
 		dbApi = new DropboxAPI<AndroidAuthSession>(session);
 	
 		tbDropbox = (ToggleButton)findViewById(R.id.settings_tbDropbox);		
-		tbDropbox.setOnCheckedChangeListener(this);				
+		tbDropbox.setOnCheckedChangeListener(this);
 	}
 	
 	protected void onResume() {
