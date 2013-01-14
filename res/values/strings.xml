@@ -14,6 +14,7 @@
     <string name="menu_borrow">Låna ut</string>
     <string name="menu_borrowed">Utlånat</string>
     <string name="menu_settings">Inställningar</string>
+    <string name="menu_returncomic">Återlämnade</string>
     <string name="common_addtogroup">Lägg tillagda serier till grupp:</string>
     <string name="common_search">Sök</string>
     <string name="common_group">Grupp</string>
@@ -51,8 +52,9 @@
     <string name="borrow_etBorrower">Utlånad till..</string>
     <string name="borrow_btnClear">Rensa</string>
     <string name="borrow_notadded">Efterfrågad bok är inte tillagd</string>
-    <string name="borrow_success">Böckerna är nu markerade som utlånade</string>
+    <string name="borrow_added">Serien markerad som utlånad</string>
     <string name="dialog_group_create">Skapa grupp</string>
-    <string name="title_activity_borrowed">Borrowed</string>
+    <string name="title_activity_borrowed">Utlånat</string>
+    <string name="borrowed_empty">Ingenting är utlånat! Passa på att läsa lite..</string>
 
 </resources>

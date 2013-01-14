@@ -4,13 +4,14 @@ import java.util.ArrayList;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.zns.comicdroid.BaseFragmentActivity;
@@ -22,6 +23,7 @@ public class Borrow extends BaseFragmentActivity {
 	
 	private final static String STATE_COMICS = "COMICS";
 	private ComicArrayAdapter adapter;
+	private Button btnScan;
 	private EditText etBorrower;
 	private ListView lvComics;
 	
@@ -31,7 +33,20 @@ public class Borrow extends BaseFragmentActivity {
         setContentView(R.layout.activity_borrow);
                 
         etBorrower = (EditText)findViewById(R.id.borrow_etBorrower);
+        btnScan = (Button)findViewById(R.id.borrow_btnScan);
         lvComics = (ListView)findViewById(R.id.borrow_lvComics);
+        
+        btnScan.setEnabled(false);
+        etBorrower.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void afterTextChanged(Editable s) {
+				btnScan.setEnabled(s.length() > 0);
+			}
+			@Override
+			public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {}
+			@Override
+			public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {}        	
+        });
         
 	    ArrayList<Comic> comics = new ArrayList<Comic>();
 	    if (savedInstanceState != null && savedInstanceState.containsKey(STATE_COMICS)) {
@@ -47,35 +62,6 @@ public class Borrow extends BaseFragmentActivity {
 		state.putParcelableArrayList(STATE_COMICS, new ArrayList<Comic>(adapter.getAll()));
 	}    
     
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		super.onCreateOptionsMenu(menu);
-		com.actionbarsherlock.view.MenuInflater inflater = getSupportMenuInflater();
-		inflater.inflate(R.menu.actionbar_edit, (com.actionbarsherlock.view.Menu) menu);
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-	    // Handle item selection
-	    switch (item.getItemId()) {
-        	case R.id.menu_done:
-        		if (etBorrower.getText().length() > 0) {
-	        		int[] ids = new int[adapter.getCount()];
-	        		int i = 0;
-	        		for (Comic c : adapter.getAll())
-	        		{
-	        			ids[i] = c.getId();
-	        			i++;
-	        		}
-	        		getDBHelper().setComicBorrowed(ids, etBorrower.getText().toString());
-	        		Toast.makeText(this, getResources().getString(R.string.borrow_success), Toast.LENGTH_LONG).show();
-        		}
-	            return true;
-	    }
-	    return super.onOptionsItemSelected(item);
-	}
-	
     public void clear_click(View view) {
     	adapter.clear();
     	etBorrower.setText("");
@@ -97,13 +83,16 @@ public class Borrow extends BaseFragmentActivity {
 				String isbn = scanResult.getContents();
 				Comic comic = getDBHelper().getComic(isbn);
 				if (comic != null) {
+					//Mark as borrowed and notify
+					getDBHelper().setComicBorrowed(comic.getId(), etBorrower.getText().toString());
+					Toast.makeText(this, getResources().getString(R.string.borrow_added), Toast.LENGTH_SHORT).show();
+					//Update adapter
 					adapter.insert(comic, 0);
 					adapter.notifyDataSetChanged();
+					return;
 				}
 			}
-			else {
-				Toast.makeText(this, getResources().getString(R.string.borrow_notadded), Toast.LENGTH_LONG).show();
-			}
+			Toast.makeText(this, getResources().getString(R.string.borrow_notadded), Toast.LENGTH_LONG).show();
     	}    	
 	}    
 }

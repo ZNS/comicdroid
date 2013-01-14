@@ -17,7 +17,7 @@ import com.google.common.primitives.Ints;
 
 public class DBHelper extends SQLiteOpenHelper {
 	
-	private static final int DB_VERSION = 	21;
+	private static final int DB_VERSION = 	22;
 	private static final String DB_NAME = 	"ComicDroid.db";
 	
 	private static DBHelper instance;
@@ -402,6 +402,26 @@ public class DBHelper extends SQLiteOpenHelper {
 		db.update("tblBooks", values, sbWhere.toString(), ids);
 	}
 
+	public void setComicReturned(int[] comicId) {
+		ContentValues values = new ContentValues();
+		values.put("Borrower", "");
+		values.put("IsBorrowed", false);
+		values.putNull("Borrower");
+		
+		StringBuilder sbWhere = new StringBuilder("_id IN (");
+		String[] ids = new String[comicId.length];
+		int i = 0;
+		for (int id : comicId) {
+			sbWhere.append("?,");
+			ids[i] = Integer.toString(id);
+			i++;
+		}
+		sbWhere.setLength(sbWhere.length() - 1);
+		sbWhere.append(")");
+		
+		db.update("tblBooks", values, sbWhere.toString(), ids);
+	}
+	
 	public void renameAuthor(String oldName, String newName) {
 		ContentValues values = new ContentValues();
 		values.put("Author", newName);

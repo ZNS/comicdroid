@@ -1,8 +1,8 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.zns.comicdroid.util.CheckableRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/rlRow"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="5dp"
+    android:padding="5dp" 
     android:background="@color/contentBg" >
 
     <ImageView
@@ -31,8 +31,7 @@
 	    	android:id="@+id/tvBorrower"
 	    	android:layout_width="wrap_content"
 	    	android:layout_height="wrap_content"
-	    	android:textSize="13sp"
-		/>
+	    	android:textSize="13sp" />
 	        
 	</LinearLayout>
 
@@ -52,4 +51,4 @@
 	    android:layout_alignParentTop="true"
 	    android:textAppearance="?android:attr/textAppearanceSmall" />
 	
-</RelativeLayout>
+</com.zns.comicdroid.util.CheckableRelativeLayout>

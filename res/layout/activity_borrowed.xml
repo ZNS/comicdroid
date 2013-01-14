@@ -6,12 +6,22 @@
     android:padding="5dp"
     tools:context=".Borrowed" >
 
+    <TextView 
+        android:id="@+id/borrowed_tvEmpty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#999999"
+        android:textSize="18sp"
+        android:padding="20dp"
+        android:text="@string/borrowed_empty"
+        android:visibility="gone"
+        />
+    
     <ListView
         android:id="@+id/borrowed_lvComics"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:listSelector="@android:color/transparent"
 		android:divider="@android:color/transparent"
-        android:dividerHeight="5dp" >
-    </ListView>
-    
+        android:dividerHeight="5dp" />    
 </LinearLayout>

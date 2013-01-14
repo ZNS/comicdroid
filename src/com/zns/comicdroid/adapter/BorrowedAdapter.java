@@ -41,6 +41,11 @@ public class BorrowedAdapter extends ArrayAdapter<Comic> {
 			  return values.get(position);
 		  return null;
 	  }
+
+	  @Override
+	  public long getItemId(int position) {
+		  return values.get(position).getId();
+	  }
 	  
 	  public View getView(int position, View convertView, ViewGroup parent) 
 	  {		  
