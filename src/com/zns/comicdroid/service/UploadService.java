@@ -3,8 +3,6 @@ package com.zns.comicdroid.service;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -17,33 +15,34 @@ import android.database.Cursor;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.dropbox.client2.DropboxAPI;
-import com.dropbox.client2.android.AndroidAuthSession;
-import com.dropbox.client2.exception.DropboxException;
-import com.dropbox.client2.exception.DropboxUnlinkedException;
-import com.dropbox.client2.session.AccessTokenPair;
-import com.dropbox.client2.session.AppKeyPair;
-import com.zns.comicdroid.Application;
+import com.google.android.gms.auth.UserRecoverableAuthException;
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.client.http.FileContent;
+import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.Drive.Files.Insert;
+import com.google.api.services.drive.DriveScopes;
 import com.zns.comicdroid.R;
 import com.zns.comicdroid.data.Comic;
 import com.zns.comicdroid.data.DBHelper;
 
-public class DropboxService extends IntentService {
+public class UploadService extends IntentService {
 	
-	public DropboxService() {
+	public UploadService() {
 		super("DropboxService");
 	}
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
 
-		//Dropbox check		
+		//Google drive check		
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-		String tokenKey = prefs.getString("DROPBOX_KEY", null);
-		String tokenSecret = prefs.getString("DROPBOX_SECRET", null);
+		boolean driveAuthenticated = prefs.getBoolean("DRIVE_AUTHENTICATED", false);
+		String account = prefs.getString("DRIVE_ACCOUNT", null);
 
-		//If user has not authenticated with dropbox, stop this now 
-		if (tokenKey == null || tokenSecret == null) {
+		//If user has not authenticated with google drive, stop this now 
+		if (!driveAuthenticated) {
 			stopSelf();
 			return;
 		}
@@ -148,29 +147,26 @@ public class DropboxService extends IntentService {
 			catch (IOException e) {}
 		}
 		
-		//Upload to Dropbox
-		AppKeyPair appKeys = new AppKeyPair(Application.DROPBOX_KEY, Application.DROPBOX_SECRET);
-		AndroidAuthSession session = new AndroidAuthSession(appKeys, Application.DROPBOX_ACCESS_TYPE);
-		DropboxAPI<AndroidAuthSession> dbApi = new DropboxAPI<AndroidAuthSession>(session);
-		dbApi.getSession().setAccessTokenPair(new AccessTokenPair(tokenKey, tokenSecret));
-		
-		FileInputStream inputStream = null;
-		try {
-		    inputStream = new FileInputStream(fileOut);
-		    dbApi.putFileOverwrite("/index.html", inputStream, fileOut.length(), null);
-		} catch (DropboxUnlinkedException e) {
-		    // User has unlinked, ask them to link again here.
-		} catch (DropboxException e) {
-		    Log.e("DbExampleLog", "Something went wrong while uploading.");
-		} catch (FileNotFoundException e) {
-		    Log.e("DbExampleLog", "File not found.");
-		} finally {
-		    if (inputStream != null) {
-		        try {
-		            inputStream.close();
-		        } catch (IOException e) {}
-		    }
-		    stopSelf();
+		//Upload to google drive
+		try 
+		{				
+			GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(getApplicationContext(), DriveScopes.DRIVE_FILE);
+			credential.setSelectedAccountName(account);
+			credential.getToken();
+			Drive service = new Drive.Builder(AndroidHttp.newCompatibleTransport(), new GsonFactory(), credential).build();
+			
+			com.google.api.services.drive.model.File driveFile = new com.google.api.services.drive.model.File();
+			driveFile.setTitle("index.html");
+			driveFile.setMimeType("text/html");
+			FileContent content = new FileContent("text/html", fileOut);
+			service.files().insert(driveFile, content).execute();
+		} 
+		catch (UserRecoverableAuthException e) {
+			//We are not authenticated for some reason, notify user.
+			//NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+		}
+		catch (Exception e) {
+			Log.w("GOOGLEDRIVE", e.getMessage());
 		}		
 	}
 

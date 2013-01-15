@@ -1,3 +1,4 @@
+
 package com.zns.comicdroid.activity;
 
 import java.io.File;
@@ -35,6 +36,7 @@ import com.zns.comicdroid.adapter.ComicArrayAdapter;
 import com.zns.comicdroid.data.Comic;
 import com.zns.comicdroid.data.Group;
 import com.zns.comicdroid.dialog.GroupAddDialogFragment;
+import com.zns.comicdroid.service.UploadService;
 import com.zns.comicdroid.util.ImageHandler;
 import com.zns.comicdroid.util.ImageHandler.MediaNotReadyException;
 
@@ -297,6 +299,11 @@ public class Edit extends BaseFragmentActivity
 				comics.add(comic);
 			}
 		}
+		
+		//Sync with google drive
+		Intent intent = new Intent(this, UploadService.class);
+		startService(intent);
+		
 		Toast.makeText(this, getResources().getString(R.string.edit_done), Toast.LENGTH_LONG).show();
 	}
 	

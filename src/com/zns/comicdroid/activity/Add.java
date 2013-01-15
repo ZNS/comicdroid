@@ -24,7 +24,7 @@ import com.zns.comicdroid.adapter.ComicArrayAdapter;
 import com.zns.comicdroid.data.Comic;
 import com.zns.comicdroid.data.Group;
 import com.zns.comicdroid.dialog.GroupAddDialogFragment;
-import com.zns.comicdroid.service.DropboxService;
+import com.zns.comicdroid.service.UploadService;
 import com.zns.comicdroid.task.BooksQueryResult;
 import com.zns.comicdroid.task.BooksQueryTask;
 
@@ -100,8 +100,8 @@ public class Add extends BaseFragmentActivity
 		if (!isScanning)
 		{
 			if (adapter != null && adapter.getCount() > 0) {
-				//Sync with dropbox
-				Intent intent = new Intent(this, DropboxService.class);
+				//Sync with google drive
+				Intent intent = new Intent(this, UploadService.class);
 				startService(intent);
 			}
 		}
