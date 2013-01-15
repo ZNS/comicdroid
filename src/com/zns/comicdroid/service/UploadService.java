@@ -13,15 +13,19 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
+import com.google.android.gms.auth.GoogleAuthException;
+import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.http.FileContent;
+import com.google.api.client.http.HttpExecuteInterceptor;
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.Drive.Files.Insert;
 import com.google.api.services.drive.DriveScopes;
 import com.zns.comicdroid.R;
 import com.zns.comicdroid.data.Comic;
@@ -150,10 +154,11 @@ public class UploadService extends IntentService {
 		//Upload to google drive
 		try 
 		{				
-			GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(getApplicationContext(), DriveScopes.DRIVE_FILE);
+			GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(getApplicationContext(), DriveScopes.DRIVE);
 			credential.setSelectedAccountName(account);
-			credential.getToken();
-			Drive service = new Drive.Builder(AndroidHttp.newCompatibleTransport(), new GsonFactory(), credential).build();
+			credential.getToken();			
+			
+			Drive service = new Drive.Builder(AndroidHttp.newCompatibleTransport(), new JacksonFactory(), credential).build();
 			
 			com.google.api.services.drive.model.File driveFile = new com.google.api.services.drive.model.File();
 			driveFile.setTitle("index.html");
@@ -164,10 +169,13 @@ public class UploadService extends IntentService {
 		catch (UserRecoverableAuthException e) {
 			//We are not authenticated for some reason, notify user.
 			//NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (GoogleAuthException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		catch (Exception e) {
-			Log.w("GOOGLEDRIVE", e.getMessage());
-		}		
 	}
 
 }

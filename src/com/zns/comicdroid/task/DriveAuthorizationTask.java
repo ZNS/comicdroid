@@ -21,7 +21,7 @@ public class DriveAuthorizationTask extends AsyncTask<String, Void, Intent> {
 	protected Intent doInBackground(String... arg0) {
 		Intent intent = null;
 		try {
-			GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(mContext, DriveScopes.DRIVE_FILE);
+			GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(mContext, DriveScopes.DRIVE);
 			credential.setSelectedAccountName(arg0[0]);
 			// Trying to get a token right away to see if we are authorized
 			credential.getToken();
