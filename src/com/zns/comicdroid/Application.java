@@ -1,9 +1,13 @@
 package com.zns.comicdroid;
 
-import com.dropbox.client2.session.Session.AccessType;
+import com.google.api.services.drive.DriveScopes;
+
 
 public class Application extends android.app.Application {
-	final static public String DROPBOX_KEY = "85qsb7sjbuyljzu";
-	final static public String DROPBOX_SECRET = "btadloh29prr9ts";
-	final static public AccessType DROPBOX_ACCESS_TYPE = AccessType.APP_FOLDER;
+	public final static String PREF_DRIVE_ACCOUNT = "DRIVE_ACCOUNT";
+	public final static String PREF_DRIVE_AUTHENTICATED = "DRIVE_AUTHENTICATED";
+	public final static String PREF_DRIVE_WEBFOLDERID = "DRIVE_WEBFOLDERID";
+	public final static String DRIVE_SCOPE = DriveScopes.DRIVE_FILE;
+	public final static String DRIVE_WEBFOLDER_NAME = "ComicDroid";
+	
 }

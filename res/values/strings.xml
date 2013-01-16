@@ -56,5 +56,7 @@
     <string name="dialog_group_create">Skapa grupp</string>
     <string name="title_activity_borrowed">Utlånat</string>
     <string name="borrowed_empty">Ingenting är utlånat! Passa på att läsa lite..</string>
+    <string name="settings_drivelabel">Publicera arkiv på google drive</string>
+    <string name="settings_linktext">Visa arkiv på google drive</string>
 
 </resources>

@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.List;
 
 import android.app.IntentService;
@@ -15,18 +16,14 @@ import android.database.Cursor;
 import android.preference.PreferenceManager;
 
 import com.google.android.gms.auth.GoogleAuthException;
-import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.http.FileContent;
-import com.google.api.client.http.HttpExecuteInterceptor;
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpRequestInitializer;
-import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.DriveScopes;
+import com.google.api.services.drive.model.ParentReference;
+import com.zns.comicdroid.Application;
 import com.zns.comicdroid.R;
 import com.zns.comicdroid.data.Comic;
 import com.zns.comicdroid.data.DBHelper;
@@ -34,7 +31,7 @@ import com.zns.comicdroid.data.DBHelper;
 public class UploadService extends IntentService {
 	
 	public UploadService() {
-		super("DropboxService");
+		super("ComicDroid Upload Service");
 	}
 
 	@Override
@@ -42,8 +39,9 @@ public class UploadService extends IntentService {
 
 		//Google drive check		
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-		boolean driveAuthenticated = prefs.getBoolean("DRIVE_AUTHENTICATED", false);
-		String account = prefs.getString("DRIVE_ACCOUNT", null);
+		boolean driveAuthenticated = prefs.getBoolean(Application.PREF_DRIVE_AUTHENTICATED, false);
+		String account = prefs.getString(Application.PREF_DRIVE_ACCOUNT, null);
+		String webFolderId = prefs.getString(Application.PREF_DRIVE_WEBFOLDERID, null);
 
 		//If user has not authenticated with google drive, stop this now 
 		if (!driveAuthenticated) {
@@ -154,18 +152,21 @@ public class UploadService extends IntentService {
 		//Upload to google drive
 		try 
 		{				
-			GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(getApplicationContext(), DriveScopes.DRIVE);
+			GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(getApplicationContext(), Application.DRIVE_SCOPE);
 			credential.setSelectedAccountName(account);
 			credential.getToken();			
 			
 			Drive service = new Drive.Builder(AndroidHttp.newCompatibleTransport(), new JacksonFactory(), credential).build();
 			
-			com.google.api.services.drive.model.File driveFile = new com.google.api.services.drive.model.File();
+			FileContent content = new FileContent("text/html", fileOut);
+						
+			com.google.api.services.drive.model.File driveFile = new com.google.api.services.drive.model.File();			
 			driveFile.setTitle("index.html");
 			driveFile.setMimeType("text/html");
-			FileContent content = new FileContent("text/html", fileOut);
+			driveFile.setParents(Arrays.asList(new ParentReference().setId(webFolderId)));					
+			
 			service.files().insert(driveFile, content).execute();
-		} 
+		}
 		catch (UserRecoverableAuthException e) {
 			//We are not authenticated for some reason, notify user.
 			//NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);

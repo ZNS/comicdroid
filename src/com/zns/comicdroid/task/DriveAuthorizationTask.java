@@ -1,30 +1,22 @@
 package com.zns.comicdroid.task;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
-import com.google.api.services.drive.DriveScopes;
 
-public class DriveAuthorizationTask extends AsyncTask<String, Void, Intent> {
-
-	private Context mContext;
+public class DriveAuthorizationTask extends AsyncTask<GoogleAccountCredential, Void, Intent> {
 	
-	public DriveAuthorizationTask(Context context)
+	public DriveAuthorizationTask()
 	{
-		mContext = context;
 	}
 	
 	@Override
-	protected Intent doInBackground(String... arg0) {
+	protected Intent doInBackground(GoogleAccountCredential... arg0) {
 		Intent intent = null;
 		try {
-			GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(mContext, DriveScopes.DRIVE);
-			credential.setSelectedAccountName(arg0[0]);
-			// Trying to get a token right away to see if we are authorized
-			credential.getToken();
+			arg0[0].getToken();
 		}
 		catch (UserRecoverableAuthException e) {
 			UserRecoverableAuthException exception = (UserRecoverableAuthException) e;			
