@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import android.app.IntentService;
+import android.app.backup.BackupManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -36,7 +37,11 @@ public class UploadService extends IntentService {
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
-
+		
+		//Notify backup manager
+		BackupManager m = new BackupManager(getApplicationContext());
+		m.dataChanged();
+		
 		//Google drive check		
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 		boolean driveAuthenticated = prefs.getBoolean(Application.PREF_DRIVE_AUTHENTICATED, false);
@@ -176,6 +181,9 @@ public class UploadService extends IntentService {
 		} catch (GoogleAuthException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+		finally {
+			stopSelf();
 		}
 	}
 
