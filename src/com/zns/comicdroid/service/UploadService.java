@@ -22,6 +22,8 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 import com.google.api.client.http.FileContent;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.model.ChildList;
+import com.google.api.services.drive.model.ChildReference;
 import com.google.api.services.drive.model.ParentReference;
 import com.zns.comicdroid.Application;
 import com.zns.comicdroid.R;
@@ -60,10 +62,10 @@ public class UploadService extends IntentService {
 		
 		BufferedReader reader = null;
 		BufferedWriter writer = null;
-		Cursor cursor = db.getCursor("SELECT _id, Title, Subtitle, Author, ImageUrl, 1 AS ItemType, 0 AS BookCount, IsBorrowed " +
+		Cursor cursor = db.getCursor("SELECT _id, Title, Subtitle, Author, ImageUrl, 1 AS ItemType, 0 AS BookCount, IsBorrowed, PublishDate " +
 				"FROM tblBooks WHERE GroupId = 0 OR ifnull(GroupId, '') = '' " +
 				"UNION " +
-				"SELECT _id, Name AS Title, '' AS Subtitle, '' AS Author, ImageUrl, 2 AS ItemType, BookCount, 0 AS IsBorrowed " +
+				"SELECT _id, Name AS Title, '' AS Subtitle, '' AS Author, ImageUrl, 2 AS ItemType, BookCount, 0 AS IsBorrowed, 0 AS PublishDate " +
 				"FROM tblGroups " +
 				"ORDER BY Title", null);
 		
@@ -99,6 +101,7 @@ public class UploadService extends IntentService {
 						if (imageUrl == null)
 							imageUrl = "";
 						int type = cursor.getInt(5);
+						int date = cursor.getInt(8);
 						StringBuilder sbChildren = new StringBuilder();
 						
 						String comicLine = sbTemplate.toString();
@@ -106,6 +109,9 @@ public class UploadService extends IntentService {
 						comicLine = comicLine.replace("#AUTHOR#", author);
 						comicLine = comicLine.replace("#IMAGEURL#", imageUrl);
 						comicLine = comicLine.replace("#ISSUE#", "");
+						comicLine = comicLine.replace("#ISAGGREGATE#", type == 2 ? " Aggregate" : "");
+						comicLine = comicLine.replace("#MARK#", type == 2 ? "<div class=\"Mark\"></div>" : "");
+						comicLine = comicLine.replace("#DATE#", type == 1 ? Integer.toString(date) : "");
 						
 						if (type == 2) {
 							//Render group children
@@ -116,7 +122,10 @@ public class UploadService extends IntentService {
 								childComic = childComic.replace("#AUTHOR#", comic.getAuthor());
 								childComic = childComic.replace("#IMAGEURL#", comic.getImageUrl());
 								childComic = childComic.replace("#ISSUE#", comic.getIssue() > 0 ? Integer.toString(comic.getIssue()) : "");
-								childComic = childComic.replace("#ISSUE#", "");
+								childComic = childComic.replace("#DATE#", Integer.toString(comic.getPublishDateTimestamp()));
+								childComic = childComic.replace("#ISAGGREGATE#", "");
+								childComic = childComic.replace("#MARK#", "");
+								childComic = childComic.replace("#CHILDREN#", "");
 								sbChildren.append(childComic);
 							}
 							comicLine = comicLine.replace("#CHILDREN#", sbChildren.toString());
@@ -158,14 +167,38 @@ public class UploadService extends IntentService {
 			
 			Drive service = new Drive.Builder(AndroidHttp.newCompatibleTransport(), new JacksonFactory(), credential).build();
 			
-			FileContent content = new FileContent("text/html", fileOut);
-						
-			com.google.api.services.drive.model.File driveFile = new com.google.api.services.drive.model.File();			
-			driveFile.setTitle("index.html");
-			driveFile.setMimeType("text/html");
-			driveFile.setParents(Arrays.asList(new ParentReference().setId(webFolderId)));					
+			//Get current index file
+			com.google.api.services.drive.model.File fileIndex = null;
+			/*FileList list = service.files().list().setQ("'" + webFolderId + "' in parents and title = 'index.html'").execute();
+			for (com.google.api.services.drive.model.File f : list.getItems()) {
+				if (f.getTitle().toLowerCase().equals("index.html")) {
+					fileIndex = f;
+					break;
+				}
+			}*/
+			ChildList list = service.children().list(webFolderId).execute();
+			for (ChildReference c : list.getItems()) {
+				com.google.api.services.drive.model.File f = service.files().get(c.getId()).execute();
+				if (f.getTitle().toLowerCase().equals("index.html")) {
+					fileIndex = f;
+					break;
+				}
+			}
 			
-			service.files().insert(driveFile, content).execute();
+			//Set content of file
+			FileContent content = new FileContent("text/html", fileOut);
+								
+			//Insert / Update
+			if (fileIndex == null) {
+				com.google.api.services.drive.model.File driveFile = new com.google.api.services.drive.model.File();			
+				driveFile.setTitle("index.html");
+				driveFile.setMimeType("text/html");
+				driveFile.setParents(Arrays.asList(new ParentReference().setId(webFolderId)));								
+				service.files().insert(driveFile, content).execute();
+			}
+			else {
+				service.files().update(fileIndex.getId(), fileIndex, content).execute();
+			}
 		}
 		catch (UserRecoverableAuthException e) {
 			//We are not authenticated for some reason, notify user.

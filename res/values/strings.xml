@@ -23,6 +23,7 @@
     <string name="common_save">Spara</string>
     <string name="common_edit">Redigera</string>
     <string name="common_delete">Radera</string>
+    <string name="common_sort">Sortera</string>
     <string name="start_tab_aggregates">Serier</string>
     <string name="start_tab_comics">Titlar</string>
     <string name="start_tab_authors">Författare</string>
