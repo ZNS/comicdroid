@@ -17,7 +17,7 @@ import com.google.common.primitives.Ints;
 
 public class DBHelper extends SQLiteOpenHelper {
 	
-	private static final int DB_VERSION = 	22;
+	private static final int DB_VERSION = 	23;
 	private static final String DB_NAME = 	"ComicDroid.db";
 	
 	private static DBHelper instance;
@@ -71,8 +71,15 @@ public class DBHelper extends SQLiteOpenHelper {
 				"BookCount INTEGER DEFAULT 0" +
 				")";
 		
+		String tblMeta = "CREATE TABLE tblMeta (" +
+				"_id INTEGER PRIMARY KEY," +
+				"LastModified INTEGER DEFAULT 0" +
+				")";
+				
 		db.execSQL(tblBooks);
 		db.execSQL(tblGroups);
+		db.execSQL(tblMeta);
+		db.execSQL("INSERT INTO tblMeta(_id,LastModified VALUES(1, strftime('%s','now'))");
 		
 		String triggerGroupId = "CREATE TRIGGER update_boook_groupid_image AFTER UPDATE OF GroupId ON tblBooks " +
 				"WHEN new.Issue = 1 " +
@@ -99,10 +106,26 @@ public class DBHelper extends SQLiteOpenHelper {
 				"UPDATE tblGroups SET BookCount=BookCount+1 WHERE _id = new.GroupId; " +
 				"END;";
 		
+		String triggerModUpd  = "CREATE TRIGGER update_book AFTER UPDATE ON tblBooks " +
+				"BEGIN " +
+				"UPDATE tblMeta SET LastModified = strftime('%s','now') " +
+				"END";
+		String triggerModIns  = "CREATE TRIGGER update_book AFTER INSERT ON tblBooks " +
+				"BEGIN " +
+				"UPDATE tblMeta SET LastModified = strftime('%s','now') " +
+				"END";
+		String triggerModDel  = "CREATE TRIGGER update_book AFTER DELETE ON tblBooks " +
+				"BEGIN " +
+				"UPDATE tblMeta SET LastModified = strftime('%s','now') " +
+				"END";
+		
 		db.execSQL(triggerGroupId);
 		db.execSQL(triggerGroupId2);
 		db.execSQL(triggerGroupId3);
-		db.execSQL(triggerGroupId4);	
+		db.execSQL(triggerGroupId4);
+		db.execSQL(triggerModUpd);
+		db.execSQL(triggerModIns);
+		db.execSQL(triggerModDel);
 	}
 
 	@Override
@@ -147,12 +170,21 @@ public class DBHelper extends SQLiteOpenHelper {
     	return db.insert(table, null, values);
     }
     
+    public void execSQL(String sql)
+    {
+    	db.execSQL(sql);
+    }
+    
 	public int GetDateStamp(String strDate) 
 			throws ParseException
 	{
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		Date date = dateFormat.parse(strDate);
 		return (int)(date.getTime() / 1000L);
+	}
+	
+	public int GetCurrentTimeStamp() {
+		return (int)(System.currentTimeMillis() / 1000L);
 	}
 	
 	public void storeComic(Comic comic)
@@ -475,5 +507,15 @@ public class DBHelper extends SQLiteOpenHelper {
 		}
 		cursor.close();
 		return duplicate;
+	}
+	
+	public int GetLastModifiedDate()
+	{
+		int stamp = 0;
+		Cursor cursor = db.rawQuery("SELECT LastModified FROM tblMeta", null);
+		if (cursor.moveToFirst())
+			stamp = cursor.getInt(0);
+		cursor.close();
+		return stamp;
 	}
 }
