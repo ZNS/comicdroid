@@ -143,7 +143,7 @@ public class Comic
 			}
 		catch (Exception e) {}
 		
-		if (info.getPublishedDate() != null)
+		if (info.getPublishedDate() != null && info.getPublishedDate().length() >= 10)
 		{
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 			Date date = dateFormat.parse(info.getPublishedDate());

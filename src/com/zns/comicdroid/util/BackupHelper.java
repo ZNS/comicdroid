@@ -4,16 +4,22 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import android.app.backup.BackupAgent;
 import android.app.backup.BackupDataInput;
 import android.app.backup.BackupDataOutput;
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.ParcelFileDescriptor;
 
+import com.google.common.base.Joiner;
 import com.zns.comicdroid.data.DBHelper;
 
 public class BackupHelper extends BackupAgent {
@@ -63,10 +69,12 @@ public class BackupHelper extends BackupAgent {
 				try
 				{
 					cb = db.getCursor("SELECT _id, GroupId, Title, Subtitle, Publisher, Author, Image, ImageUrl, PublishDate, AddedDate, PageCount, IsBorrowed, Borrower, BorrowedDate, ISBN, Issue" +
-							" FROM tblBooks ORDER BY _id", null);					
-					writer.writeInt(cb.getCount());					
+							" FROM tblBooks ORDER BY _id", null);
+					int count = cb.getCount();
+					writer.writeInt(count);					
 					while (cb.moveToNext())
 					{
+						writer.writeInt(cb.getInt(0));
 						writer.writeUTF(String.format("INSERT INTO tblBooks(_id, GroupId, Title, Subtitle, Publisher, Author, Image, ImageUrl, PublishDate, AddedDate, PageCount, IsBorrowed, Borrower, BorrowedDate, ISBN, Issue)" +
 								" VALUES(%d ,%d,'%s','%s', '%s', '%s', '%s', '%s', %d, %d, %d, %d, '%s', %d, '%s', %d);", 
 								cb.getInt(0),
@@ -160,13 +168,16 @@ public class BackupHelper extends BackupAgent {
 					in = new DataInputStream(baStream);
 					 
 					//Comics
+					List<Integer> addedComics = new ArrayList<Integer>();
 					int rows = in.readInt();
 					for (int i = 0; i < rows; i++)
 					{
+						int id = in.readInt();
 						String sql = in.readUTF();
 						if (sql != null && !sql.equals("")) {
 							try {
 								db.execSQL(sql);
+								addedComics.add(id);
 							}
 							catch (Exception x) {
 								//Failed to restore comic...
@@ -187,7 +198,42 @@ public class BackupHelper extends BackupAgent {
 								//Failed to restore group...
 							}
 						}
-					}			
+					}
+					
+					//Fix images
+					Cursor cb = null;
+					String imageDirectory = getExternalFilesDir(null).toString();					
+					try 
+					{
+						String ids = Joiner.on(',').join(addedComics);
+						cb = db.getCursor("SELECT _id, Image, ImageUrl FROM tblBooks WHERE _id IN (" + ids  + ")", null);
+						while (cb.moveToNext()) {
+							String filePath = cb.getString(1);
+							if (filePath.length() > 0) {
+								File file = new File(filePath);
+								if (file.exists())
+									continue;
+							}
+							String url = cb.getString(2);
+							if (url.length() > 0) {
+								try
+								{
+									filePath = ImageHandler.storeImage(new URL(url), imageDirectory);
+									ContentValues val = new ContentValues();
+									val.put("Image", filePath);
+									db.update("tblBooks", val, "_id=?", new String[] { Integer.toString(cb.getInt(0)) });
+								}
+								catch (Exception x)
+								{
+									//Unable to save image to disk
+								}
+							}
+						}
+					}
+					finally
+					{
+						cb.close();
+					}
 				}
 				finally {
 					if (in != null)

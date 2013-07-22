@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import android.app.backup.BackupManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -17,7 +18,7 @@ import com.google.common.primitives.Ints;
 
 public class DBHelper extends SQLiteOpenHelper {
 	
-	private static final int DB_VERSION = 	23;
+	private static final int DB_VERSION = 	25;
 	private static final String DB_NAME = 	"ComicDroid.db";
 	
 	private static DBHelper instance;
@@ -79,7 +80,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		db.execSQL(tblBooks);
 		db.execSQL(tblGroups);
 		db.execSQL(tblMeta);
-		db.execSQL("INSERT INTO tblMeta(_id,LastModified VALUES(1, strftime('%s','now'))");
+		db.execSQL("INSERT INTO tblMeta(_id,LastModified) VALUES(1, strftime('%s','now'))");
 		
 		String triggerGroupId = "CREATE TRIGGER update_boook_groupid_image AFTER UPDATE OF GroupId ON tblBooks " +
 				"WHEN new.Issue = 1 " +
@@ -108,16 +109,16 @@ public class DBHelper extends SQLiteOpenHelper {
 		
 		String triggerModUpd  = "CREATE TRIGGER update_book AFTER UPDATE ON tblBooks " +
 				"BEGIN " +
-				"UPDATE tblMeta SET LastModified = strftime('%s','now') " +
-				"END";
-		String triggerModIns  = "CREATE TRIGGER update_book AFTER INSERT ON tblBooks " +
+				"UPDATE tblMeta SET LastModified = strftime('%s','now'); " +
+				"END;";
+		String triggerModIns  = "CREATE TRIGGER insert_book AFTER INSERT ON tblBooks " +
 				"BEGIN " +
-				"UPDATE tblMeta SET LastModified = strftime('%s','now') " +
-				"END";
-		String triggerModDel  = "CREATE TRIGGER update_book AFTER DELETE ON tblBooks " +
+				"UPDATE tblMeta SET LastModified = strftime('%s','now'); " +
+				"END;";
+		String triggerModDel  = "CREATE TRIGGER delete_book AFTER DELETE ON tblBooks " +
 				"BEGIN " +
-				"UPDATE tblMeta SET LastModified = strftime('%s','now') " +
-				"END";
+				"UPDATE tblMeta SET LastModified = strftime('%s','now'); " +
+				"END;";
 		
 		db.execSQL(triggerGroupId);
 		db.execSQL(triggerGroupId2);
@@ -132,7 +133,8 @@ public class DBHelper extends SQLiteOpenHelper {
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		db.execSQL("DROP TABLE tblBooks");
 		db.execSQL("DROP TABLE tblGroups");
-		onCreate(db);		
+		db.execSQL("DROP TABLE IF EXISTS tblMeta");
+		onCreate(db);
 		/*for (int i = 0; i < 500; i++) {
 			db.execSQL("INSERT INTO tblBooks (Title,Subtitle,Publisher,Author,Image) SELECT Title,Subtitle,Publisher,Author,Image FROM tblBooks LIMIT 1");
 		}*/		
