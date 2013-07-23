@@ -7,7 +7,7 @@ import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 
 public class DriveAuthorizationTask extends AsyncTask<GoogleAccountCredential, Void, Intent> {
-	
+		
 	public DriveAuthorizationTask()
 	{
 	}
@@ -21,9 +21,10 @@ public class DriveAuthorizationTask extends AsyncTask<GoogleAccountCredential, V
 		catch (UserRecoverableAuthException e) {
 			UserRecoverableAuthException exception = (UserRecoverableAuthException) e;			
 			intent = exception.getIntent();
-			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).addFlags(Intent.FLAG_FROM_BACKGROUND);			
 		}		
-		catch (Exception e) {}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 		return intent;
 	}
 }

@@ -1,5 +1,7 @@
 package com.zns.comicdroid.activity;
 
+import java.util.Arrays;
+
 import android.accounts.AccountManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,7 +14,6 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-import com.google.android.gms.common.AccountPicker;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.zns.comicdroid.Application;
 import com.zns.comicdroid.BaseFragmentActivity;
@@ -25,6 +26,7 @@ public class Settings extends BaseFragmentActivity
 
 	private ToggleButton tbDropbox;
 	private String mAccount;
+	private GoogleAccountCredential mCredential;
 	
 	private String getAccount() {
 		if (mAccount != null && !mAccount.equals("")) {
@@ -41,6 +43,8 @@ public class Settings extends BaseFragmentActivity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_settings);
 
+		mCredential = GoogleAccountCredential.usingOAuth2(getApplicationContext(), Arrays.asList(Application.DRIVE_SCOPE));
+		
 		tbDropbox = (ToggleButton)findViewById(R.id.settings_tbDropbox);
 		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());		
 		tbDropbox.setChecked(pref.getBoolean(Application.PREF_DRIVE_AUTHENTICATED, false));
@@ -54,13 +58,9 @@ public class Settings extends BaseFragmentActivity
 	}	
 	
 	protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-		//Create credentials
-		GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(this, Application.DRIVE_SCOPE);
-		
 		if (requestCode == 101 && resultCode == RESULT_OK) {			
 			mAccount = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-			
-			credential.setSelectedAccountName(getAccount());
+			mCredential.setSelectedAccountName(getAccount());
 			
 			//Store account
 			SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -84,12 +84,11 @@ public class Settings extends BaseFragmentActivity
 						editor.commit(); 						
 					}
 				}
-			}.execute(credential);			
+			}.execute(mCredential); 			
 		}
 		if (requestCode == 102) {
 			if (resultCode == RESULT_OK) {
 				//Create webfolder
-				credential.setSelectedAccountName(getAccount());
 				new DriveWebFolderTask() {
 					@Override
 					protected void onPostExecute(String fileId) {
@@ -102,7 +101,7 @@ public class Settings extends BaseFragmentActivity
 							editor.commit();
 						}
 					}					
-				}.execute(credential);
+				}.execute(mCredential);
 				//Google drive authorized, store status
 				SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 				SharedPreferences.Editor editor = pref.edit();
@@ -118,8 +117,7 @@ public class Settings extends BaseFragmentActivity
 		if (buttonView == tbDropbox) {
 			if (isChecked)
 			{
-				Intent intent = AccountPicker.newChooseAccountIntent(null, null, new String[]{"com.google"}, false, null, null, null, null);
-				startActivityForResult(intent, 101);
+				startActivityForResult(mCredential.newChooseAccountIntent(), 101);
 			}
 			else
 			{

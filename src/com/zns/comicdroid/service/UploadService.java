@@ -166,7 +166,7 @@ public class UploadService extends IntentService {
 		//Upload to google drive
 		try 
 		{				
-			GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(getApplicationContext(), Application.DRIVE_SCOPE);
+			GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(getApplicationContext(), Arrays.asList(Application.DRIVE_SCOPE));
 			credential.setSelectedAccountName(account);
 			credential.getToken();			
 			
@@ -174,13 +174,6 @@ public class UploadService extends IntentService {
 			
 			//Get current index file
 			com.google.api.services.drive.model.File fileIndex = null;
-			/*FileList list = service.files().list().setQ("'" + webFolderId + "' in parents and title = 'index.html'").execute();
-			for (com.google.api.services.drive.model.File f : list.getItems()) {
-				if (f.getTitle().toLowerCase().equals("index.html")) {
-					fileIndex = f;
-					break;
-				}
-			}*/
 			ChildList list = service.children().list(webFolderId).execute();
 			for (ChildReference c : list.getItems()) {
 				com.google.api.services.drive.model.File f = service.files().get(c.getId()).execute();
