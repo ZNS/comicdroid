@@ -40,8 +40,8 @@ public class Settings extends BaseFragmentActivity
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_settings);
+		super.onCreate(savedInstanceState);
 
 		mCredential = GoogleAccountCredential.usingOAuth2(getApplicationContext(), Arrays.asList(Application.DRIVE_SCOPE));
 		

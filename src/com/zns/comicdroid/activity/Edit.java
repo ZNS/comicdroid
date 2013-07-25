@@ -71,8 +71,8 @@ public class Edit extends BaseFragmentActivity
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_edit);
+		super.onCreate(savedInstanceState);
 
 		etTitle = (EditText)findViewById(R.id.comicEdit_etTitle);
 		etSubtitle = (EditText)findViewById(R.id.comicEdit_etSubtitle);

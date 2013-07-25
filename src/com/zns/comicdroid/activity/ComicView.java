@@ -3,7 +3,9 @@ package com.zns.comicdroid.activity;
 import java.text.SimpleDateFormat;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -20,6 +22,7 @@ import com.actionbarsherlock.view.MenuItem;
 import com.zns.comicdroid.BaseFragmentActivity;
 import com.zns.comicdroid.R;
 import com.zns.comicdroid.data.Comic;
+import com.zns.comicdroid.service.UploadService;
 
 @SuppressLint("SimpleDateFormat")
 public class ComicView extends BaseFragmentActivity {
@@ -41,8 +44,8 @@ public class ComicView extends BaseFragmentActivity {
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_comic_view);
+		super.onCreate(savedInstanceState);
 
 		tvTitle = (TextView)findViewById(R.id.comicView_txtTitle);
 		tvSubtitle = (TextView)findViewById(R.id.comicView_txtSubtitle);
@@ -127,6 +130,29 @@ public class ComicView extends BaseFragmentActivity {
 				intent.putExtra(Edit.INTENT_COMIC_IDS, new int[] { currentComic.getId() });
 	        	startActivity(intent);
 	            return true;
+        	case R.id.menu_delete:
+        		new AlertDialog.Builder(this)
+        	    .setTitle(R.string.comicview_delete_title)
+        	    .setMessage(R.string.comicview_delete_body)
+        	    .setPositiveButton(R.string.common_yes, new DialogInterface.OnClickListener() {
+        	        public void onClick(DialogInterface dialog, int which) { 
+        	        	getDBHelper().deleteComic(currentComic.getId());
+        				//Sync with google drive
+        				Intent intent = new Intent(ComicView.this, UploadService.class);
+        				startService(intent);
+        				//Back to start
+        	        	Intent intent2 = new Intent(ComicView.this, Start.class);
+        	        	startActivity(intent2);
+        	        	finish();
+        	        }
+        	     })
+        	    .setNegativeButton(R.string.common_no, new DialogInterface.OnClickListener() {
+        	        public void onClick(DialogInterface dialog, int which) {
+        	        	dialog.cancel();
+        	        }
+        	     })
+        	     .show();        		
+        		return true;
 	    }
 	    return super.onOptionsItemSelected(item);
 	}

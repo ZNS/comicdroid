@@ -16,7 +16,6 @@ import android.support.v4.view.ViewPager;
 import android.text.InputType;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.Tab;
 import com.actionbarsherlock.view.Menu;
@@ -46,14 +45,14 @@ public class Start extends BaseFragmentActivity
 	private SearchView searchView;
 	private ViewPager viewPager;
 	private TabFragmentAdapter fragmentAdapter;
-		
+	    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_start);
+		super.onCreate(savedInstanceState);
 				
 		Resources res = getResources();
-				
+	             
 		//Tabs
 		getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		
@@ -92,6 +91,16 @@ public class Start extends BaseFragmentActivity
 		});	
 		viewPager.setAdapter(fragmentAdapter);
 	}	
+
+	@Override
+	protected void onResume() {
+		super.onResume();		
+		//Refresh data
+		BaseListFragment fragment = fragmentAdapter.getFragment(viewPager.getCurrentItem());
+		if (fragment != null) {
+			fragment.update();
+		}
+	}
 	
 	@Override
 	protected void onNewIntent(Intent intent) {

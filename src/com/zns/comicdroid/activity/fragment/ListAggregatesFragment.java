@@ -48,6 +48,7 @@ public class ListAggregatesFragment extends BaseListFragment {
 						intent.putExtra(Comics.INTENT_COMICS_TYPE, Comics.VIEWTYPE_GROUP);
 						intent.putExtra(Comics.INTENT_COMICS_VALUE, Integer.toString(aggregate.getId()));
 						intent.putExtra(Comics.INTENT_COMICS_HEADING, aggregate.getTitle());
+						intent.putExtra(Comics.INTENT_COMICS_ID, aggregate.getId());
 						startActivity(intent);
 					}
 				}

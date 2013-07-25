@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="app_name">ComicDroid</string>
     <string name="title_activity_add">Lägg till</string>
     <string name="title_activity_comic_view">Serie</string>
@@ -9,11 +8,16 @@
     <string name="title_activity_comics">Serier</string>
     <string name="title_activity_settings">Inställningar</string>
     <string name="menu_start">Arkivet</string>
+    <string name="menu_start_sub">Bläddra bland dina serier</string>    
     <string name="menu_add">Lägg till</string>
+    <string name="menu_add_sub">Scanna in eller skapa nya serier</string>    
     <string name="menu_add_short">Ny</string>
     <string name="menu_borrow">Låna ut</string>
+	<string name="menu_borrow_sub">Markera serier som utlånade</string>
     <string name="menu_borrowed">Utlånat</string>
+    <string name="menu_borrowed_sub">Se vilka serier som är utlånade</string>    
     <string name="menu_settings">Inställningar</string>
+	<string name="menu_settings_sub">Diverse inställningar för ComicDroid</string>
     <string name="menu_returncomic">Återlämnade</string>
     <string name="common_addtogroup">Lägg tillagda serier till grupp:</string>
     <string name="common_search">Sök</string>
@@ -24,6 +28,8 @@
     <string name="common_edit">Redigera</string>
     <string name="common_delete">Radera</string>
     <string name="common_sort">Sortera</string>
+    <string name="common_yes">Ja</string>
+    <string name="common_no">Nej</string>
     <string name="start_tab_aggregates">Serier</string>
     <string name="start_tab_comics">Titlar</string>
     <string name="start_tab_authors">Författare</string>
@@ -38,6 +44,8 @@
     <string name="edit_needtosave">Du måste spara innan du kan lägga till en bild.</string>
     <string name="comicview_issueshort">Vol.</string>
     <string name="comicview_borrowed">Utlånad</string>
+    <string name="comicview_delete_title">Radera serie?</string>
+    <string name="comicview_delete_body">Vill du verkligen radera serien?</string>
     <string name="dialog_groupadd_label">Ange namn för grupp:</string>
     <string name="dialog_rename_label">Byt namn till:</string>
     <string name="comic_title">Titel</string>
@@ -59,5 +67,8 @@
     <string name="borrowed_empty">Ingenting är utlånat! Passa på att läsa lite..</string>
     <string name="settings_drivelabel">Publicera arkiv på google drive</string>
     <string name="settings_linktext">Visa arkiv på google drive</string>
-
+	<string name="drawer_open">Öppna</string>
+	<string name="drawer_close">Stäng</string>
+	<string name="group_delete_title">Radera grupp?</string>
+	<string name="group_delete_alt">Radera även alla serier i den här gruppen!</string>
 </resources>

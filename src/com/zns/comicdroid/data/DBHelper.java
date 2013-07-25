@@ -1,12 +1,12 @@
 package com.zns.comicdroid.data;
 
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import android.app.backup.BackupManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -403,6 +403,19 @@ public class DBHelper extends SQLiteOpenHelper {
 	
 	public void deleteComic(int id)
 	{
+		Comic comic = getComic(id);
+		try
+		{
+			if (comic.getImage() != null && comic.getImage().length() > 0)
+			{
+				File image = new File(comic.getImage());
+				if (image.exists())
+					image.delete();
+			}
+		}
+		catch (Exception e) {
+			//Doesn't matter too much if image can't be deleted. It will be delete when app is uninstalled.
+		}
 		db.delete("tblBooks", "_id=?", new String[] { Integer.toString(id) });
 	}
 	
@@ -468,6 +481,12 @@ public class DBHelper extends SQLiteOpenHelper {
 		update("tblBooks", values, "Publisher=?", new String[] { oldName });
 	}
 	
+	public void renameGroup(int id, String newName) {
+		ContentValues values = new ContentValues();
+		values.put("Name", newName);
+		update("tblGroups", values, "GroupId=?", new String[] { Integer.toString(id) });
+	}
+	
 	public List<Group> getGroups()
 	{
 		List<Group> groups = new ArrayList<Group>();
@@ -498,7 +517,26 @@ public class DBHelper extends SQLiteOpenHelper {
 		
 		return isValid;
 	}
-		
+	
+	public void deleteGroup(int id, boolean deleteBooks)
+	{
+		if (deleteBooks)
+		{
+			Cursor cursor = db.rawQuery("SELECT _id FROM tblBooks WHERE GroupId=?", new String[] { Integer.toString(id) });
+			while (cursor.moveToNext()) {
+				int bookId = cursor.getInt(0);
+				deleteComic(bookId);
+			}
+		}
+		else 
+		{
+			ContentValues values = new ContentValues();
+			values.put("GroupId", 0);
+			update("tblBooks", values, "GroupId=?", new String[] { Integer.toString(id) });
+		}
+		db.delete("tblGroups", "_id=?", new String[] { Integer.toString(id) });
+	}
+	
 	public boolean isDuplicateComic(String isbn) {
 		boolean duplicate = false;
 		Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM tblBooks WHERE ISBN = ?", new String[] { isbn });

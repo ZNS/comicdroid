@@ -29,8 +29,8 @@ public class Borrowed extends BaseFragmentActivity
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_borrowed);
+		super.onCreate(savedInstanceState);
 		
 		lvComics = (ListView)findViewById(R.id.borrowed_lvComics);
 		lvComics.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);

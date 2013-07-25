@@ -29,8 +29,8 @@ public class Borrow extends BaseFragmentActivity {
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);               
         setContentView(R.layout.activity_borrow);
+    	super.onCreate(savedInstanceState);               
                 
         etBorrower = (EditText)findViewById(R.id.borrow_etBorrower);
         btnScan = (Button)findViewById(R.id.borrow_btnScan);

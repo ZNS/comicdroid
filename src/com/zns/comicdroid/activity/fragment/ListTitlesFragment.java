@@ -77,29 +77,5 @@ public class ListTitlesFragment extends BaseListFragment {
 			}
 		}
 		return ids;
-	}
-	
-	//Create Context Menu
-	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-		super.onCreateContextMenu(menu, v, menuInfo);
-		getActivity().getMenuInflater().inflate(R.menu.start_context_menu, menu);
-	}
-	
-	//Handle click on Context Menu
-	@Override
-	public boolean onContextItemSelected(MenuItem item) {
-		AdapterContextMenuInfo info = (AdapterContextMenuInfo)item.getMenuInfo();
-		int comicId = getAdapter().getComicId((int)info.position);
-		if (comicId > 0)
-		{
-			switch (item.getItemId()) {
-				case R.id.start_context_delete:
-					getDBHelper().deleteComic(comicId);
-					adapter.notifyDataSetChanged();
-					return true;
-			}
-		}
-		return super.onContextItemSelected(item);
-	}		
+	}	
 }

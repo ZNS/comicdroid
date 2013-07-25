@@ -10,7 +10,7 @@
         android:id="@+id/menu_sort" 
         android:showAsAction="ifRoom" 
         android:icon="@drawable/ic_sort"
-        android:title="@string/common_sort" />
+        android:title="@string/common_sort" android:visible="false"/>
         
     <item 
         android:id="@+id/menu_edit" 

@@ -44,8 +44,8 @@ public class Add extends BaseFragmentActivity
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);               
         setContentView(R.layout.activity_add);
+        super.onCreate(savedInstanceState);               
                 
         etISBN = (EditText)findViewById(R.id.etISBN);        
         spGroup = (Spinner)findViewById(R.id.add_spGroup);

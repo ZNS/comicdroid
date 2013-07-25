@@ -4,5 +4,6 @@
         android:id="@+id/menu_edit" 
         android:showAsAction="ifRoom" 
         android:icon="@drawable/ic_action_edit"
-        android:title="@string/common_edit" />    
+        android:title="@string/common_edit" />
+    <item android:id="@+id/menu_delete" android:title="@string/common_delete" android:showAsAction="withText"></item>    
 </menu>

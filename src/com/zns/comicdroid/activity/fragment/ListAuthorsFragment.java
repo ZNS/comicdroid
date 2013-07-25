@@ -79,20 +79,24 @@ public class ListAuthorsFragment extends BaseListFragment
 	//Handle click on Context Menu
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		AdapterContextMenuInfo info = (AdapterContextMenuInfo)item.getMenuInfo();
-		String name = getAdapter().getGroupedItemName((int)info.position);
-		if (name != null)
+		if (getUserVisibleHint())
 		{
-			switch (item.getItemId()) {
-				case R.id.context_edit:
-					RenameDialogFragment dialogRename = new RenameDialogFragment();
-					dialogRename.setName(name);
-					dialogRename.setTargetFragment(this, 0);
-					dialogRename.show(getActivity().getSupportFragmentManager(), "AUTHORRENAME");
-					return true;
+			AdapterContextMenuInfo info = (AdapterContextMenuInfo)item.getMenuInfo();
+			String name = getAdapter().getGroupedItemName((int)info.position);
+			if (name != null)
+			{
+				switch (item.getItemId()) {
+					case R.id.context_edit:
+						RenameDialogFragment dialogRename = new RenameDialogFragment();
+						dialogRename.setName(name);
+						dialogRename.setTargetFragment(this, 0);
+						dialogRename.show(getActivity().getSupportFragmentManager(), "AUTHORRENAME");
+						return true;
+				}
 			}
-		}
-		return super.onContextItemSelected(item);
+			return true;
+		}	
+		return false;
 	}
 	
 	@Override

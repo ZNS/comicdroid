@@ -79,20 +79,24 @@ public class ListPublishersFragment extends BaseListFragment
 	//Handle click on Context Menu
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		AdapterContextMenuInfo info = (AdapterContextMenuInfo)item.getMenuInfo();
-		String name = getAdapter().getGroupedItemName((int)info.position);
-		if (name != null)
-		{
-			switch (item.getItemId()) {
-				case R.id.context_edit:
-					RenameDialogFragment dialogRename = new RenameDialogFragment();
-					dialogRename.setName(name);			
-					dialogRename.setTargetFragment(this, 0);
-					dialogRename.show(getActivity().getSupportFragmentManager(), "PUBLISHERRENAME");
-					return true;
+		if (getUserVisibleHint())
+		{		
+			AdapterContextMenuInfo info = (AdapterContextMenuInfo)item.getMenuInfo();
+			String name = getAdapter().getGroupedItemName((int)info.position);
+			if (name != null)
+			{
+				switch (item.getItemId()) {
+					case R.id.context_edit:
+						RenameDialogFragment dialogRename = new RenameDialogFragment();
+						dialogRename.setName(name);			
+						dialogRename.setTargetFragment(this, 0);
+						dialogRename.show(getActivity().getSupportFragmentManager(), "PUBLISHERRENAME");
+						return true;
+				}
 			}
+			return true;
 		}
-		return super.onContextItemSelected(item);
+		return false;
 	}
 	
 	@Override

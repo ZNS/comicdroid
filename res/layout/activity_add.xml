@@ -1,108 +1,115 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="5dp" 
-    tools:context=".Add">
-       
-	<LinearLayout
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+ android:id="@+id/drawer_layout"
+ android:layout_width="match_parent"
+ android:layout_height="match_parent">
+	<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    xmlns:tools="http://schemas.android.com/tools"
 	    android:layout_width="match_parent"
 	    android:layout_height="match_parent"
-	    android:orientation="vertical"
-	    android:background="@color/contentBg"
-	    android:padding="5dp" >
-
-		<TextView
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:layout_marginBottom="-3dp"
-		    android:layout_marginTop="-3dp"
-		    android:text="@string/common_addtogroup" />
-
-	    <RelativeLayout
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:layout_marginBottom="10dp" >
-			
-			<ImageView
-			    android:id="@+id/add_ivGroupAdd"
+	    android:padding="5dp" 
+	    tools:context=".Add">
+	       
+		<LinearLayout
+		    android:layout_width="match_parent"
+		    android:layout_height="match_parent"
+		    android:orientation="vertical"
+		    android:background="@color/contentBg"
+		    android:padding="5dp" >
+	
+			<TextView
 			    android:layout_width="wrap_content"
 			    android:layout_height="wrap_content"
-			    android:layout_alignParentRight="true"
-			    android:src="@drawable/ic_add" />
-					        
-			<Spinner
-			    android:id="@+id/add_spGroup"
-			    android:layout_width="fill_parent"
-			    android:layout_height="wrap_content"				    
-			    android:layout_toLeftOf="@id/add_ivGroupAdd" />
-			
-	    </RelativeLayout>
-			        	
-		<RelativeLayout
-		    android:layout_width="fill_parent"
-		    android:layout_height="wrap_content"
-		    android:layout_marginBottom="10dp" >
-		
-		    <Button
-		        android:id="@+id/btnSearch"
-		        style="@style/ButtonText"
-		        android:layout_width="wrap_content"
-		        android:layout_height="35dp"
-		        android:layout_alignParentRight="true"
-		        android:background="@drawable/button"
-		        android:onClick="queryISBN"
-		        android:text="@string/common_search" />
-		    
-		    <EditText
-		        android:id="@+id/etISBN"
+			    android:layout_marginBottom="-3dp"
+			    android:layout_marginTop="-3dp"
+			    android:text="@string/common_addtogroup" />
+	
+		    <RelativeLayout
 		        android:layout_width="fill_parent"
 		        android:layout_height="wrap_content"
-		        android:layout_toLeftOf="@id/btnSearch"
-		        android:hint="ISBN" />
-		    	    
-		</RelativeLayout>
-	
-		<LinearLayout
-		    android:layout_width="fill_parent"
-		    android:layout_height="wrap_content"
-		    android:orientation="horizontal"
-		    android:weightSum="1"
-		    android:layout_marginBottom="10dp" >	
-		
-			<Button
-		        android:id="@+id/btnScan"
-		        style="@style/ButtonText"
-		        android:layout_width="0dip"
-		        android:layout_height="35dp"
-		        android:layout_weight=".65"
-		        android:layout_marginRight="2.5dp"
-		        android:background="@drawable/button"
-		        android:onClick="scanISBN"
-		        android:text="@string/add_btnscan" />
+		        android:layout_marginBottom="10dp" >
 				
-			<Button
-		        android:id="@+id/btnAdd"
-		        style="@style/ButtonText"
-		        android:layout_width="0dip"
-		        android:layout_height="35dp"
-		        android:layout_weight=".35"
-		        android:layout_marginLeft="2.5dp"
-		        android:background="@drawable/button"
-		        android:onClick="create"
-		        android:text="@string/add_btnadd" />
-						
+				<ImageView
+				    android:id="@+id/add_ivGroupAdd"
+				    android:layout_width="wrap_content"
+				    android:layout_height="wrap_content"
+				    android:layout_alignParentRight="true"
+				    android:src="@drawable/ic_add" />
+						        
+				<Spinner
+				    android:id="@+id/add_spGroup"
+				    android:layout_width="fill_parent"
+				    android:layout_height="wrap_content"				    
+				    android:layout_toLeftOf="@id/add_ivGroupAdd" />
+				
+		    </RelativeLayout>
+				        	
+			<RelativeLayout
+			    android:layout_width="fill_parent"
+			    android:layout_height="wrap_content"
+			    android:layout_marginBottom="10dp" >
+			
+			    <Button
+			        android:id="@+id/btnSearch"
+			        style="@style/ButtonText"
+			        android:layout_width="wrap_content"
+			        android:layout_height="35dp"
+			        android:layout_alignParentRight="true"
+			        android:background="@drawable/button"
+			        android:onClick="queryISBN"
+			        android:text="@string/common_search" />
+			    
+			    <EditText
+			        android:id="@+id/etISBN"
+			        android:layout_width="fill_parent"
+			        android:layout_height="wrap_content"
+			        android:layout_toLeftOf="@id/btnSearch"
+			        android:hint="ISBN" />
+			    	    
+			</RelativeLayout>
+		
+			<LinearLayout
+			    android:layout_width="fill_parent"
+			    android:layout_height="wrap_content"
+			    android:orientation="horizontal"
+			    android:weightSum="1"
+			    android:layout_marginBottom="10dp" >	
+			
+				<Button
+			        android:id="@+id/btnScan"
+			        style="@style/ButtonText"
+			        android:layout_width="0dip"
+			        android:layout_height="35dp"
+			        android:layout_weight=".65"
+			        android:layout_marginRight="2.5dp"
+			        android:background="@drawable/button"
+			        android:onClick="scanISBN"
+			        android:text="@string/add_btnscan" />
+					
+				<Button
+			        android:id="@+id/btnAdd"
+			        style="@style/ButtonText"
+			        android:layout_width="0dip"
+			        android:layout_height="35dp"
+			        android:layout_weight=".35"
+			        android:layout_marginLeft="2.5dp"
+			        android:background="@drawable/button"
+			        android:onClick="create"
+			        android:text="@string/add_btnadd" />
+							
+			</LinearLayout>
+			
+			<ListView
+			    android:id="@+id/add_lvComics"
+			    android:layout_width="match_parent"
+			    android:layout_height="wrap_content"
+		        android:padding="5dp"
+		        android:divider="@android:color/transparent"
+		        android:dividerHeight="5dp" >
+			</ListView>
+			
 		</LinearLayout>
-		
-		<ListView
-		    android:id="@+id/add_lvComics"
-		    android:layout_width="match_parent"
-		    android:layout_height="wrap_content"
-	        android:padding="5dp"
-	        android:divider="@android:color/transparent"
-	        android:dividerHeight="5dp" >
-		</ListView>
-		
-	</LinearLayout>
+	
+	</FrameLayout>
 
-</FrameLayout>
+	<include layout="@layout/navigation_drawer_left" />
+</android.support.v4.widget.DrawerLayout>
