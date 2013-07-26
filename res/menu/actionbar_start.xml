@@ -6,17 +6,18 @@
 		android:showAsAction="collapseActionView|ifRoom"
 		android:actionViewClass="com.actionbarsherlock.widget.SearchView" />
    
-    <item 
-        android:id="@+id/menu_sort" 
-        android:showAsAction="ifRoom" 
-        android:icon="@drawable/ic_sort"
-        android:title="@string/common_sort" android:visible="false"/>
+    
         
     <item 
         android:id="@+id/menu_edit" 
         android:showAsAction="ifRoom" 
         android:icon="@drawable/ic_action_edit"
         android:visible="false"
-        android:title="@string/common_edit" />
+        android:title="@string/common_edit" /><item android:id="@+id/menu_sort" android:showAsAction="ifRoom" android:icon="@drawable/ic_sort" android:title="@string/common_sort" android:visible="false" >
+            <menu>
+                <item android:id="@+id/sort_title" android:title="@string/sort_title"/>
+                <item android:id="@+id/sort_added" android:title="@string/sort_added"/>
+            </menu>
+        </item>
        
 </menu>

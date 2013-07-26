@@ -20,7 +20,7 @@ public class DriveWebFolderTask extends AsyncTask<GoogleAccountCredential, Void,
 	protected String doInBackground(GoogleAccountCredential... arg0) {
 		String id = "";
 		try {
-			Drive service = new Drive.Builder(AndroidHttp.newCompatibleTransport(), new JacksonFactory(), arg0[0]).build();			
+			Drive service = new Drive.Builder(AndroidHttp.newCompatibleTransport(), new JacksonFactory(), arg0[0]).build();
 			File body = new File();
 			body.setTitle(Application.DRIVE_WEBFOLDER_NAME);
 			body.setMimeType("application/vnd.google-apps.folder");			

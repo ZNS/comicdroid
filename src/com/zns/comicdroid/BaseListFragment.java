@@ -2,6 +2,7 @@ package com.zns.comicdroid;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import android.app.Activity;
 import android.database.Cursor;
@@ -27,6 +28,7 @@ public abstract class BaseListFragment extends BaseFragment
 	public OnListLoadedListener listLoadedCallback = null;
 	public SimpleCursorAdapter adapter;	
 	private String filter;
+	protected String orderBy;
 	protected ListView listView;
 	protected int index;	
 	
@@ -103,6 +105,15 @@ public abstract class BaseListFragment extends BaseFragment
 	public String getSQLFilter() {
 		return "";
 	} 
+
+	public void setOrderBy(String orderBy) {
+		this.orderBy = orderBy;
+		this.update();
+	}
+	
+	public String getOrderBy() {
+		return orderBy;
+	}
 	
 	public int[] getItemIds() {
 		return null;
@@ -112,17 +123,17 @@ public abstract class BaseListFragment extends BaseFragment
 	@Override
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
 		Loader<Cursor> loader = null;
-		if (filter != null && !filter.equals("")) {						
+		if (filter != null && !filter.equals("")) {
 			String sql = getSQLFilter();
 			List<String> params = new ArrayList<String>();
 			int paramIndex = -1;
 			while((paramIndex = sql.indexOf("?", paramIndex + 1)) > -1) {
 				params.add(filter + "%");
 			}
-			loader = new SQLiteCursorLoader(getActivity(), DBHelper.getHelper(getActivity()), getSQLFilter(), params.toArray(new String[params.size()]));
+			loader = new SQLiteCursorLoader(getActivity(), DBHelper.getHelper(getActivity()), appendOrderBy(getSQLFilter()), params.toArray(new String[params.size()]));
 		}
 		else {
-			loader = new SQLiteCursorLoader(getActivity(), DBHelper.getHelper(getActivity()), getSQLDefault(), null); 
+			loader = new SQLiteCursorLoader(getActivity(), DBHelper.getHelper(getActivity()), appendOrderBy(getSQLDefault()), null); 
 		}
 		return loader;
 	}
@@ -141,4 +152,12 @@ public abstract class BaseListFragment extends BaseFragment
 		adapter.changeCursor(null);
 		BindList();
 	}	
+	
+	private String appendOrderBy(String sql)
+	{
+		if (!sql.toLowerCase(Locale.ENGLISH).contains("order by")) {
+			return sql + " ORDER BY " + orderBy;
+		}
+		return sql;
+	}
 }

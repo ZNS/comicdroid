@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import android.app.IntentService;
 import android.app.backup.BackupManager;
@@ -56,6 +57,11 @@ public class UploadService extends IntentService {
 			return;
 		}
 		
+		//if the webfolderId does not exist, we are in trouble
+		if (webFolderId == null || webFolderId.length() == 0)
+		{
+		}
+		
 		//Get some more stuff from context
 		DBHelper db = DBHelper.getHelper(getApplicationContext());			
 		String outPath = getApplicationContext().getExternalFilesDir(null).toString() + "/html";
@@ -95,16 +101,10 @@ public class UploadService extends IntentService {
 				if (line.trim().equals("#LISTCOMICS#")) {
 					while (cursor.moveToNext()) {
 						int id = cursor.getInt(0);
-						String title = cursor.getString(1);
-						String subTitle = cursor.getString(2);
-						if (subTitle == null)
-							subTitle = "";
-						String author = cursor.getString(3);
-						if (author == null)
-							author = "";
-						String imageUrl = cursor.getString(4);
-						if (imageUrl == null)
-							imageUrl = "";
+						String title = nullToEmpty(cursor.getString(1));
+						String subTitle = nullToEmpty(cursor.getString(2));
+						String author = nullToEmpty(cursor.getString(3));
+						String imageUrl = nullToEmpty(cursor.getString(4));
 						int type = cursor.getInt(5);
 						int date = cursor.getInt(8);
 						StringBuilder sbChildren = new StringBuilder();
@@ -123,9 +123,9 @@ public class UploadService extends IntentService {
 							List<Comic> comics = db.getComics(id);
 							for(Comic comic : comics) {
 								String childComic = sbTemplate.toString();
-								childComic = childComic.replace("#TITLE#", comic.getTitle() + (!comic.getSubTitle().equals("") ? " - " + comic.getSubTitle() : ""));
-								childComic = childComic.replace("#AUTHOR#", comic.getAuthor());
-								childComic = childComic.replace("#IMAGEURL#", comic.getImageUrl());
+								childComic = childComic.replace("#TITLE#", nullToEmpty(comic.getTitle()) + (!nullToEmpty(comic.getSubTitle()).equals("") ? " - " + comic.getSubTitle() : ""));
+								childComic = childComic.replace("#AUTHOR#", nullToEmpty(comic.getAuthor()));
+								childComic = childComic.replace("#IMAGEURL#", nullToEmpty(comic.getImageUrl()));
 								childComic = childComic.replace("#ISSUE#", comic.getIssue() > 0 ? Integer.toString(comic.getIssue()) : "");
 								childComic = childComic.replace("#DATE#", Integer.toString(comic.getPublishDateTimestamp()));
 								childComic = childComic.replace("#ISAGGREGATE#", "");
@@ -177,7 +177,7 @@ public class UploadService extends IntentService {
 			ChildList list = service.children().list(webFolderId).execute();
 			for (ChildReference c : list.getItems()) {
 				com.google.api.services.drive.model.File f = service.files().get(c.getId()).execute();
-				if (f.getTitle().toLowerCase().equals("index.html")) {
+				if (f.getTitle().toLowerCase(Locale.ENGLISH).equals("index.html")) {
 					fileIndex = f;
 					break;
 				}
@@ -207,10 +207,18 @@ public class UploadService extends IntentService {
 		} catch (GoogleAuthException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		finally {
 			stopSelf();
 		}
 	}
 
+	private String nullToEmpty(String val)
+	{
+		if (val == null)
+			return "";
+		return val;
+	}
 }

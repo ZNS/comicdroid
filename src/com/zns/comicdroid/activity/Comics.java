@@ -22,7 +22,7 @@ import com.zns.comicdroid.dialog.RenameDialogFragment;
 import com.zns.comicdroid.service.UploadService;
 
 public class Comics extends BaseFragmentActivity
-	implements	LoaderCallbacks<Cursor>, RenameDialogFragment.OnRenameDialogListener {
+	implements	LoaderCallbacks<Cursor>, 	RenameDialogFragment.OnRenameDialogListener {
 	
 	public static final String INTENT_COMICS_TYPE = "com.zns.comic.COMICS_TYPE";
 	public static final String INTENT_COMICS_VALUE = "com.zns.comic.COMICS_VALUE";
@@ -173,6 +173,7 @@ public class Comics extends BaseFragmentActivity
 				getDBHelper().renamePublisher(oldName, newName);
 				break;				
 		}
+		tvHeading.setText(newName);
 		//Sync with google drive
 		Intent intent = new Intent(Comics.this, UploadService.class);
 		startService(intent);

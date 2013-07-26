@@ -15,29 +15,29 @@
   "name": "books", 
   "files": [
     {
-      "downloadUrl": "/downloads/books/v1/31/java/1.15.0-rc/google-api-services-books-v1-rev31-1.15.0-rc.jar", 
-      "path": "google-api-services-books-v1-rev31-1.15.0-rc.jar", 
+      "downloadUrl": "/downloads/books/v1/32/java/1.15.0-rc/google-api-services-books-v1-rev32-1.15.0-rc.jar", 
+      "path": "google-api-services-books-v1-rev32-1.15.0-rc.jar", 
       "type": "binary", 
-      "timestamp": "2013-07-15 09:55"
+      "timestamp": "2013-07-18 01:29"
     }, 
     {
-      "downloadUrl": "/downloads/books/v1/31/java/1.15.0-rc/google-api-services-books-v1-rev31-1.15.0-rc-javadoc.jar", 
-      "path": "google-api-services-books-v1-rev31-1.15.0-rc-javadoc.jar", 
+      "downloadUrl": "/downloads/books/v1/32/java/1.15.0-rc/google-api-services-books-v1-rev32-1.15.0-rc-javadoc.jar", 
+      "path": "google-api-services-books-v1-rev32-1.15.0-rc-javadoc.jar", 
       "type": "documentation", 
-      "timestamp": "2013-07-15 09:55"
+      "timestamp": "2013-07-18 01:29"
     }, 
     {
-      "downloadUrl": "/downloads/books/v1/31/java/1.15.0-rc/google-api-services-books-v1-rev31-1.15.0-rc-sources.jar", 
-      "path": "google-api-services-books-v1-rev31-1.15.0-rc-sources.jar", 
+      "downloadUrl": "/downloads/books/v1/32/java/1.15.0-rc/google-api-services-books-v1-rev32-1.15.0-rc-sources.jar", 
+      "path": "google-api-services-books-v1-rev32-1.15.0-rc-sources.jar", 
       "type": "source", 
-      "timestamp": "2013-07-15 09:46"
+      "timestamp": "2013-07-18 01:29"
     }, 
     {
-      "path": "google-api-services-books-v1-rev31-1.15.0-rc.jar.properties", 
+      "path": "google-api-services-books-v1-rev32-1.15.0-rc.jar.properties", 
       "type": "android.properties"
     }
   ], 
-  "revision": 31, 
+  "revision": 32, 
   "language": "java", 
   "language_version": "1.15.0-rc", 
   "dependencies": [

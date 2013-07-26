@@ -43,7 +43,7 @@ import android.widget.ImageView;
  * A local cache of downloaded images is maintained internally to improve performance.
  */
 public class ImageWorker {
-    private static final String LOG_TAG = "ImageDownloader";
+    //private static final String LOG_TAG = "ImageDownloader";
 
     public enum Mode { NO_ASYNC_TASK, NO_DOWNLOADED_DRAWABLE, CORRECT }
     private Mode mode = Mode.NO_ASYNC_TASK;

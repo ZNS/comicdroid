@@ -27,9 +27,12 @@ public class RenameDialogFragment extends DialogFragment {
 	
 	@Override
 	public void onAttach(Activity activity) {
-	    super.onAttach(activity);	    
+	    super.onAttach(activity);
 	    if (getTargetFragment() instanceof OnRenameDialogListener) {
 	    	renameCallback = (OnRenameDialogListener)getTargetFragment();
+	    }
+	    else if (activity instanceof OnRenameDialogListener) {
+	    	renameCallback = (OnRenameDialogListener)activity;
 	    }
 	}	
 	

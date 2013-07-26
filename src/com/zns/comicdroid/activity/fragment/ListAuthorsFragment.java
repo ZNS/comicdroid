@@ -17,6 +17,7 @@ import com.zns.comicdroid.activity.Comics;
 import com.zns.comicdroid.adapter.GroupedItemAdapter;
 import com.zns.comicdroid.data.DBHelper;
 import com.zns.comicdroid.dialog.RenameDialogFragment;
+import com.zns.comicdroid.service.UploadService;
 
 public class ListAuthorsFragment extends BaseListFragment
 	implements RenameDialogFragment.OnRenameDialogListener
@@ -103,5 +104,8 @@ public class ListAuthorsFragment extends BaseListFragment
 	public void onDialogPositiveClick(String oldName, String newName) {
 		DBHelper.getHelper(getActivity()).renameAuthor(oldName, newName);
 		this.update();
+		//Sync with google drive
+		Intent intent = new Intent(getActivity(), UploadService.class);
+		getActivity().startService(intent);
 	}	
 }

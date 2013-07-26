@@ -42,6 +42,7 @@ public class Start extends BaseFragmentActivity
 	private String currentTab = TAB_AGGREGATES;
 	private MenuItem menuEdit;
 	private MenuItem menuSearch;
+	private MenuItem menuSort;
 	private SearchView searchView;
 	private ViewPager viewPager;
 	private TabFragmentAdapter fragmentAdapter;
@@ -154,6 +155,7 @@ public class Start extends BaseFragmentActivity
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		menuEdit = menu.findItem(R.id.menu_edit);
 		menuSearch = menu.findItem(R.id.menu_search);
+		menuSort = menu.findItem(R.id.menu_sort);
 		return true;
 	}
 	
@@ -168,6 +170,12 @@ public class Start extends BaseFragmentActivity
 				intent.putExtra(Edit.INTENT_COMIC_IDS, ids);
 	        	startActivity(intent);
 	            return true;
+        	case R.id.sort_title:
+        		fragmentAdapter.getFragment(viewPager.getCurrentItem()).setOrderBy("Title, Issue");
+        		return true;
+        	case R.id.sort_added:
+        		fragmentAdapter.getFragment(viewPager.getCurrentItem()).setOrderBy("AddedDate DESC, Title, Issue");
+        		return true;        		
 	    }
 	    return super.onOptionsItemSelected(item);
 	}
@@ -190,6 +198,12 @@ public class Start extends BaseFragmentActivity
 	@Override
 	public void onTabSelected(Tab tab, FragmentTransaction ft) {
 		String tag = (String)tab.getTag();
+		if (menuSort != null) {
+			if (tag.equals(TAB_TITLES))
+				menuSort.setVisible(true);
+			else
+				menuSort.setVisible(false);
+		}
 		if (tag.equals(currentTab))
 			return;
 		viewPager.setCurrentItem(tab.getPosition());
@@ -217,7 +231,6 @@ public class Start extends BaseFragmentActivity
 
 		@Override
 		public Fragment getItem(int pos) {
-			//pos = pos - 1;
 			String tag = (String)getSupportActionBar().getTabAt(pos).getTag();
 			BaseListFragment fragment = null;
 							

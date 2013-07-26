@@ -71,4 +71,6 @@
 	<string name="drawer_close">Stäng</string>
 	<string name="group_delete_title">Radera grupp?</string>
 	<string name="group_delete_alt">Radera även alla serier i den här gruppen!</string>
+	<string name="sort_title">Titel</string>
+	<string name="sort_added">Tillagd</string>
 </resources>

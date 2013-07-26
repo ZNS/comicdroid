@@ -5,7 +5,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -127,6 +129,22 @@ public class DBHelper extends SQLiteOpenHelper {
 		db.execSQL(triggerModUpd);
 		db.execSQL(triggerModIns);
 		db.execSQL(triggerModDel);
+		
+		
+		/*for (int i = 0; i < 20; i++) {
+			db.execSQL("INSERT INTO tblGroups(Name) VALUES('Group " + i + "')");
+		}
+		Map<Integer, Integer> map = new HashMap<Integer, Integer>();
+		for (int i = 0; i < 100; i++) {
+			//Get group
+			int group = (int)(Math.random() * 20);
+			int issue = 1;
+			if (group > 0) {
+				issue = map.containsKey(group) ? map.get(group) : 0;
+				map.put(group, issue + 1);
+			}
+			db.execSQL(String.format("INSERT INTO tblBooks(GroupId, Title, Author, Issue) VALUES(%d, '%s', '%s', %d)", group, "Comic " + i, "Author " + i, issue + 1));
+		}*/
 	}
 
 	@Override
@@ -135,9 +153,23 @@ public class DBHelper extends SQLiteOpenHelper {
 		db.execSQL("DROP TABLE tblGroups");
 		db.execSQL("DROP TABLE IF EXISTS tblMeta");
 		onCreate(db);
-		/*for (int i = 0; i < 500; i++) {
-			db.execSQL("INSERT INTO tblBooks (Title,Subtitle,Publisher,Author,Image) SELECT Title,Subtitle,Publisher,Author,Image FROM tblBooks LIMIT 1");
-		}*/		
+	}
+	
+	private void generateData() {
+		for (int i = 0; i < 20; i++) {
+			db.execSQL("INSERT INTO tblGroups(Name) VALUES('Group " + i + "')");
+		}
+		Map<Integer, Integer> map = new HashMap<Integer, Integer>();
+		for (int i = 0; i < 100; i++) {
+			//Get group
+			int group = (int)(Math.random() * 20);
+			int issue = 1;
+			if (group > 0) {
+				issue = map.containsKey(group) ? map.get(group) : 0;
+				map.put(group, issue + 1);
+			}
+			db.execSQL(String.format("INSERT INTO tblBooks(GroupId, Title, Author, Issue) VALUES(%d, '%s', '%s', %d)", group, "Comic " + i, "Author " + i, issue + 1));
+		}
 	}
 	
     @Override
@@ -484,7 +516,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	public void renameGroup(int id, String newName) {
 		ContentValues values = new ContentValues();
 		values.put("Name", newName);
-		update("tblGroups", values, "GroupId=?", new String[] { Integer.toString(id) });
+		update("tblGroups", values, "_id=?", new String[] { Integer.toString(id) });
 	}
 	
 	public List<Group> getGroups()

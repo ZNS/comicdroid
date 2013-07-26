@@ -76,7 +76,7 @@ public class BackupHelper extends BackupAgent {
 					{
 						writer.writeInt(cb.getInt(0));
 						writer.writeUTF(String.format("INSERT INTO tblBooks(_id, GroupId, Title, Subtitle, Publisher, Author, Image, ImageUrl, PublishDate, AddedDate, PageCount, IsBorrowed, Borrower, BorrowedDate, ISBN, Issue)" +
-								" VALUES(%d ,%d,'%s','%s', '%s', '%s', '%s', '%s', %d, %d, %d, %d, '%s', %d, '%s', %d);", 
+								" VALUES(%d ,%d, %s, %s, %s, %s, %s, %s, %d, %d, %d, %d, %s, %d, %s, %d);", 
 								cb.getInt(0),
 								cb.getInt(1),
 								dbString(cb.getString(2)),
@@ -107,7 +107,7 @@ public class BackupHelper extends BackupAgent {
 					while (cb.moveToNext())
 					{
 						writer.writeUTF(String.format("INSERT INTO tblGroups(_id, Name, Image, ImageUrl, BookCount)" +
-								" VALUES(%d '%s', '%s', '%s', %d);", 
+								" VALUES(%d, %s, %s, %s, %d);", 
 								cb.getInt(0),
 								dbString(cb.getString(1)),
 								dbString(cb.getString(2)),
@@ -260,7 +260,8 @@ public class BackupHelper extends BackupAgent {
 	private String dbString(String val) {
 		if (val != null) {
 			val = val.replaceAll("'", "''");
+			return "'" + val + "'";
 		}
-		return val;
+		return "null";
 	}
 }

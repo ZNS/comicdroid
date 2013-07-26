@@ -3,17 +3,11 @@ package com.zns.comicdroid.activity.fragment;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
-
 import com.zns.comicdroid.BaseListFragment;
-import com.zns.comicdroid.R;
 import com.zns.comicdroid.activity.ComicView;
 import com.zns.comicdroid.adapter.ComicAdapter;
 
@@ -25,6 +19,7 @@ public class ListTitlesFragment extends BaseListFragment {
 		Bundle b = new Bundle();
 		b.putInt("index", index);
 		fragment.setArguments(b);
+		fragment.orderBy = "Title, Issue";
 		return fragment;
 	}
 	
@@ -54,12 +49,12 @@ public class ListTitlesFragment extends BaseListFragment {
 	
 	@Override
 	public String getSQLDefault() {
-		return "SELECT _id, Title, Subtitle, Author, Image, Issue, IsBorrowed FROM tblBooks ORDER BY Title, Issue";
+		return "SELECT _id, Title, Subtitle, Author, Image, Issue, IsBorrowed FROM tblBooks";
 	}
 	
 	@Override
 	public String getSQLFilter() {
-		return "SELECT _id, Title, Subtitle, Author, Image, Issue, IsBorrowed FROM tblBooks WHERE Title LIKE ? ORDER BY Title, Issue";
+		return "SELECT _id, Title, Subtitle, Author, Image, Issue, IsBorrowed FROM tblBooks WHERE Title LIKE ?";
 	}
 	
 	@Override
