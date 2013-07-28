@@ -16,19 +16,52 @@ import android.app.backup.BackupAgent;
 import android.app.backup.BackupDataInput;
 import android.app.backup.BackupDataOutput;
 import android.content.ContentValues;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.os.ParcelFileDescriptor;
+import android.preference.PreferenceManager;
 
 import com.google.common.base.Joiner;
+import com.zns.comicdroid.Application;
 import com.zns.comicdroid.data.DBHelper;
 
 public class BackupHelper extends BackupAgent {
+	private final static String BACKUP_KEY_PREFS = "com.zns.comicdroid.backup.prefs";
 	private final static String BACKUP_KEY_DB = "com.zns.comicdroid.backup.db";
 	
 	@Override
 	public void onBackup(ParcelFileDescriptor oldState, BackupDataOutput data,
 			ParcelFileDescriptor newState) throws IOException {
 		
+		//-----------------------Shared Preferences--------------------------
+		ByteArrayOutputStream bufStream = null;
+		DataOutputStream writer = null;		
+		try
+		{
+			bufStream = new ByteArrayOutputStream();
+			writer = new DataOutputStream(bufStream);
+			
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+			String drive_account = prefs.getString(Application.PREF_DRIVE_ACCOUNT, null);
+			boolean drive_authenticated = prefs.getBoolean(Application.PREF_DRIVE_AUTHENTICATED, false);
+			String drive_webFolderId = prefs.getString(Application.PREF_DRIVE_WEBFOLDERID, null);
+			
+			writer.writeUTF(drive_account);
+			writer.writeBoolean(drive_authenticated);
+			writer.writeUTF(drive_webFolderId);
+		
+			byte[] buffer = bufStream.toByteArray();
+			int len = buffer.length;
+			data.writeEntityHeader(BACKUP_KEY_PREFS, len);
+			data.writeEntityData(buffer, len);
+		}
+		finally {
+			if (writer != null)
+				writer.close();
+		}		
+		
+		//-----------------------Database------------------------------------
 		DBHelper db = DBHelper.getHelper(getApplicationContext());
 		int dataModifed = db.GetLastModifiedDate();
 		boolean performBackup = true;
@@ -57,8 +90,8 @@ public class BackupHelper extends BackupAgent {
 		if (performBackup)
 		{
 			//Write backup data
-			ByteArrayOutputStream bufStream = null;
-			DataOutputStream writer = null;		
+			bufStream = null;
+			writer = null;		
 			try
 			{					
 				Cursor cb = null;
@@ -155,7 +188,37 @@ public class BackupHelper extends BackupAgent {
 			String key = data.getKey();
 			int dataSize = data.getDataSize();
 	        
-			if (key.equals(BACKUP_KEY_DB) && dataSize > 0) {
+			if (key.equals(BACKUP_KEY_PREFS) && dataSize > 0) {				
+				byte[] dataBuf = new byte[dataSize];
+				data.readEntityData(dataBuf, 0, dataSize);
+				
+				ByteArrayInputStream baStream = null;
+				DataInputStream in = null;				
+				try
+				{
+					SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+					Editor prefsEdit = prefs.edit();
+					
+					baStream = new ByteArrayInputStream(dataBuf);
+					in = new DataInputStream(baStream);
+					
+					String drive_account = in.readUTF();
+					boolean drive_enabled = in.readBoolean();
+					String drive_webFolderId = in.readUTF();
+					
+					if (drive_account != null)
+						prefsEdit.putString(Application.PREF_DRIVE_ACCOUNT, drive_account);
+					prefsEdit.putBoolean(Application.PREF_DRIVE_AUTHENTICATED, drive_enabled);
+					if (drive_webFolderId != null)
+						prefsEdit.putString(Application.PREF_DRIVE_WEBFOLDERID, drive_webFolderId);
+					prefsEdit.commit();
+				}
+				finally {
+					if (in != null)
+						in.close();
+				}				
+			}
+			else if (key.equals(BACKUP_KEY_DB) && dataSize > 0) {
 				byte[] dataBuf = new byte[dataSize];
 				data.readEntityData(dataBuf, 0, dataSize);
 				

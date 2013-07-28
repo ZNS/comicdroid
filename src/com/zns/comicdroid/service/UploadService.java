@@ -57,9 +57,11 @@ public class UploadService extends IntentService {
 			return;
 		}
 		
-		//if the webfolderId does not exist, we are in trouble
-		if (webFolderId == null || webFolderId.length() == 0)
+		//Webfolder id does not exist anymore.... try to recover
+		if (account == null || webFolderId == null)
 		{
+			stopSelf();
+			return;
 		}
 		
 		//Get some more stuff from context
