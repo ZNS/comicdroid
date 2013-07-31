@@ -47,31 +47,37 @@ public class Borrowed extends BaseFragmentActivity
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {		
-		if (((Checkable)view).isChecked()) {
-			view.setBackgroundDrawable(getResources().getDrawable(R.drawable.listitem_selected));
+		if (parent == lvComics)
+		{
+			if (((Checkable)view).isChecked()) {
+				view.setBackgroundDrawable(getResources().getDrawable(R.drawable.listitem_selected));
+			}
+			else {
+				view.setBackgroundColor(getResources().getColor(R.color.contentBg));
+			}
+		    final float scale = getResources().getDisplayMetrics().density;
+		    int padding_in_px = (int) (5 * scale + 0.5f);
+			view.setPadding(padding_in_px, padding_in_px, padding_in_px, padding_in_px);
+			
+			SparseBooleanArray checked = lvComics.getCheckedItemPositions();
+			boolean hasCheckedElement = false;
+	        for (int i = 0 ; i < checked.size() && ! hasCheckedElement ; i++) {
+	            hasCheckedElement = checked.valueAt(i);
+	        }
+	 
+	        if (hasCheckedElement) {
+	            if (mMode == null) {
+	                mMode = startActionMode(new ModeCallback());
+	            }
+	        } else {
+	            if (mMode != null) {
+	                mMode.finish();
+	            }
+	        }
 		}
 		else {
-			view.setBackgroundColor(getResources().getColor(R.color.contentBg));
+			super.onItemClick(parent, view, pos, id);
 		}
-	    final float scale = getResources().getDisplayMetrics().density;
-	    int padding_in_px = (int) (5 * scale + 0.5f);
-		view.setPadding(padding_in_px, padding_in_px, padding_in_px, padding_in_px);
-		
-		SparseBooleanArray checked = lvComics.getCheckedItemPositions();
-		boolean hasCheckedElement = false;
-        for (int i = 0 ; i < checked.size() && ! hasCheckedElement ; i++) {
-            hasCheckedElement = checked.valueAt(i);
-        }
- 
-        if (hasCheckedElement) {
-            if (mMode == null) {
-                mMode = startActionMode(new ModeCallback());
-            }
-        } else {
-            if (mMode != null) {
-                mMode.finish();
-            }
-        }		
 	}
 	
     private final class ModeCallback implements ActionMode.Callback {    	 

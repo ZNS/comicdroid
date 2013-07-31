@@ -188,6 +188,7 @@ public class BackupHelper extends BackupAgent {
 			String key = data.getKey();
 			int dataSize = data.getDataSize();
 	        
+			//-----------------------Shared Preferences--------------------------
 			if (key.equals(BACKUP_KEY_PREFS) && dataSize > 0) {				
 				byte[] dataBuf = new byte[dataSize];
 				data.readEntityData(dataBuf, 0, dataSize);
@@ -218,6 +219,7 @@ public class BackupHelper extends BackupAgent {
 						in.close();
 				}				
 			}
+			//-------------------------------Database---------------------------------------
 			else if (key.equals(BACKUP_KEY_DB) && dataSize > 0) {
 				byte[] dataBuf = new byte[dataSize];
 				data.readEntityData(dataBuf, 0, dataSize);

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -23,6 +24,7 @@ import com.zns.comicdroid.R;
 import com.zns.comicdroid.adapter.ComicArrayAdapter;
 import com.zns.comicdroid.data.Comic;
 import com.zns.comicdroid.data.Group;
+import com.zns.comicdroid.dialog.AuthorIllustratorDialogFragment;
 import com.zns.comicdroid.dialog.GroupAddDialogFragment;
 import com.zns.comicdroid.service.UploadService;
 import com.zns.comicdroid.task.BooksQueryResult;
@@ -31,7 +33,8 @@ import com.zns.comicdroid.task.BooksQueryTask;
 import de.greenrobot.event.EventBus;
 
 public class Add extends BaseFragmentActivity 
-	implements GroupAddDialogFragment.OnGroupAddDialogListener {
+	implements GroupAddDialogFragment.OnGroupAddDialogListener,
+	AuthorIllustratorDialogFragment.OnAuthorIllustratorDialogListener {
 
 	private final static String STATE_COMICS = "COMICS";
 	
@@ -143,12 +146,17 @@ public class Add extends BaseFragmentActivity
     
     public void onBookQueryCompleteMainThread(BooksQueryResult result) {
 		if (result.success)
-		{														
+		{		
 			if (spGroup.getSelectedItemPosition() > 0) {
 				Group g = (Group)spGroup.getSelectedItem();
 				result.comic.setGroupId(g.getId());
 			}
-			getDBHelper().storeComic(result.comic);
+			int comicId = getDBHelper().storeComic(result.comic);			
+			if (result.comic.getAuthor().contains(","))
+			{
+				AuthorIllustratorDialogFragment dialog = AuthorIllustratorDialogFragment.newInstance(comicId, result.comic.getAuthor());
+				dialog.show(getSupportFragmentManager(), "AUTHORILLUSTRATOR");
+			}			
 			adapter.insert(result.comic, 0);
 			adapter.notifyDataSetChanged();
 			return;
@@ -199,4 +207,17 @@ public class Add extends BaseFragmentActivity
     	//Fire query
 		new BooksQueryTask().execute("isbn:" + isbn, getExternalFilesDir(null).toString(), isbn);
     }
+
+	@Override
+	public void onDialogPositiveClick(int comicId, String authors, String illustrators) {
+		if (comicId > -1 && (authors.length() > 0 || illustrators.length() > 0))
+		{
+			ContentValues values = new ContentValues();
+			if (authors.length() > 0)
+				values.put("Author", authors);
+			if (illustrators.length() > 0)
+				values.put("Illustrator", illustrators);
+			getDBHelper().update("tblBooks", values, "_id=?", new String[] { Integer.toString(comicId) });
+		}
+	}
 }

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import android.content.ContentValues;
@@ -20,7 +21,7 @@ import com.google.common.primitives.Ints;
 
 public class DBHelper extends SQLiteOpenHelper {
 	
-	private static final int DB_VERSION = 	25;
+	private static final int DB_VERSION = 	2;
 	private static final String DB_NAME = 	"ComicDroid.db";
 	
 	private static DBHelper instance;
@@ -221,12 +222,12 @@ public class DBHelper extends SQLiteOpenHelper {
 		return (int)(System.currentTimeMillis() / 1000L);
 	}
 	
-	public void storeComic(Comic comic)
+	public int storeComic(Comic comic)
 	{
 		ContentValues values = new ContentValues();
 		
 		String title = comic.getTitle().trim();
-		if (title.toLowerCase().startsWith("the ")) {
+		if (title.toLowerCase(Locale.ENGLISH).startsWith("the ")) {
 			title = title.substring(4) + ", The";
 		}
 		
@@ -245,7 +246,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		values.put("Issue", comic.getIssue());
 		values.put("ImageUrl", comic.getImageUrl());
 		
-		db.insert("tblBooks", null, values);
+		return (int)db.insert("tblBooks", null, values);
 	}
 	
 	public List<Comic> getComics(String order)
