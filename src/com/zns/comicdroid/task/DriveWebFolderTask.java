@@ -1,42 +1,75 @@
 package com.zns.comicdroid.task;
 
-import java.util.Arrays;
-
+import android.content.Intent;
 import android.os.AsyncTask;
-
+import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
-import com.google.api.services.drive.model.ParentReference;
 import com.google.api.services.drive.model.Permission;
 import com.zns.comicdroid.Application;
 
-public class DriveWebFolderTask extends AsyncTask<GoogleAccountCredential, Void, String> {
+public class DriveWebFolderTask extends AsyncTask<com.zns.comicdroid.task.DriveWebFolderTask.DriveWebFolderTaskArg, Void, com.zns.comicdroid.task.DriveWebFolderTask.DriveWebFolderTaskResult> {
 
+	public static class DriveWebFolderTaskArg {
+		public GoogleAccountCredential credentials;
+		public String webFolderId;
+	}
+	
+	public static class DriveWebFolderTaskResult {
+		public String fileId;
+		public boolean success;
+		public Intent intent;
+	}
+	
 	public DriveWebFolderTask()
 	{
 	}
 	
 	@Override
-	protected String doInBackground(GoogleAccountCredential... arg0) {
-		String id = "";
+	protected com.zns.comicdroid.task.DriveWebFolderTask.DriveWebFolderTaskResult doInBackground(com.zns.comicdroid.task.DriveWebFolderTask.DriveWebFolderTaskArg... args) {
+		DriveWebFolderTaskResult result = new DriveWebFolderTaskResult();
 		try {
-			Drive service = new Drive.Builder(AndroidHttp.newCompatibleTransport(), new JacksonFactory(), arg0[0]).build();
-			File body = new File();
-			body.setTitle(Application.DRIVE_WEBFOLDER_NAME);
-			body.setMimeType("application/vnd.google-apps.folder");
-			body.setParents(Arrays.asList(new ParentReference().setId("appdata")));
-			File file = service.files().insert(body).execute();
-			Permission permission = new Permission();
-			permission.setValue("");
-			permission.setType("anyone");
-			permission.setRole("reader");			
-			service.permissions().insert(file.getId(), permission).execute();	
-			id = file.getId();
+			//Try to get token
+			args[0].credentials.getToken();
+			Drive service = new Drive.Builder(AndroidHttp.newCompatibleTransport(), new JacksonFactory(), args[0].credentials).build();
+			
+			//Check if folder exists
+			File webFolder = null;
+			try
+			{
+				if (args[0].webFolderId != null)
+					webFolder = service.files().get(args[0].webFolderId).execute();
+			}
+			catch (Exception e1) {}
+			
+			if (webFolder == null || webFolder.getExplicitlyTrashed() == Boolean.TRUE)
+			{
+				File body = new File();
+				body.setTitle(Application.DRIVE_WEBFOLDER_NAME);
+				body.setMimeType("application/vnd.google-apps.folder");
+				File file = service.files().insert(body).execute();
+				Permission permission = new Permission();
+				permission.setValue("");
+				permission.setType("anyone");
+				permission.setRole("reader");			
+				service.permissions().insert(file.getId(), permission).execute();	
+				result.fileId = file.getId();
+			}
+			else {
+				result.fileId = webFolder.getId();
+			}
+			result.success = true;
 		}	
-		catch (Exception e) {}
-		return id;
+		catch (UserRecoverableAuthException e) {
+			result.intent = e.getIntent();
+			result.success = false;
+		}		
+		catch (Exception e) {
+			result.success = false;
+		}
+		return result;
 	}
 }

@@ -28,6 +28,7 @@ import com.zns.comicdroid.service.UploadService;
 public class ComicView extends BaseFragmentActivity {
 	
 	public final static String INTENT_COMIC_ID = "com.zns.comic.COMICID";
+	public final static int CODE_COMIC_EDITED = 100;
 	
 	private Comic currentComic;
 	private TextView tvTitle;
@@ -35,6 +36,7 @@ public class ComicView extends BaseFragmentActivity {
 	private TextView tvSubtitleHeading;
 	private View tvSubtitleDivider;
 	private TextView tvAuthor;
+	private TextView tvIllustrator;
 	private TextView tvPublisher;
 	private TextView tvPublished;
 	private TextView tvAdded;
@@ -52,6 +54,7 @@ public class ComicView extends BaseFragmentActivity {
 		tvSubtitleHeading = (TextView)findViewById(R.id.comicView_tvSubtitleHeading);
 		tvSubtitleDivider = (View)findViewById(R.id.comicView_vSubtitleDivider);
 		tvAuthor = (TextView)findViewById(R.id.comicView_txtAuthor);
+		tvIllustrator = (TextView)findViewById(R.id.comicView_txtIllustrator);
 		tvPublisher = (TextView)findViewById(R.id.comicView_txtPublisher);
 		tvPublished = (TextView)findViewById(R.id.comicView_txtPublished);
 		tvAdded = (TextView)findViewById(R.id.comicView_txtAdded);
@@ -83,6 +86,15 @@ public class ComicView extends BaseFragmentActivity {
 	    }
 	}
 
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == CODE_COMIC_EDITED && resultCode == RESULT_OK && currentComic != null) {
+			//Comic was edited, refresh
+			currentComic = getDBHelper().getComic(currentComic.getId());
+			BindComic(currentComic);
+		}
+	}
+	
 	private void BindComic(Comic comic)
 	{
 		if (comic == null)
@@ -103,6 +115,7 @@ public class ComicView extends BaseFragmentActivity {
 			tvSubtitle.setVisibility(View.GONE);
 		}
 		tvAuthor.setText(comic.getAuthor());
+		tvIllustrator.setText(comic.getIllustrator());
 		tvPublisher.setText(comic.getPublisher());
 		tvPublished.setText(new SimpleDateFormat("yyyy-MM-dd").format(comic.getPublishDate()));
 		tvAdded.setText(new SimpleDateFormat("yyyy-MM-dd").format(comic.getAddedDate()));
@@ -128,7 +141,7 @@ public class ComicView extends BaseFragmentActivity {
         	case R.id.menu_edit:
 	        	Intent intent = new Intent(this, Edit.class);
 				intent.putExtra(Edit.INTENT_COMIC_IDS, new int[] { currentComic.getId() });
-	        	startActivity(intent);
+	        	startActivityForResult(intent, CODE_COMIC_EDITED);
 	            return true;
         	case R.id.menu_delete:
         		new AlertDialog.Builder(this)

@@ -2,7 +2,6 @@
 package com.zns.comicdroid.activity;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -10,6 +9,7 @@ import java.util.List;
 
 import android.content.ContentValues;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
@@ -38,7 +38,6 @@ import com.zns.comicdroid.data.Group;
 import com.zns.comicdroid.dialog.GroupAddDialogFragment;
 import com.zns.comicdroid.service.UploadService;
 import com.zns.comicdroid.util.ImageHandler;
-import com.zns.comicdroid.util.ImageHandler.MediaNotReadyException;
 
 public class Edit extends BaseFragmentActivity
 	implements	OnClickListener, 
@@ -52,7 +51,8 @@ public class Edit extends BaseFragmentActivity
 	private EditText etSubtitle;
 	private EditText etIssue;
 	private AutoCompleteTextView etAuthor;
-	private AutoCompleteTextView etPublisher;
+	private AutoCompleteTextView etIllustrator;
+	private AutoCompleteTextView etPublisher;	
 	private EditText etPublished;
 	private EditText etAdded;
 	private EditText etPageCount;
@@ -67,6 +67,7 @@ public class Edit extends BaseFragmentActivity
 	
 	private ArrayAdapter<Group> adapterGroups;		
 	private AutoCompleteAdapter adapterAuthors;
+	private AutoCompleteAdapter adapterIllustrators;
 	private AutoCompleteAdapter adapterPublisher;
 	
 	@Override
@@ -78,6 +79,7 @@ public class Edit extends BaseFragmentActivity
 		etSubtitle = (EditText)findViewById(R.id.comicEdit_etSubtitle);
 		etIssue = (EditText)findViewById(R.id.comicEdit_etIssue);
 		etAuthor = (AutoCompleteTextView)findViewById(R.id.comicEdit_actAuthor);
+		etIllustrator = (AutoCompleteTextView)findViewById(R.id.comicEdit_actIllustrator);
 		etPublisher = (AutoCompleteTextView)findViewById(R.id.comicEdit_actPublisher);
 		etPublished = (EditText)findViewById(R.id.comicEdit_etPublished);
 		etAdded = (EditText)findViewById(R.id.comicEdit_etAdded);
@@ -120,6 +122,14 @@ public class Edit extends BaseFragmentActivity
 		etAuthor.setThreshold(3);
 		etAuthor.setAdapter(adapterAuthors);
 					
+		//Autocomplete illustrator
+		adapterIllustrators = new AutoCompleteAdapter(this, 
+				"SELECT DISTINCT 0 AS _id, Illustrator FROM tblBooks WHERE Illustrator LIKE ? ORDER BY Illustrator", 
+				"Illustrator", 
+				1); 	    	
+		etIllustrator.setThreshold(3);
+		etIllustrator.setAdapter(adapterIllustrators);
+		
 		//Autocomplete publisher
 		adapterPublisher = new AutoCompleteAdapter(this, 
 				"SELECT DISTINCT 0 AS _id, Publisher FROM tblBooks WHERE Publisher LIKE ? ORDER BY Publisher", 
@@ -169,6 +179,7 @@ public class Edit extends BaseFragmentActivity
 			setTextField(etSubtitle, comic.getSubTitle(), false);
 			setTextField(etIssue, comic.getIssue() > 0 ? Integer.toString(comic.getIssue()) : "", false);
 			setTextField(etAuthor, comic.getAuthor(), false);
+			setTextField(etIllustrator, comic.getIllustrator(), false);
 			setTextField(etPublisher, comic.getPublisher(), false);
 			
 			if (comic.getPublishDateTimestamp() > 0)
@@ -192,8 +203,10 @@ public class Edit extends BaseFragmentActivity
 			}
 			
 			ivImage.setVisibility(View.VISIBLE);
-			if (comic.getImage() != null)
+			if (comic.getImage() != null && comic.getImage().length() > 0)
 				ivImage.setImageBitmap(BitmapFactory.decodeFile(comic.getImage()));
+			else
+				ivImage.setImageDrawable(getResources().getDrawable(R.drawable.camera_icon));
 		}
 		else
 		{
@@ -206,6 +219,7 @@ public class Edit extends BaseFragmentActivity
 			setTextField(etTitle, comic.getTitle(), true);
 			setTextField(etSubtitle, comic.getSubTitle(), true);			
 			setTextField(etAuthor, comic.getAuthor(), true);
+			setTextField(etIllustrator, comic.getIllustrator(), true);
 			setTextField(etPublisher, comic.getPublisher(), true);
 			int groupId = getCommonGroupId(comics);
 			if (groupId > 0) {
@@ -234,6 +248,8 @@ public class Edit extends BaseFragmentActivity
 					values.put("SubTitle", etSubtitle.getText().toString());
 				if (!isEmpty(etAuthor))
 					values.put("Author", etAuthor.getText().toString());
+				if (!isEmpty(etIllustrator))
+					values.put("Illustrator", etIllustrator.getText().toString());				
 				if (!isEmpty(etPublisher))
 					values.put("Publisher", etPublisher.getText().toString());
 				if (spGroup.getSelectedItemPosition() > 0) {
@@ -246,6 +262,7 @@ public class Edit extends BaseFragmentActivity
 				values.put("Title", title);
 				values.put("SubTitle", etSubtitle.getText().toString());
 				values.put("Author", etAuthor.getText().toString());
+				values.put("Illustrator", etIllustrator.getText().toString());
 				values.put("Publisher", etPublisher.getText().toString());				
 				if (!isEmpty(etIssue))
 					values.put("Issue", Integer.parseInt(etIssue.getText().toString()));
@@ -259,15 +276,12 @@ public class Edit extends BaseFragmentActivity
 					Group g = (Group)spGroup.getSelectedItem();
 					values.put("GroupId", g.getId());
 				}
-				if (newImage != null) {
-					ImageHandler.resizeOnDisk(newImage);
+				if (newImage != null) {					
 					values.put("Image", newImage);
 				}
 			}
 		}
 		catch (ParseException e) {}
-		catch (IOException e) {} 
-		catch (MediaNotReadyException e) {}
 		
 		if (comics != null)
 		{
@@ -303,6 +317,8 @@ public class Edit extends BaseFragmentActivity
 		//Sync with google drive
 		Intent intent = new Intent(this, UploadService.class);
 		startService(intent);
+		
+		setResult(RESULT_OK);
 		
 		Toast.makeText(this, getResources().getString(R.string.edit_done), Toast.LENGTH_LONG).show();
 	}
@@ -353,8 +369,22 @@ public class Edit extends BaseFragmentActivity
 	}
 	
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CAMERA_REQUEST && resultCode != RESULT_OK) {
-        	newImage = null;
+        if (requestCode == CAMERA_REQUEST) {
+        	if (resultCode == RESULT_OK) {
+        		try
+        		{
+        			ImageHandler.resizeOnDisk(newImage);
+        		}
+        		catch (Exception e) {
+        			Toast.makeText(this, R.string.error_storeimage, Toast.LENGTH_SHORT).show();
+        		}
+        		Bitmap bmp = BitmapFactory.decodeFile(newImage);
+        		ivImage.setImageBitmap(bmp);
+        	}
+        	else {
+        		Toast.makeText(this, R.string.error_storeimage, Toast.LENGTH_SHORT).show();
+        		newImage = null;
+        	}
         }
     }
     
@@ -388,6 +418,7 @@ public class Edit extends BaseFragmentActivity
 	protected void onDestroy() {
 		adapterPublisher.close();
 		adapterAuthors.close();
+		adapterIllustrators.close();
 		super.onDestroy();	
 	}
 }

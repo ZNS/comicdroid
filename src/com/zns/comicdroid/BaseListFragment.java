@@ -25,9 +25,12 @@ public abstract class BaseListFragment extends BaseFragment
 		public void onListLoaded();
 	}
 	
+	private static final String STATE_SCROLLY = "LISTVIEW_SCROLL_Y";
 	public OnListLoadedListener listLoadedCallback = null;
 	public SimpleCursorAdapter adapter;	
 	private String filter;
+	private int[] scrollPos = new int[] { 0, 0 };
+	private boolean doScroll = false;
 	protected String orderBy;
 	protected ListView listView;
 	protected int index;	
@@ -42,11 +45,13 @@ public abstract class BaseListFragment extends BaseFragment
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);        
         Bundle args = getArguments();
         if (args != null) {
             index = args.getInt("index");
         }
+        if (savedInstanceState != null)
+        	scrollPos = savedInstanceState.getIntArray(STATE_SCROLLY);
     }
 	
 	@Override
@@ -66,6 +71,26 @@ public abstract class BaseListFragment extends BaseFragment
 			getActivity().getSupportLoaderManager().restartLoader(index,  null, this);
 	}
 	
+	@Override
+	public void onPause() {
+		super.onPause();
+		scrollPos[0] = listView.getFirstVisiblePosition();
+		View v = listView.getChildAt(0);
+		scrollPos[1] = (v == null) ? 0 : v.getTop();
+	}
+	
+	@Override
+	public void onResume() {
+		doScroll = true;
+		super.onResume();
+	}
+	
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+	    super.onSaveInstanceState(outState);
+	    outState.putIntArray(STATE_SCROLLY, scrollPos);
+	}
+		
 	@Override
 	public void onDestroy() {
 		Loader<Cursor> loader = getActivity().getSupportLoaderManager().getLoader(index);
@@ -96,6 +121,11 @@ public abstract class BaseListFragment extends BaseFragment
 	public void BindList()
 	{
 		listView.setAdapter(adapter);
+		if (doScroll)
+		{
+			listView.setSelectionFromTop(scrollPos[0], scrollPos[1]);
+			doScroll = false;
+		}
 	}
 	
 	public String getSQLDefault() {

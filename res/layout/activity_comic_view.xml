@@ -101,6 +101,27 @@
 				</LinearLayout>
 			</LinearLayout>
 			
+			<!-- Illustrator -->
+	
+		    <TextView
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_marginBottom="-2dp"
+		        android:text="@string/comic_illustrator"
+		        android:textAppearance="?android:attr/textAppearanceSmall" />
+		
+		    <TextView
+		        android:id="@+id/comicView_txtIllustrator"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:paddingBottom="5dp"
+		        android:textAppearance="?android:attr/textAppearanceMedium" />
+		
+			<View
+		    	android:layout_width="fill_parent"
+		    	android:layout_height="1dp"
+		    	android:background="@android:color/darker_gray"/>
+						
 			<!-- Publisher -->
 			    <TextView
 		        android:layout_width="wrap_content"

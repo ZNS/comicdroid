@@ -32,6 +32,7 @@ public class Comics extends BaseFragmentActivity
 	public static final int VIEWTYPE_GROUP = 1;
 	public static final int VIEWTYPE_AUTHOR = 2;
 	public static final int VIEWTYPE_PUBLISHER = 3;
+	public static final int VIEWTYPE_ILLUSTRATOR = 4;
 	
 	private SQLiteCursorLoader loader;
 	private ComicAdapter adapter;
@@ -70,12 +71,20 @@ public class Comics extends BaseFragmentActivity
 	    heading = intent.getCharSequenceExtra(INTENT_COMICS_HEADING).toString();
 	    if (viewType == VIEWTYPE_GROUP) {
 	    	groupId = intent.getIntExtra(INTENT_COMICS_ID, 0);
+	    	adapter.renderTitle = false;
 	    }	    
 	    tvHeading.setText(heading);
 	    
 	    getSupportLoaderManager().initLoader(0, null, this);
 	}
 
+	@Override
+	protected void onResume() {
+		super.onResume();
+		if (adapter != null)
+			adapter.notifyDataSetChanged();
+	}
+	
 	//Loader Implementation
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
@@ -90,6 +99,9 @@ public class Comics extends BaseFragmentActivity
 				break;
 			case VIEWTYPE_PUBLISHER:
 				sql += "WHERE Publisher = ? ORDER BY Title, Issue";
+				break;
+			case VIEWTYPE_ILLUSTRATOR:
+				sql += "WHERE Illustrator = ? ORDER BY Title, Issue";
 				break;
 		}
 			
@@ -172,6 +184,9 @@ public class Comics extends BaseFragmentActivity
 			case VIEWTYPE_PUBLISHER:
 				getDBHelper().renamePublisher(oldName, newName);
 				break;				
+			case VIEWTYPE_ILLUSTRATOR:
+				getDBHelper().renameIllustrator(oldName, newName);
+				break;
 		}
 		tvHeading.setText(newName);
 		//Sync with google drive

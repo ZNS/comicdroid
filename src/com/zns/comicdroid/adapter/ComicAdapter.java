@@ -21,6 +21,7 @@ public class ComicAdapter extends SimpleCursorAdapter
 	private final ImageWorker imageWorker = new ImageWorker();
 	private int colorDefault;
 	private int colorIsBorrowed;
+	public boolean renderTitle = true;
 	
 	static class ComicHolder
 	{
@@ -75,12 +76,18 @@ public class ComicAdapter extends SimpleCursorAdapter
 	    	
 			String title = cursor.getString(1);
 			String subTitle = cursor.getString(2);
+			if (subTitle == null)
+				subTitle = "";
 			String author = cursor.getString(3);
 			String image = cursor.getString(4);
 			int issue = cursor.getInt(5);
 			boolean isBorrowed = cursor.getInt(6) == 1;
 			
-			holder.tvTitle.setText(title + (issue > 0 && subTitle != null && !subTitle.equals("") ? " - " + subTitle : ""));
+			String strTitle = title + (subTitle.length() > 0 ? " - " + subTitle : "");
+			if (!renderTitle)
+				strTitle = subTitle.length() > 0 ? subTitle : title;
+				
+			holder.tvTitle.setText(strTitle);
 			holder.tvAuthor.setText(author);
 			if (issue > 0) {
 				holder.tvIssue.setText("Vol. " + Integer.toString(issue));

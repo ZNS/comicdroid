@@ -26,6 +26,7 @@ import com.zns.comicdroid.BaseListFragment;
 import com.zns.comicdroid.R;
 import com.zns.comicdroid.activity.fragment.ListAggregatesFragment;
 import com.zns.comicdroid.activity.fragment.ListAuthorsFragment;
+import com.zns.comicdroid.activity.fragment.ListIllustratorsFragment;
 import com.zns.comicdroid.activity.fragment.ListPublishersFragment;
 import com.zns.comicdroid.activity.fragment.ListTitlesFragment;
 
@@ -33,11 +34,12 @@ public class Start extends BaseFragmentActivity
 	implements	BaseListFragment.OnListLoadedListener, 
 				ActionBar.TabListener {
 	
-	private static final int TAB_COUNT = 4;
+	private static final int TAB_COUNT = 5;
 	private static final String TAB_AGGREGATES = "AGGREGATES";
 	private static final String TAB_TITLES= "TITLES";
 	private static final String TAB_AUTHORS = "AUTHORS";
 	private static final String TAB_PUBLISHERS = "PUBLISHERS";
+	private static final String TAB_ILLUSTRATORS = "ILLUSTRATORS";
 	
 	private String currentTab = TAB_AGGREGATES;
 	private MenuItem menuEdit;
@@ -76,10 +78,16 @@ public class Start extends BaseFragmentActivity
 		getSupportActionBar().addTab(tab2);		
 				
 		ActionBar.Tab tab3 = getSupportActionBar().newTab();
-		tab3.setText(res.getString(R.string.start_tab_publishers));
-		tab3.setTag(TAB_PUBLISHERS);
+		tab3.setText(res.getString(R.string.start_tab_illustrators));
+		tab3.setTag(TAB_ILLUSTRATORS);
 		tab3.setTabListener(this);
-		getSupportActionBar().addTab(tab3);
+		getSupportActionBar().addTab(tab3);		
+		
+		ActionBar.Tab tab4 = getSupportActionBar().newTab();
+		tab4.setText(res.getString(R.string.start_tab_publishers));
+		tab4.setTag(TAB_PUBLISHERS);
+		tab4.setTabListener(this);
+		getSupportActionBar().addTab(tab4);
 		
 		//View pager
 		fragmentAdapter = new TabFragmentAdapter(getSupportFragmentManager());
@@ -238,6 +246,8 @@ public class Start extends BaseFragmentActivity
 				fragment = ListTitlesFragment.newInstance(pos);
 			else if (tag.equals(TAB_AUTHORS))
 				fragment = ListAuthorsFragment.newInstance(pos);
+			else if (tag.equals(TAB_ILLUSTRATORS))
+				fragment = ListIllustratorsFragment.newInstance(pos);			
 			else if (tag.equals(TAB_PUBLISHERS))
 				fragment = ListPublishersFragment.newInstance(pos);
 			else

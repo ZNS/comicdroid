@@ -21,7 +21,7 @@ import com.google.common.primitives.Ints;
 
 public class DBHelper extends SQLiteOpenHelper {
 	
-	private static final int DB_VERSION = 	2;
+	private static final int DB_VERSION = 	3;
 	private static final String DB_NAME = 	"ComicDroid.db";
 	
 	private static DBHelper instance;
@@ -55,6 +55,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				"Subtitle TEXT," +
 				"Publisher TEXT," +
 				"Author TEXT," +
+				"Illustrator TEXT," +
 				"Image TEXT," +
 				"ImageUrl TEXT," +
 				"PublishDate INTEGER," +
@@ -236,6 +237,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		values.put("Subtitle", comic.getSubTitle());
 		values.put("Publisher", comic.getPublisher());
 		values.put("Author", comic.getAuthor());
+		values.put("Illustrator", comic.getIllustrator());
 		values.put("PublishDate", comic.getPublishDateTimestamp());
 		values.put("AddedDate", (int)(System.currentTimeMillis() / 1000L));
 		values.put("PageCount", comic.getPageCount());
@@ -258,7 +260,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		else if (order.equalsIgnoreCase("forlag"))
 			orderBy = "Publisher";
 		
-		Cursor cursor = db.rawQuery("SELECT _id, Title, Subtitle, Author, Publisher, PublishDate, " +
+		Cursor cursor = db.rawQuery("SELECT _id, Title, Subtitle, Author, Illustrator, Publisher, PublishDate, " +
 				"AddedDate, PageCount, IsBorrowed, Borrower, Image, ISBN, Issue, GroupId, ImageUrl, BorrowedDate FROM tblBooks ORDER BY " + orderBy, null);
 		while (cursor.moveToNext())
 		{
@@ -267,17 +269,18 @@ public class DBHelper extends SQLiteOpenHelper {
 					cursor.getString(2),
 					cursor.getString(3),
 					cursor.getString(4),
-					cursor.getInt(5),
+					cursor.getString(5),
 					cursor.getInt(6),
 					cursor.getInt(7),
 					cursor.getInt(8),
-					cursor.getString(9),
+					cursor.getInt(9),
 					cursor.getString(10),
 					cursor.getString(11),
-					cursor.getInt(12),
+					cursor.getString(12),
 					cursor.getInt(13),
-					cursor.getString(14),
-					cursor.getInt(15));
+					cursor.getInt(14),
+					cursor.getString(15),
+					cursor.getInt(16));
 			result.add(comic);
 		}
 		cursor.close();
@@ -288,7 +291,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	public List<Comic> getComics(int[] ids)
 	{
 		List<Comic> list = new ArrayList<Comic>();
-		Cursor cursor = db.rawQuery("SELECT _id, Title, Subtitle, Author, Publisher, PublishDate, " +
+		Cursor cursor = db.rawQuery("SELECT _id, Title, Subtitle, Author, Illustrator, Publisher, PublishDate, " +
 				"AddedDate, PageCount, IsBorrowed, Borrower, Image, ISBN, Issue, GroupId, ImageUrl, BorrowedDate FROM tblBooks WHERE _id IN (" +
 				Joiner.on(",").join(Ints.asList(ids)) +
 				")", null);
@@ -299,17 +302,18 @@ public class DBHelper extends SQLiteOpenHelper {
 					cursor.getString(2),
 					cursor.getString(3),
 					cursor.getString(4),
-					cursor.getInt(5),
+					cursor.getString(5),
 					cursor.getInt(6),
 					cursor.getInt(7),
 					cursor.getInt(8),
-					cursor.getString(9),
+					cursor.getInt(9),
 					cursor.getString(10),
 					cursor.getString(11),
-					cursor.getInt(12),
+					cursor.getString(12),
 					cursor.getInt(13),
-					cursor.getString(14),
-					cursor.getInt(15));
+					cursor.getInt(14),
+					cursor.getString(15),
+					cursor.getInt(16));
 			list.add(comic);
 		}
 		cursor.close();
@@ -319,7 +323,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	public List<Comic> getComics(int groupId)
 	{
 		List<Comic> list = new ArrayList<Comic>();
-		Cursor cursor = db.rawQuery("SELECT _id, Title, Subtitle, Author, Publisher, PublishDate, " +
+		Cursor cursor = db.rawQuery("SELECT _id, Title, Subtitle, Author, Illustrator, Publisher, PublishDate, " +
 				"AddedDate, PageCount, IsBorrowed, Borrower, Image, ISBN, Issue, GroupId, ImageUrl, BorrowedDate FROM tblBooks " +
 				"WHERE GroupId = ? " +
 				"ORDER BY Issue", new String[] { Integer.toString(groupId) });
@@ -330,17 +334,18 @@ public class DBHelper extends SQLiteOpenHelper {
 					cursor.getString(2),
 					cursor.getString(3),
 					cursor.getString(4),
-					cursor.getInt(5),
+					cursor.getString(5),
 					cursor.getInt(6),
 					cursor.getInt(7),
 					cursor.getInt(8),
-					cursor.getString(9),
+					cursor.getInt(9),
 					cursor.getString(10),
 					cursor.getString(11),
-					cursor.getInt(12),
+					cursor.getString(12),
 					cursor.getInt(13),
-					cursor.getString(14),
-					cursor.getInt(15));
+					cursor.getInt(14),
+					cursor.getString(15),
+					cursor.getInt(16));
 			list.add(comic);
 		}
 		cursor.close();
@@ -350,7 +355,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	public List<Comic> getBorrowed()
 	{
 		List<Comic> list = new ArrayList<Comic>();
-		Cursor cursor = db.rawQuery("SELECT _id, Title, Subtitle, Author, Publisher, PublishDate, " +
+		Cursor cursor = db.rawQuery("SELECT _id, Title, Subtitle, Author, Illustrator, Publisher, PublishDate, " +
 				"AddedDate, PageCount, IsBorrowed, Borrower, Image, ISBN, Issue, GroupId, ImageUrl, BorrowedDate FROM tblBooks " +
 				"WHERE IsBorrowed = 1 " +
 				"ORDER BY Borrower, BorrowedDate", null);
@@ -361,17 +366,18 @@ public class DBHelper extends SQLiteOpenHelper {
 					cursor.getString(2),
 					cursor.getString(3),
 					cursor.getString(4),
-					cursor.getInt(5),
+					cursor.getString(5),
 					cursor.getInt(6),
 					cursor.getInt(7),
 					cursor.getInt(8),
-					cursor.getString(9),
+					cursor.getInt(9),
 					cursor.getString(10),
 					cursor.getString(11),
-					cursor.getInt(12),
+					cursor.getString(12),
 					cursor.getInt(13),
-					cursor.getString(14),
-					cursor.getInt(15));
+					cursor.getInt(14),
+					cursor.getString(15),
+					cursor.getInt(16));
 			list.add(comic);
 		}
 		cursor.close();
@@ -381,7 +387,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	public Comic getComic(int id)
 	{
 		Comic comic = null;
-		Cursor cursor = db.rawQuery("SELECT _id, Title, Subtitle, Author, Publisher, PublishDate, " +
+		Cursor cursor = db.rawQuery("SELECT _id, Title, Subtitle, Author, Illustrator, Publisher, PublishDate, " +
 				"AddedDate, PageCount, IsBorrowed, Borrower, Image, ISBN, Issue, GroupId, ImageUrl, BorrowedDate FROM tblBooks WHERE _id = ?", new String[] { Integer.toString(id) });
 		if (cursor.moveToNext())
 		{
@@ -390,17 +396,18 @@ public class DBHelper extends SQLiteOpenHelper {
 					cursor.getString(2),
 					cursor.getString(3),
 					cursor.getString(4),
-					cursor.getInt(5),
+					cursor.getString(5),
 					cursor.getInt(6),
 					cursor.getInt(7),
 					cursor.getInt(8),
-					cursor.getString(9),
+					cursor.getInt(9),
 					cursor.getString(10),
 					cursor.getString(11),
-					cursor.getInt(12),
+					cursor.getString(12),
 					cursor.getInt(13),
-					cursor.getString(14),
-					cursor.getInt(15));					
+					cursor.getInt(14),
+					cursor.getString(15),
+					cursor.getInt(16));					
 		}
 		cursor.close();		
 		return comic;
@@ -409,7 +416,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	public Comic getComic(String isbn)
 	{
 		Comic comic = null;
-		Cursor cursor = db.rawQuery("SELECT _id, Title, Subtitle, Author, Publisher, PublishDate, " +
+		Cursor cursor = db.rawQuery("SELECT _id, Title, Subtitle, Author, Illustrator, Publisher, PublishDate, " +
 				"AddedDate, PageCount, IsBorrowed, Borrower, Image, ISBN, Issue, GroupId, ImageUrl, BorrowedDate FROM tblBooks WHERE ISBN = ?", new String[] { isbn });
 		if (cursor.moveToNext())
 		{
@@ -418,17 +425,18 @@ public class DBHelper extends SQLiteOpenHelper {
 					cursor.getString(2),
 					cursor.getString(3),
 					cursor.getString(4),
-					cursor.getInt(5),
+					cursor.getString(5),
 					cursor.getInt(6),
 					cursor.getInt(7),
 					cursor.getInt(8),
-					cursor.getString(9),
+					cursor.getInt(9),
 					cursor.getString(10),
 					cursor.getString(11),
-					cursor.getInt(12),
+					cursor.getString(12),
 					cursor.getInt(13),
-					cursor.getString(14),
-					cursor.getInt(15));					
+					cursor.getInt(14),
+					cursor.getString(15),
+					cursor.getInt(16));					
 		}
 		cursor.close();		
 		return comic;
@@ -508,6 +516,12 @@ public class DBHelper extends SQLiteOpenHelper {
 		update("tblBooks", values, "Author=?", new String[] { oldName });
 	}
 	
+	public void renameIllustrator(String oldName, String newName) {
+		ContentValues values = new ContentValues();
+		values.put("Illustrator", newName);
+		update("tblBooks", values, "Illustrator=?", new String[] { oldName });
+	}
+	
 	public void renamePublisher(String oldName, String newName) {
 		ContentValues values = new ContentValues();
 		values.put("Publisher", newName);
@@ -582,6 +596,32 @@ public class DBHelper extends SQLiteOpenHelper {
 		return duplicate;
 	}
 	
+	public List<String> getAuthors(String[] names)
+	{
+		List<String> foundNames = new ArrayList<String>();
+		for (int i = 0; i < names.length; i++)
+			names[i] = dbString(names[i]);
+		Cursor cursor = db.rawQuery("SELECT Author FROM tblBooks WHERE Author IN('" + Joiner.on("','").join(names) + "')", null);
+		while (cursor.moveToNext()) 
+		{
+			foundNames.add(cursor.getString(0));
+		}
+		return foundNames;
+	}
+
+	public List<String> getIllustrators(String[] names)
+	{
+		List<String> foundNames = new ArrayList<String>();
+		for (int i = 0; i < names.length; i++)
+			names[i] = dbString(names[i]);
+		Cursor cursor = db.rawQuery("SELECT Illustrator FROM tblBooks WHERE Illustrator IN('" + Joiner.on("','").join(names) + "')", null);
+		while (cursor.moveToNext()) 
+		{
+			foundNames.add(cursor.getString(0));
+		}
+		return foundNames;
+	}
+	
 	public int GetLastModifiedDate()
 	{
 		int stamp = 0;
@@ -590,5 +630,11 @@ public class DBHelper extends SQLiteOpenHelper {
 			stamp = cursor.getInt(0);
 		cursor.close();
 		return stamp;
+	}
+	
+	private String dbString(String val) {
+		if (val == null)
+			return "null";
+		return val.replaceAll("'", "''");
 	}
 }

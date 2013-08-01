@@ -154,58 +154,78 @@ public class Add extends BaseFragmentActivity
 			int comicId = getDBHelper().storeComic(result.comic);			
 			if (result.comic.getAuthor().contains(","))
 			{
-				AuthorIllustratorDialogFragment dialog = AuthorIllustratorDialogFragment.newInstance(comicId, result.comic.getAuthor());
-				dialog.show(getSupportFragmentManager(), "AUTHORILLUSTRATOR");
+				//Try to figure out author/illustrator automagically
+				String[] names = result.comic.getAuthor().split(",");
+				List<String> authors = getDBHelper().getAuthors(names);
+				List<String> illustrators = getDBHelper().getIllustrators(names);
+				if (authors.size() == 1)
+					result.comic.setAuthor(authors.get(0));
+				if (illustrators.size() == 1)
+					result.comic.setIllustrator(illustrators.get(0));
+				if (names.length > (authors.size() + illustrators.size()) || authors.size() != 1 || illustrators.size() != 1)
+				{
+					//Open dialog for author/illustrator
+					AuthorIllustratorDialogFragment dialog = AuthorIllustratorDialogFragment.newInstance(comicId, result.comic.getAuthor());
+					dialog.show(getSupportFragmentManager(), "AUTHORILLUSTRATOR");
+				}
 			}			
 			adapter.insert(result.comic, 0);
 			adapter.notifyDataSetChanged();
 			return;
 		}
 		
+		etISBN.setText("");
 		Toast
 			.makeText(Add.this, getResources().getString(R.string.add_search_notfound), Toast.LENGTH_LONG)
-			.show();
+			.show();		
     }
     
     public void queryISBN(View view)
     {
-    	String isbn = etISBN.getText().toString().toUpperCase(Locale.ENGLISH);
+    	String isbn = etISBN.getText().toString();
     	
     	//Validate ISBN
-    	boolean isValid = false;
-    	if (isbn.length() == 10 || isbn.length() == 13) {
-    		if (isbn.length() == 10) {
-    			int sum = 0;
-    			for (int x = 0; x < 10; x++) {
-    				int digit = isbn.charAt(x) != 'X' ? ((int)isbn.charAt(x) & 0xF) : 10;
-    				sum += x != 9 ? digit * (10 - x) : digit;
-    			}
-    			isValid = sum % 11 == 0;
-    		}
-    		else {
-    		    int sum = 0;
-    		    for (int x = 0; x < 13; x += 2) {
-    		        sum += ((int)isbn.charAt(x) & 0xF);
-    		    }
-    		    for (int x = 1; x < 12; x += 2) {
-    		        sum += ((int)isbn.charAt(x) & 0xF) * 3;
-    		    }
-    		    isValid = sum % 10 == 0;
-    		}
-    	}
-    	if (!isValid) {
-    		Toast.makeText(this, getResources().getString(R.string.add_search_invalidisbn), Toast.LENGTH_LONG).show();
-    		return;
-    	}
-    	
-    	//Duplicate check
-    	if (getDBHelper().isDuplicateComic(isbn)) {
-    		Toast.makeText(this, getResources().getString(R.string.add_search_isduplicate), Toast.LENGTH_LONG).show();
-    		return;
+    	if (!isbn.contains(":"))
+    	{
+    		isbn = isbn.toUpperCase(Locale.ENGLISH);
+	    	boolean isValid = false;
+	    	if (isbn.length() == 10 || isbn.length() == 13) {
+	    		if (isbn.length() == 10) {
+	    			int sum = 0;
+	    			for (int x = 0; x < 10; x++) {
+	    				int digit = isbn.charAt(x) != 'X' ? ((int)isbn.charAt(x) & 0xF) : 10;
+	    				sum += x != 9 ? digit * (10 - x) : digit;
+	    			}
+	    			isValid = sum % 11 == 0;
+	    		}
+	    		else {
+	    		    int sum = 0;
+	    		    for (int x = 0; x < 13; x += 2) {
+	    		        sum += ((int)isbn.charAt(x) & 0xF);
+	    		    }
+	    		    for (int x = 1; x < 12; x += 2) {
+	    		        sum += ((int)isbn.charAt(x) & 0xF) * 3;
+	    		    }
+	    		    isValid = sum % 10 == 0;
+	    		}
+	    	}
+	    	if (!isValid) {
+	    		Toast.makeText(this, getResources().getString(R.string.add_search_invalidisbn), Toast.LENGTH_LONG).show();
+	    		return;
+	    	}
+	    	
+	    	//Duplicate check
+	    	if (getDBHelper().isDuplicateComic(isbn)) {
+	    		Toast.makeText(this, getResources().getString(R.string.add_search_isduplicate), Toast.LENGTH_LONG).show();
+	    		return;
+	    	}
     	}
     	
     	//Fire query
-		new BooksQueryTask().execute("isbn:" + isbn, getExternalFilesDir(null).toString(), isbn);
+    	String q = "isbn:" + isbn;
+    	if (isbn.contains(":"))
+    		q = isbn;
+		new BooksQueryTask().execute(q, getExternalFilesDir(null).toString(), isbn);
     }
 
 	@Override

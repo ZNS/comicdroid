@@ -11,11 +11,16 @@ import java.util.List;
 import java.util.Locale;
 
 import android.app.IntentService;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.backup.BackupManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.UserRecoverableAuthException;
@@ -29,16 +34,50 @@ import com.google.api.services.drive.model.ChildReference;
 import com.google.api.services.drive.model.ParentReference;
 import com.zns.comicdroid.Application;
 import com.zns.comicdroid.R;
+import com.zns.comicdroid.activity.Settings;
 import com.zns.comicdroid.data.Comic;
 import com.zns.comicdroid.data.DBHelper;
 
 public class UploadService extends IntentService {
 	
+	private NotificationManager notificationManager;
+	
 	public UploadService() {
 		super("ComicDroid Upload Service");
 	}
 
+	private void NotifyAuthentication() {
+		//Set prefs
+		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		Editor editor = pref.edit();
+		editor.putBoolean(Application.PREF_DRIVE_AUTHENTICATED, false);
+		editor.commit();
+		
+		Intent settingsIntent = new Intent(getApplicationContext(), Settings.class);
+		settingsIntent.putExtra(Settings.INTENT_STOP_UPLOAD, true);		
+		
+		TaskStackBuilder stack = TaskStackBuilder.create(getApplicationContext());
+		stack.addParentStack(Settings.class);
+		stack.addNextIntent(settingsIntent);
+		
+		PendingIntent pendingIntent = stack.getPendingIntent(0, PendingIntent.FLAG_CANCEL_CURRENT);
+		NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
+		.setContentTitle("ComicDroid kunde inte publicera till google drive")
+		.setSmallIcon(R.drawable.ic_launcher)
+		.setContentText("Klicka här för att aktivera publiceringen igen")
+		.setAutoCancel(true)
+		.setContentIntent(pendingIntent);
+		
+		notificationManager.notify(1, builder.build());
+	}
+	
 	@Override
+	public void onCreate() {
+		super.onCreate();
+		notificationManager = (NotificationManager)getApplicationContext().getSystemService(NOTIFICATION_SERVICE);
+	}
+ 	
+ 	@Override
 	protected void onHandleIntent(Intent intent) {
 		
 		//Notify backup manager
@@ -60,7 +99,41 @@ public class UploadService extends IntentService {
 		//Webfolder id does not exist anymore.... try to recover
 		if (account == null || webFolderId == null)
 		{
-			stopSelf();
+			NotifyAuthentication();
+			return;
+		}
+
+		//Get Service
+		Drive service = null;
+		try
+		{
+			GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(getApplicationContext(), Arrays.asList(Application.DRIVE_SCOPE));
+			credential.setSelectedAccountName(account);
+			credential.getToken();					
+			service = new Drive.Builder(AndroidHttp.newCompatibleTransport(), new JacksonFactory(), credential).build();
+		}
+		catch (UserRecoverableAuthException e) {
+			//We are not authenticated for some reason, notify user.
+			NotifyAuthentication();
+			return;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (GoogleAuthException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 			
+		
+		//Make sure webfolder still exists
+		try	{
+			com.google.api.services.drive.model.File webFolder = service.files().get(webFolderId).execute();
+			if (webFolder == null || webFolder.getExplicitlyTrashed() == Boolean.TRUE) {
+				NotifyAuthentication();
+				return;				
+			}
+		} 
+		catch (IOException e) {
+			NotifyAuthentication();
 			return;
 		}
 		
@@ -167,13 +240,7 @@ public class UploadService extends IntentService {
 		
 		//Upload to google drive
 		try 
-		{				
-			GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(getApplicationContext(), Arrays.asList(Application.DRIVE_SCOPE));
-			credential.setSelectedAccountName(account);
-			credential.getToken();			
-			
-			Drive service = new Drive.Builder(AndroidHttp.newCompatibleTransport(), new JacksonFactory(), credential).build();
-			
+		{						
 			//Get current index file
 			com.google.api.services.drive.model.File fileIndex = null;
 			ChildList list = service.children().list(webFolderId).execute();
@@ -200,16 +267,7 @@ public class UploadService extends IntentService {
 				service.files().update(fileIndex.getId(), fileIndex, content).execute();
 			}
 		}
-		catch (UserRecoverableAuthException e) {
-			//We are not authenticated for some reason, notify user.
-			//NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (GoogleAuthException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (Exception e) {
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 		finally {

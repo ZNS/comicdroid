@@ -23,6 +23,7 @@ public class Comic
 	private String title;
 	private String subTitle;
 	private String author;
+	private String illustrator;
 	private String publisher;
 	private int publishDate;
 	private int addedDate;
@@ -44,6 +45,7 @@ public class Comic
 		this.title = in.readString();
 		this.subTitle = in.readString();
 		this.author = in.readString();
+		this.illustrator = in.readString();
 		this.publisher = in.readString();
 		this.publishDate = in.readInt();
 		this.addedDate = in.readInt();
@@ -57,13 +59,14 @@ public class Comic
 		this.issue = in.readInt();
 	}
 	 
-	public Comic(int id, String title, String subTitle, String author, String publisher, int publishDate, int addedDate, int pageCount, int isBorrowed, String borrower, String image, String isbn, int issue, int groupId, String imageUrl, int borrowedDate)
+	public Comic(int id, String title, String subTitle, String author, String illustrator, String publisher, int publishDate, int addedDate, int pageCount, int isBorrowed, String borrower, String image, String isbn, int issue, int groupId, String imageUrl, int borrowedDate)
 	{
 		this.id = id;
 		this.groupId = groupId;
 		this.title = title;
 		this.subTitle = subTitle;
 		this.author = author;
+		this.illustrator = illustrator;
 		this.publisher = publisher;
 		this.publishDate = publishDate;
 		this.addedDate = addedDate;
@@ -206,6 +209,13 @@ public class Comic
 		this.author = author;
 	}
 	
+	public String getIllustrator() {
+		return illustrator != null ? illustrator : "";
+	}
+	public void setIllustrator(String illustrator) {
+		this.illustrator = illustrator;
+	}
+	
 	public String getPublisher() {
 		return publisher != null ? publisher : "";
 	}
@@ -330,6 +340,7 @@ public class Comic
 		dest.writeString(title);
 		dest.writeString(subTitle);
 		dest.writeString(author);
+		dest.writeString(illustrator);
 		dest.writeString(publisher);
 		dest.writeInt(publishDate);
 		dest.writeInt(addedDate);

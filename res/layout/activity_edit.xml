@@ -140,6 +140,25 @@
 			        android:textAppearance="?android:attr/textAppearanceMedium" >
 			    </AutoCompleteTextView>        
 				    	
+				<!-- ILLUSTRATOR -->
+	
+			    <TextView
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_marginBottom="-2dp"
+			        android:text="@string/comic_illustrator"
+			        android:textAppearance="?android:attr/textAppearanceSmall" />
+			
+			    <AutoCompleteTextView
+			        android:id="@+id/comicEdit_actIllustrator"
+			        android:layout_width="fill_parent"
+			        android:layout_height="wrap_content"
+			        android:text=""
+			        android:paddingBottom="5dp"
+			        android:textColorHint="#cccccc"
+			        android:textAppearance="?android:attr/textAppearanceMedium" >
+			    </AutoCompleteTextView>
+			    			    
 				<!-- Publisher -->
 				    <TextView
 			        android:layout_width="wrap_content"

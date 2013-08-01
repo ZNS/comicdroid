@@ -33,6 +33,7 @@
     <string name="start_tab_aggregates">Serier</string>
     <string name="start_tab_comics">Titlar</string>
     <string name="start_tab_authors">Författare</string>
+    <string name="start_tab_illustrators">Illustratörer</string>
     <string name="start_tab_publishers">Förlag</string>
     <string name="add_btnscan">Scanna ISBN</string>
     <string name="add_btnadd">Skapa</string>
@@ -51,6 +52,7 @@
     <string name="comic_title">Titel</string>
     <string name="comic_subtitle">Undertitel</string>
     <string name="comic_author">Författare</string>
+    <string name="comic_illustrator">Illustratör</string>
     <string name="comic_publisher">Förlag</string>
     <string name="comic_datepublished">Publicerad</string>
     <string name="comic_dateadded">Tillagd</string>
@@ -73,4 +75,6 @@
 	<string name="group_delete_alt">Radera även alla serier i den här gruppen!</string>
 	<string name="sort_title">Titel</string>
 	<string name="sort_added">Tillagd</string>
+	<string name="error_webfoldercreate">Kunde inte skapa mapp på google drive</string>
+	<string name="error_storeimage">Kunde inte spara bild</string>
 </resources>
