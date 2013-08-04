@@ -9,6 +9,9 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -18,11 +21,15 @@ import com.commonsware.cwac.loaderex.acl.SQLiteCursorLoader;
 import com.zns.comicdroid.BaseFragmentActivity;
 import com.zns.comicdroid.R;
 import com.zns.comicdroid.adapter.ComicAdapter;
+import com.zns.comicdroid.data.Group;
+import com.zns.comicdroid.dialog.GroupDialogFragment;
 import com.zns.comicdroid.dialog.RenameDialogFragment;
 import com.zns.comicdroid.service.UploadService;
 
 public class Comics extends BaseFragmentActivity
-	implements	LoaderCallbacks<Cursor>, 	RenameDialogFragment.OnRenameDialogListener {
+	implements	LoaderCallbacks<Cursor>,
+				RenameDialogFragment.OnRenameDialogListener,
+				OnCheckedChangeListener {
 	
 	public static final String INTENT_COMICS_TYPE = "com.zns.comic.COMICS_TYPE";
 	public static final String INTENT_COMICS_VALUE = "com.zns.comic.COMICS_VALUE";
@@ -43,6 +50,10 @@ public class Comics extends BaseFragmentActivity
 	private boolean deleteComics = false;
 	private int groupId;
 	private String heading;
+	private Group currentGroup;
+	private CheckBox cbIsWatched;
+	private CheckBox cbIsFinished;
+	private CheckBox cbIsComplete;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +62,7 @@ public class Comics extends BaseFragmentActivity
 		
 		lvComics = (ListView)findViewById(R.id.comics_lvComics);
 		tvHeading = (TextView)findViewById(R.id.comics_txtHeading);
-		
+
 		adapter = new ComicAdapter(this);
 		lvComics.setAdapter(adapter);
 		
@@ -69,11 +80,23 @@ public class Comics extends BaseFragmentActivity
 	    viewType = intent.getIntExtra(INTENT_COMICS_TYPE, 0);
 	    viewWhereValue = intent.getCharSequenceExtra(INTENT_COMICS_VALUE).toString();
 	    heading = intent.getCharSequenceExtra(INTENT_COMICS_HEADING).toString();
+	    tvHeading.setText(heading);
+	    
 	    if (viewType == VIEWTYPE_GROUP) {
 	    	groupId = intent.getIntExtra(INTENT_COMICS_ID, 0);
+	    	currentGroup = getDBHelper().getGroup(groupId);
+	    	cbIsWatched = (CheckBox)findViewById(R.id.comics_cbWatched);
+	    	cbIsWatched.setChecked(currentGroup.getIsWatched());
+	    	cbIsWatched.setOnCheckedChangeListener(this);
+	    	cbIsFinished = (CheckBox)findViewById(R.id.comics_cbFinished);
+	    	cbIsFinished.setChecked(currentGroup.getIsFinished());
+	    	cbIsFinished.setOnCheckedChangeListener(this);
+	    	cbIsComplete = (CheckBox)findViewById(R.id.comics_cbComplete);
+	    	cbIsComplete.setChecked(currentGroup.getIsComplete());
+	    	cbIsComplete.setOnCheckedChangeListener(this);
 	    	adapter.renderTitle = false;
-	    }	    
-	    tvHeading.setText(heading);
+	    	findViewById(R.id.comics_group_alts).setVisibility(View.VISIBLE);
+	    }
 	    
 	    getSupportLoaderManager().initLoader(0, null, this);
 	}
@@ -136,9 +159,17 @@ public class Comics extends BaseFragmentActivity
 	    // Handle item selection
 	    switch (item.getItemId()) {
         	case R.id.menu_edit:
-				RenameDialogFragment dialogRename = new RenameDialogFragment();
-				dialogRename.setName(heading);
-				dialogRename.show(getSupportFragmentManager(), "RENAMEDIALOG");
+        		if (viewType == VIEWTYPE_GROUP)
+        		{
+        			GroupDialogFragment dialogGroup = GroupDialogFragment.newInstance(groupId, currentGroup.getName(), currentGroup.getTotalBookCount());
+        			dialogGroup.show(getSupportFragmentManager(), "GROUPDIALOG");
+        		}
+        		else
+        		{
+					RenameDialogFragment dialogRename = new RenameDialogFragment();
+					dialogRename.setName(heading);
+					dialogRename.show(getSupportFragmentManager(), "RENAMEDIALOG");
+        		}
 	            return true;
         	case R.id.menu_delete:
         		new AlertDialog.Builder(this)
@@ -175,9 +206,6 @@ public class Comics extends BaseFragmentActivity
 	@Override
 	public void onDialogPositiveClick(String oldName, String newName) {
 		switch (viewType) {
-			case VIEWTYPE_GROUP:
-				getDBHelper().renameGroup(groupId, newName);
-				break;
 			case VIEWTYPE_AUTHOR:
 				getDBHelper().renameAuthor(oldName, newName);
 				break;
@@ -192,5 +220,15 @@ public class Comics extends BaseFragmentActivity
 		//Sync with google drive
 		Intent intent = new Intent(Comics.this, UploadService.class);
 		startService(intent);
+	}
+
+	@Override
+	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+		if (buttonView == cbIsFinished)
+			getDBHelper().setGroupIsFinished(groupId, isChecked);
+		else if (buttonView == cbIsWatched)
+			getDBHelper().setGroupIsWatched(groupId, isChecked);
+		else if (buttonView == cbIsComplete)
+			getDBHelper().setGroupIsComplete(groupId, isChecked);		
 	}
 }

@@ -5,11 +5,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -21,7 +18,7 @@ import com.google.common.primitives.Ints;
 
 public class DBHelper extends SQLiteOpenHelper {
 	
-	private static final int DB_VERSION = 	3;
+	private static final int DB_VERSION = 	12;
 	private static final String DB_NAME = 	"ComicDroid.db";
 	
 	private static DBHelper instance;
@@ -73,7 +70,11 @@ public class DBHelper extends SQLiteOpenHelper {
 				"Name TEXT," +
 				"Image TEXT," +
 				"ImageUrl TEXT," +
-				"BookCount INTEGER DEFAULT 0" +
+				"BookCount INTEGER DEFAULT 0, " +
+				"TotalBookCount INTEGER DEFAULT 0, " +
+				"IsWatched INTEGER DEFAULT 0, " +
+				"IsFinished INTEGER DEFAULT 0, " +
+				"IsComplete INTEGER DEFAULT 0" +
 				")";
 		
 		String tblMeta = "CREATE TABLE tblMeta (" +
@@ -121,6 +122,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				"END;";
 		String triggerModDel  = "CREATE TRIGGER delete_book AFTER DELETE ON tblBooks " +
 				"BEGIN " +
+				"UPDATE tblGroups SET BookCount=BookCount-1 WHERE BookCount > 0 AND _id = old.GroupId; " +
 				"UPDATE tblMeta SET LastModified = strftime('%s','now'); " +
 				"END;";
 		
@@ -130,34 +132,34 @@ public class DBHelper extends SQLiteOpenHelper {
 		db.execSQL(triggerGroupId4);
 		db.execSQL(triggerModUpd);
 		db.execSQL(triggerModIns);
-		db.execSQL(triggerModDel);
-		
-		
-		/*for (int i = 0; i < 20; i++) {
-			db.execSQL("INSERT INTO tblGroups(Name) VALUES('Group " + i + "')");
-		}
-		Map<Integer, Integer> map = new HashMap<Integer, Integer>();
-		for (int i = 0; i < 100; i++) {
-			//Get group
-			int group = (int)(Math.random() * 20);
-			int issue = 1;
-			if (group > 0) {
-				issue = map.containsKey(group) ? map.get(group) : 0;
-				map.put(group, issue + 1);
-			}
-			db.execSQL(String.format("INSERT INTO tblBooks(GroupId, Title, Author, Issue) VALUES(%d, '%s', '%s', %d)", group, "Comic " + i, "Author " + i, issue + 1));
-		}*/
+		db.execSQL(triggerModDel);		
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		db.execSQL("DROP TABLE tblBooks");
-		db.execSQL("DROP TABLE tblGroups");
-		db.execSQL("DROP TABLE IF EXISTS tblMeta");
-		onCreate(db);
+		//Just to make sure
+		if (oldVersion >= newVersion)
+			return;
+		
+		if (oldVersion < 10) {
+			db.execSQL("ALTER TABLE tblGroups ADD COLUMN IsWatched INTEGER DEFAULT 0");
+			db.execSQL("ALTER TABLE tblGroups ADD COLUMN IsComplete INTEGER DEFAULT 0");			
+			db.execSQL("DROP TRIGGER IF EXISTS delete_book; " +
+			"CREATE TRIGGER delete_book AFTER DELETE ON tblBooks " +
+			"BEGIN " +
+			"UPDATE tblGroups SET BookCount=BookCount-1 WHERE BookCount > 0 AND _id = old.GroupId; " +
+			"UPDATE tblMeta SET LastModified = strftime('%s','now'); " +
+			"END;");
+		}
+		if (oldVersion < 11) {
+			db.execSQL("ALTER TABLE tblGroups ADD COLUMN IsFinished INTEGER DEFAULT 0");
+		}
+		if (oldVersion < 12) {
+			db.execSQL("ALTER TABLE tblGroups ADD COLUMN TotalBookCount INTEGER DEFAULT 0");
+		}
 	}
 	
-	private void generateData() {
+	/*private void generateData() {
 		for (int i = 0; i < 20; i++) {
 			db.execSQL("INSERT INTO tblGroups(Name) VALUES('Group " + i + "')");
 		}
@@ -172,7 +174,7 @@ public class DBHelper extends SQLiteOpenHelper {
 			}
 			db.execSQL(String.format("INSERT INTO tblBooks(GroupId, Title, Author, Issue) VALUES(%d, '%s', '%s', %d)", group, "Comic " + i, "Author " + i, issue + 1));
 		}
-	}
+	}*/
 	
     @Override
     public synchronized void close() {
@@ -534,17 +536,50 @@ public class DBHelper extends SQLiteOpenHelper {
 		update("tblGroups", values, "_id=?", new String[] { Integer.toString(id) });
 	}
 	
-	public List<Group> getGroups()
+	public Group getGroup(int id)
+	{
+		Group group = null;
+		Cursor cursor = db.rawQuery("SELECT _id,  Name, Image, BookCount, TotalBookCount, IsWatched, IsFinished, IsComplete FROM tblGroups WHERE _id=? ORDER BY Name", new String[] { Integer.toString(id) });
+		if (cursor.moveToNext()) {			
+			group = new Group(cursor.getInt(0),
+					cursor.getString(1),
+					cursor.getString(2),
+					cursor.getInt(3),
+					cursor.getInt(4),
+					cursor.getInt(5),
+					cursor.getInt(6),
+					cursor.getInt(7));
+		}
+		cursor.close();
+		return group;		
+	}
+	
+	private List<Group> getGroupsBySql(String sql, String[] selectionArgs)
 	{
 		List<Group> groups = new ArrayList<Group>();
-		Cursor cursor = db.rawQuery("SELECT _id,  Name, Image FROM tblGroups ORDER BY Name", null);
+		Cursor cursor = db.rawQuery(sql, selectionArgs);
 		while (cursor.moveToNext()) {			
 			groups.add(new Group(cursor.getInt(0),
 					cursor.getString(1),
-					cursor.getBlob(2)));
+					cursor.getString(2),
+					cursor.getInt(3),
+					cursor.getInt(4),
+					cursor.getInt(5),
+					cursor.getInt(6),
+					cursor.getInt(7)));
 		}
 		cursor.close();
-		return groups;
+		return groups;		
+	}
+	
+	public List<Group> getGroups()
+	{
+		return getGroupsBySql("SELECT _id,  Name, Image, BookCount, TotalBookCount, IsWatched, IsFinished, IsComplete FROM tblGroups ORDER BY Name", null);
+	}
+	
+	public List<Group> getGroupsWatched()
+	{
+		return getGroupsBySql("SELECT _id,  Name, Image, BookCount, TotalBookCount, IsWatched, IsFinished, IsComplete FROM tblGroups WHERE IsWatched=? ORDER BY Name", new String[] { "1" });
 	}
 	
 	public boolean addGroup(String name) {
@@ -582,6 +617,27 @@ public class DBHelper extends SQLiteOpenHelper {
 			update("tblBooks", values, "GroupId=?", new String[] { Integer.toString(id) });
 		}
 		db.delete("tblGroups", "_id=?", new String[] { Integer.toString(id) });
+	}
+	
+	public void setGroupIsWatched(int groupId, boolean watched)
+	{
+		ContentValues values = new ContentValues();
+		values.put("IsWatched", watched ? 1 : 0);
+		db.update("tblGroups", values, "_id=?", new String[] { Integer.toString(groupId) });
+	}
+	
+	public void setGroupIsFinished(int groupId, boolean finished)
+	{
+		ContentValues values = new ContentValues();
+		values.put("IsFinished", finished ? 1 : 0);
+		db.update("tblGroups", values, "_id=?", new String[] { Integer.toString(groupId) });
+	}
+	
+	public void setGroupIsComplete(int groupId, boolean complete)
+	{
+		ContentValues values = new ContentValues();
+		values.put("IsComplete", complete ? 1 : 0);
+		db.update("tblGroups", values, "_id=?", new String[] { Integer.toString(groupId) });
 	}
 	
 	public boolean isDuplicateComic(String isbn) {

@@ -17,11 +17,43 @@
 	        android:text=""
 			android:padding="10dp"
 	        android:paddingTop="5dp"
-	        android:layout_marginBottom="1dp"
+	        android:layout_marginBottom="2dp"
 	        android:textColor="#333333"
 	        android:background="@color/contentBg"
 	        android:textSize="25sp"
 	        android:textStyle="bold" />
+
+	    <LinearLayout
+	        android:id="@+id/comics_group_alts"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_marginBottom="2dp"
+	        android:background="@color/contentBg"	        
+	        android:orientation="horizontal" 
+	        android:visibility="gone">
+
+	        <CheckBox
+	            android:id="@+id/comics_cbWatched"
+	            android:layout_width="fill_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:text="@string/group_watched" />
+	        
+	        <CheckBox
+	            android:id="@+id/comics_cbFinished"
+	            android:layout_width="fill_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:text="@string/group_finished" />
+	        	        
+	        <CheckBox
+	            android:id="@+id/comics_cbComplete"
+	            android:layout_width="fill_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:text="@string/group_complete" />
+	        	        
+	    </LinearLayout>
 	
 	    <ListView
 	        android:id="@+id/comics_lvComics"

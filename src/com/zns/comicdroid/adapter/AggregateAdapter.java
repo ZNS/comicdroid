@@ -29,6 +29,9 @@ public class AggregateAdapter extends SimpleCursorAdapter {
 		ImageView ivImage;
 		TextView tvCount;
 		ImageView ivGroupMark;
+		ImageView ivGroupWatched;
+		ImageView ivGroupCompleted;
+		ImageView ivGroupFinished;
 		RelativeLayout rlRow;
 	}
 	
@@ -67,6 +70,9 @@ public class AggregateAdapter extends SimpleCursorAdapter {
 	    		holder.tvCount = (TextView)convertView.findViewById(R.id.tvCount);
 	    		holder.ivGroupMark = (ImageView)convertView.findViewById(R.id.ivGroupMark);
 	    		holder.rlRow = (RelativeLayout)convertView.findViewById(R.id.rlRow);
+	    		holder.ivGroupCompleted = (ImageView)convertView.findViewById(R.id.ivGroupCompleted);
+	    		holder.ivGroupFinished = (ImageView)convertView.findViewById(R.id.ivGroupFinished);
+	    		holder.ivGroupWatched = (ImageView)convertView.findViewById(R.id.ivGroupWatched);
 	    		
 	    		convertView.setTag(holder);
 	    	}
@@ -82,16 +88,26 @@ public class AggregateAdapter extends SimpleCursorAdapter {
 			int type = cursor.getInt(5);
 			int count = cursor.getInt(6);
 			boolean isBorrowed = cursor.getInt(7) == 1;
+			int totalCount = cursor.getInt(8);
+			boolean isFinished = cursor.getInt(9) == 1;
+			boolean isComplete = cursor.getInt(10) == 1;
+			boolean isWatched = cursor.getInt(11) == 1;
 			
 			holder.tvTitle.setText(title + (subTitle != null && !subTitle.equals("") ? " - " + subTitle : ""));
 			holder.tvAuthor.setText(author);
 			if (type == 2) {
 				holder.ivGroupMark.setVisibility(View.VISIBLE);
-				holder.tvCount.setText("(" + count + ")");
+				holder.tvCount.setText("(" + count + (totalCount > 0 ? "/" + totalCount : "") + ")");
+				holder.ivGroupFinished.setVisibility(isFinished ? View.VISIBLE : View.GONE);
+				holder.ivGroupCompleted.setVisibility(isComplete ? View.VISIBLE : View.GONE);
+				holder.ivGroupWatched.setVisibility(isWatched ? View.VISIBLE : View.GONE);
 			}
 			else
 			{
 				holder.ivGroupMark.setVisibility(View.GONE);
+				holder.ivGroupCompleted.setVisibility(View.GONE);
+				holder.ivGroupFinished.setVisibility(View.GONE);
+				holder.ivGroupWatched.setVisibility(View.GONE);
 				holder.tvCount.setText("");
 			}
 			if (image != null)

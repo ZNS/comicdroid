@@ -15,6 +15,7 @@ import com.zns.comicdroid.activity.Borrow;
 import com.zns.comicdroid.activity.Borrowed;
 import com.zns.comicdroid.activity.Settings;
 import com.zns.comicdroid.activity.Start;
+import com.zns.comicdroid.activity.WatchedGroups;
 import com.zns.comicdroid.adapter.DrawerMenuAdapter;
 import com.zns.comicdroid.data.DBHelper;
 
@@ -39,13 +40,15 @@ public class BaseFragmentActivity
 		drawerList = (ListView)findViewById(R.id.drawer_left);
 		String[] titles = new String[] { 
 				getString(R.string.menu_start), 
-				getString(R.string.menu_borrowed), 
+				getString(R.string.menu_borrowed),
+				getString(R.string.menu_watched),
 				getString(R.string.menu_add), 
 				getString(R.string.menu_borrow), 
 				getString(R.string.menu_settings) };
 		String[] subTitles = new String[] { 
 				getString(R.string.menu_start_sub), 
-				getString(R.string.menu_borrowed_sub), 
+				getString(R.string.menu_borrowed_sub),
+				getString(R.string.menu_watched_sub),
 				getString(R.string.menu_add_sub), 
 				getString(R.string.menu_borrow_sub), 
 				getString(R.string.menu_settings_sub) };
@@ -97,14 +100,18 @@ public class BaseFragmentActivity
 	        	startActivity(intent);
 	        	break;
 	        case 2:
-	        	intent = new Intent(this, Add.class);
+	        	intent = new Intent(this, WatchedGroups.class);
 	        	startActivity(intent);
 	        	break;
 	        case 3:
-	        	intent = new Intent(this, Borrow.class);
+	        	intent = new Intent(this, Add.class);
 	        	startActivity(intent);
 	        	break;
 	        case 4:
+	        	intent = new Intent(this, Borrow.class);
+	        	startActivity(intent);
+	        	break;
+	        case 5:
 	        	intent = new Intent(this, Settings.class);
 	        	startActivity(intent);
 	        	break;

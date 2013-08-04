@@ -134,18 +134,22 @@ public class BackupHelper extends BackupAgent {
 				
 				try
 				{
-					cb = db.getCursor("SELECT _id, Name, Image, ImageUrl, BookCount" +
+					cb = db.getCursor("SELECT _id, Name, Image, ImageUrl, BookCount, TotalBookCount, IsWatched, IsFinished, IsComplete" +
 							" FROM tblGroups ORDER BY _id", null);
 					writer.writeInt(cb.getCount());
 					while (cb.moveToNext())
 					{
-						writer.writeUTF(String.format("INSERT INTO tblGroups(_id, Name, Image, ImageUrl, BookCount)" +
-								" VALUES(%d, %s, %s, %s, %d);", 
+						writer.writeUTF(String.format("INSERT INTO tblGroups(_id, Name, Image, ImageUrl, BookCount, TotalBookCount, IsWatched, IsFinished, IsComplete)" +
+								" VALUES(%d, %s, %s, %s, %d, %d, %d, %d, %d);", 
 								cb.getInt(0),
 								dbString(cb.getString(1)),
 								dbString(cb.getString(2)),
 								dbString(cb.getString(3)),
-								cb.getInt(4)));
+								cb.getInt(4),
+								cb.getInt(5),
+								cb.getInt(6),
+								cb.getInt(7),
+								cb.getInt(8)));
 					}
 				}
 				finally {

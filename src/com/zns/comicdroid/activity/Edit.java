@@ -35,13 +35,13 @@ import com.zns.comicdroid.adapter.AutoCompleteAdapter;
 import com.zns.comicdroid.adapter.ComicArrayAdapter;
 import com.zns.comicdroid.data.Comic;
 import com.zns.comicdroid.data.Group;
-import com.zns.comicdroid.dialog.GroupAddDialogFragment;
+import com.zns.comicdroid.dialog.GroupDialogFragment;
 import com.zns.comicdroid.service.UploadService;
 import com.zns.comicdroid.util.ImageHandler;
 
 public class Edit extends BaseFragmentActivity
 	implements	OnClickListener, 
-				GroupAddDialogFragment.OnGroupAddDialogListener {
+				GroupDialogFragment.OnGroupAddDialogListener {
 	
 	public static final String INTENT_COMIC_IDS = "com.zns.comic.COMICIDS";
 	private static final int CAMERA_REQUEST = 1888; 
@@ -100,7 +100,7 @@ public class Edit extends BaseFragmentActivity
     	List<Group> groups = getDBHelper().getGroups();
     	if (groups == null)
     		groups = new ArrayList<Group>();
-    	groups.add(0, new Group(0, getResources().getString(R.string.common_nogroup), null));
+    	groups.add(0, new Group(0, getResources().getString(R.string.common_nogroup), null, 0, 0, 0, 0, 0));
     	adapterGroups = new ArrayAdapter<Group>(this, android.R.layout.simple_spinner_item, groups);
     	adapterGroups.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     	spGroup.setAdapter(adapterGroups);
@@ -109,7 +109,7 @@ public class Edit extends BaseFragmentActivity
     	ivGroupAdd.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				DialogFragment dialogAddGroup = new GroupAddDialogFragment();
+				DialogFragment dialogAddGroup = new GroupDialogFragment();
 				dialogAddGroup.show(getSupportFragmentManager(), "GROUPADD");
 			}
 		});
@@ -361,7 +361,7 @@ public class Edit extends BaseFragmentActivity
 	@Override
 	public void onDialogPositiveClick(DialogFragment dialog) {
 		List<Group> groups = getDBHelper().getGroups();
-		groups.add(0, new Group(0, getResources().getString(R.string.common_nogroup), null));
+		groups.add(0, new Group(0, getResources().getString(R.string.common_nogroup), null, 0, 0, 0, 0, 0));
 		adapterGroups.clear();
 		for (Group g : groups)
 			adapterGroups.add(g);

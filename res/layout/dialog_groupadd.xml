@@ -20,4 +20,18 @@
         <requestFocus />
     </EditText>
     
+	<TextView
+	 android:layout_width="wrap_content"
+	 android:layout_height="wrap_content"
+	 android:layout_marginTop="5dp"
+	 android:text="@string/dialog_groupadd_totalcount" />
+	
+    <EditText
+        android:id="@+id/dialogAddGroup_etTotalCount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:ems="10" >
+    </EditText>
+	
 </LinearLayout>
