@@ -49,12 +49,12 @@ public class ListTitlesFragment extends BaseListFragment {
 	
 	@Override
 	public String getSQLDefault() {
-		return "SELECT _id, Title, Subtitle, Author, Image, Issue, IsBorrowed FROM tblBooks";
+		return "SELECT _id, Title, Subtitle, Author, Image, Issue, IsBorrowed, IsRead, Rating FROM tblBooks";
 	}
 	
 	@Override
 	public String getSQLFilter() {
-		return "SELECT _id, Title, Subtitle, Author, Image, Issue, IsBorrowed FROM tblBooks WHERE Title LIKE ?";
+		return "SELECT _id, Title, Subtitle, Author, Image, Issue, IsBorrowed, IsRead, Rating FROM tblBooks WHERE Title LIKE ?";
 	}
 	
 	@Override

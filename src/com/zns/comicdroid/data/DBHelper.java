@@ -18,7 +18,7 @@ import com.google.common.primitives.Ints;
 
 public class DBHelper extends SQLiteOpenHelper {
 	
-	private static final int DB_VERSION = 	12;
+	private static final int DB_VERSION = 	13;
 	private static final String DB_NAME = 	"ComicDroid.db";
 	
 	private static DBHelper instance;
@@ -59,10 +59,13 @@ public class DBHelper extends SQLiteOpenHelper {
 				"AddedDate INTEGER," +
 				"PageCount INTEGER," +
 				"IsBorrowed INTEGER DEFAULT 0," +
+				"IsRead INTEGER DEFAULT 0," +
 				"Borrower TEXT," +
 				"BorrowedDate INTEGER," +
 				"ISBN TEXT," +
-				"Issue INTEGER" +
+				"Issue INTEGER," + 
+				"Issues TEXT," +
+				"Rating INTEGER DEFAULT 0" +
 				")";
 		
 		String tblGroups = "CREATE TABLE tblGroups (" +
@@ -157,6 +160,11 @@ public class DBHelper extends SQLiteOpenHelper {
 		if (oldVersion < 12) {
 			db.execSQL("ALTER TABLE tblGroups ADD COLUMN TotalBookCount INTEGER DEFAULT 0");
 		}
+		if (oldVersion < 13) {
+			db.execSQL("ALTER TABLE tblBooks ADD COLUMN IsRead INTEGER DEFAULT 0");
+			db.execSQL("ALTER TABLE tblBooks ADD COLUMN Rating INTEGER DEFAULT 0");
+			db.execSQL("ALTER TABLE tblBooks ADD COLUMN Issues TEXT");
+		}
 	}
 	
 	/*private void generateData() {
@@ -249,199 +257,97 @@ public class DBHelper extends SQLiteOpenHelper {
 		values.put("ISBN", comic.getISBN());
 		values.put("Issue", comic.getIssue());
 		values.put("ImageUrl", comic.getImageUrl());
+		values.put("Rating", comic.getRating());
+		values.put("IsRead", comic.getIsRead() ? 1 : 0);
+		values.put("Issues", comic.getIssues());
 		
 		return (int)db.insert("tblBooks", null, values);
 	}
 	
+	private List<Comic> getComicsBySql(String sql, String[] args) {
+		List<Comic> result = new ArrayList<Comic>();
+		Cursor cursor = db.rawQuery(sql, args);
+		while (cursor.moveToNext())
+		{
+			Comic comic = new Comic(cursor.getInt(0),
+					cursor.getString(1),
+					cursor.getString(2),
+					cursor.getString(3),
+					cursor.getString(4),
+					cursor.getString(5),
+					cursor.getInt(6),
+					cursor.getInt(7),
+					cursor.getInt(8),
+					cursor.getInt(9),
+					cursor.getString(10),
+					cursor.getString(11),
+					cursor.getString(12),
+					cursor.getInt(13),
+					cursor.getInt(14),
+					cursor.getString(15),
+					cursor.getInt(16),
+					cursor.getInt(17),
+					cursor.getInt(18),
+					cursor.getString(19));
+			result.add(comic);
+		}
+		cursor.close();		
+		return result;		
+	}
+	
 	public List<Comic> getComics(String order)
 	{
-		List<Comic> result = new ArrayList<Comic>();
 		String orderBy = "Title";
 		if (order.equalsIgnoreCase("forfattare"))
 			orderBy = "Author";
 		else if (order.equalsIgnoreCase("forlag"))
-			orderBy = "Publisher";
-		
-		Cursor cursor = db.rawQuery("SELECT _id, Title, Subtitle, Author, Illustrator, Publisher, PublishDate, " +
-				"AddedDate, PageCount, IsBorrowed, Borrower, Image, ISBN, Issue, GroupId, ImageUrl, BorrowedDate FROM tblBooks ORDER BY " + orderBy, null);
-		while (cursor.moveToNext())
-		{
-			Comic comic = new Comic(cursor.getInt(0),
-					cursor.getString(1),
-					cursor.getString(2),
-					cursor.getString(3),
-					cursor.getString(4),
-					cursor.getString(5),
-					cursor.getInt(6),
-					cursor.getInt(7),
-					cursor.getInt(8),
-					cursor.getInt(9),
-					cursor.getString(10),
-					cursor.getString(11),
-					cursor.getString(12),
-					cursor.getInt(13),
-					cursor.getInt(14),
-					cursor.getString(15),
-					cursor.getInt(16));
-			result.add(comic);
-		}
-		cursor.close();
-		
-		return result;
+			orderBy = "Publisher";		
+		return getComicsBySql("SELECT _id, Title, Subtitle, Author, Illustrator, Publisher, PublishDate, " +
+				"AddedDate, PageCount, IsBorrowed, Borrower, Image, ISBN, Issue, GroupId, ImageUrl, BorrowedDate, IsRead, Rating, Issues FROM tblBooks ORDER BY " + orderBy, null);
 	}
 	
 	public List<Comic> getComics(int[] ids)
 	{
-		List<Comic> list = new ArrayList<Comic>();
-		Cursor cursor = db.rawQuery("SELECT _id, Title, Subtitle, Author, Illustrator, Publisher, PublishDate, " +
-				"AddedDate, PageCount, IsBorrowed, Borrower, Image, ISBN, Issue, GroupId, ImageUrl, BorrowedDate FROM tblBooks WHERE _id IN (" +
+		return getComicsBySql("SELECT _id, Title, Subtitle, Author, Illustrator, Publisher, PublishDate, " +
+				"AddedDate, PageCount, IsBorrowed, Borrower, Image, ISBN, Issue, GroupId, ImageUrl, BorrowedDate, IsRead, Rating, Issues FROM tblBooks WHERE _id IN (" +
 				Joiner.on(",").join(Ints.asList(ids)) +
 				")", null);
-		while (cursor.moveToNext())
-		{
-			Comic comic = new Comic(cursor.getInt(0),
-					cursor.getString(1),
-					cursor.getString(2),
-					cursor.getString(3),
-					cursor.getString(4),
-					cursor.getString(5),
-					cursor.getInt(6),
-					cursor.getInt(7),
-					cursor.getInt(8),
-					cursor.getInt(9),
-					cursor.getString(10),
-					cursor.getString(11),
-					cursor.getString(12),
-					cursor.getInt(13),
-					cursor.getInt(14),
-					cursor.getString(15),
-					cursor.getInt(16));
-			list.add(comic);
-		}
-		cursor.close();
-		return list;
 	}
 	
 	public List<Comic> getComics(int groupId)
-	{
-		List<Comic> list = new ArrayList<Comic>();
-		Cursor cursor = db.rawQuery("SELECT _id, Title, Subtitle, Author, Illustrator, Publisher, PublishDate, " +
-				"AddedDate, PageCount, IsBorrowed, Borrower, Image, ISBN, Issue, GroupId, ImageUrl, BorrowedDate FROM tblBooks " +
+	{		
+		return getComicsBySql("SELECT _id, Title, Subtitle, Author, Illustrator, Publisher, PublishDate, " +
+				"AddedDate, PageCount, IsBorrowed, Borrower, Image, ISBN, Issue, GroupId, ImageUrl, BorrowedDate, IsRead, Rating, Issues FROM tblBooks " +
 				"WHERE GroupId = ? " +
 				"ORDER BY Issue", new String[] { Integer.toString(groupId) });
-		while (cursor.moveToNext())
-		{
-			Comic comic = new Comic(cursor.getInt(0),
-					cursor.getString(1),
-					cursor.getString(2),
-					cursor.getString(3),
-					cursor.getString(4),
-					cursor.getString(5),
-					cursor.getInt(6),
-					cursor.getInt(7),
-					cursor.getInt(8),
-					cursor.getInt(9),
-					cursor.getString(10),
-					cursor.getString(11),
-					cursor.getString(12),
-					cursor.getInt(13),
-					cursor.getInt(14),
-					cursor.getString(15),
-					cursor.getInt(16));
-			list.add(comic);
-		}
-		cursor.close();
-		return list;
 	}
 	
 	public List<Comic> getBorrowed()
 	{
-		List<Comic> list = new ArrayList<Comic>();
-		Cursor cursor = db.rawQuery("SELECT _id, Title, Subtitle, Author, Illustrator, Publisher, PublishDate, " +
-				"AddedDate, PageCount, IsBorrowed, Borrower, Image, ISBN, Issue, GroupId, ImageUrl, BorrowedDate FROM tblBooks " +
+		return getComicsBySql("SELECT _id, Title, Subtitle, Author, Illustrator, Publisher, PublishDate, " +
+				"AddedDate, PageCount, IsBorrowed, Borrower, Image, ISBN, Issue, GroupId, ImageUrl, BorrowedDate, IsRead, Rating, Issues FROM tblBooks " +
 				"WHERE IsBorrowed = 1 " +
 				"ORDER BY Borrower, BorrowedDate", null);
-		while (cursor.moveToNext())
-		{
-			Comic comic = new Comic(cursor.getInt(0),
-					cursor.getString(1),
-					cursor.getString(2),
-					cursor.getString(3),
-					cursor.getString(4),
-					cursor.getString(5),
-					cursor.getInt(6),
-					cursor.getInt(7),
-					cursor.getInt(8),
-					cursor.getInt(9),
-					cursor.getString(10),
-					cursor.getString(11),
-					cursor.getString(12),
-					cursor.getInt(13),
-					cursor.getInt(14),
-					cursor.getString(15),
-					cursor.getInt(16));
-			list.add(comic);
-		}
-		cursor.close();
-		return list;
 	}
 	
 	public Comic getComic(int id)
 	{
-		Comic comic = null;
-		Cursor cursor = db.rawQuery("SELECT _id, Title, Subtitle, Author, Illustrator, Publisher, PublishDate, " +
-				"AddedDate, PageCount, IsBorrowed, Borrower, Image, ISBN, Issue, GroupId, ImageUrl, BorrowedDate FROM tblBooks WHERE _id = ?", new String[] { Integer.toString(id) });
-		if (cursor.moveToNext())
-		{
-			comic = new Comic(cursor.getInt(0),
-					cursor.getString(1),
-					cursor.getString(2),
-					cursor.getString(3),
-					cursor.getString(4),
-					cursor.getString(5),
-					cursor.getInt(6),
-					cursor.getInt(7),
-					cursor.getInt(8),
-					cursor.getInt(9),
-					cursor.getString(10),
-					cursor.getString(11),
-					cursor.getString(12),
-					cursor.getInt(13),
-					cursor.getInt(14),
-					cursor.getString(15),
-					cursor.getInt(16));					
-		}
-		cursor.close();		
-		return comic;
+		List<Comic> comics = getComicsBySql("SELECT _id, Title, Subtitle, Author, Illustrator, Publisher, PublishDate, " +
+				"AddedDate, PageCount, IsBorrowed, Borrower, Image, ISBN, Issue, GroupId, ImageUrl, BorrowedDate, IsRead, Rating, Issues FROM tblBooks WHERE _id = ?", 
+				new String[] { Integer.toString(id) });
+		if (comics != null && comics.size() > 0)
+			return comics.get(0);
+		return null;
 	}
 	
 	public Comic getComic(String isbn)
 	{
-		Comic comic = null;
-		Cursor cursor = db.rawQuery("SELECT _id, Title, Subtitle, Author, Illustrator, Publisher, PublishDate, " +
-				"AddedDate, PageCount, IsBorrowed, Borrower, Image, ISBN, Issue, GroupId, ImageUrl, BorrowedDate FROM tblBooks WHERE ISBN = ?", new String[] { isbn });
-		if (cursor.moveToNext())
-		{
-			comic = new Comic(cursor.getInt(0),
-					cursor.getString(1),
-					cursor.getString(2),
-					cursor.getString(3),
-					cursor.getString(4),
-					cursor.getString(5),
-					cursor.getInt(6),
-					cursor.getInt(7),
-					cursor.getInt(8),
-					cursor.getInt(9),
-					cursor.getString(10),
-					cursor.getString(11),
-					cursor.getString(12),
-					cursor.getInt(13),
-					cursor.getInt(14),
-					cursor.getString(15),
-					cursor.getInt(16));					
-		}
-		cursor.close();		
-		return comic;
+		List<Comic> comics = getComicsBySql("SELECT _id, Title, Subtitle, Author, Illustrator, Publisher, PublishDate, " +
+				"AddedDate, PageCount, IsBorrowed, Borrower, Image, ISBN, Issue, GroupId, ImageUrl, BorrowedDate, IsRead, Rating, Issues FROM tblBooks WHERE ISBN = ?", 
+				new String[] { isbn });
+		if (comics != null && comics.size() > 0)
+			return comics.get(0);
+		return null;		
 	}
 	
 	public void deleteComic(int id)
@@ -460,6 +366,22 @@ public class DBHelper extends SQLiteOpenHelper {
 			//Doesn't matter too much if image can't be deleted. It will be delete when app is uninstalled.
 		}
 		db.delete("tblBooks", "_id=?", new String[] { Integer.toString(id) });
+	}
+	
+	public void setComicRead(int comicId, boolean isRead) {
+		ContentValues values = new ContentValues();
+		values.put("IsRead", isRead ? 1 : 0);
+		db.update("tblBooks", values, "_id=?", new String[] { Integer.toString(comicId) });		
+	}
+	
+	public void setComicRating(int comicId, int rating) {
+		if (rating > 5)
+			rating = 5;
+		if (rating < 0)
+			rating = 0;
+		ContentValues values = new ContentValues();
+		values.put("Rating", rating);
+		db.update("tblBooks", values, "_id=?", new String[] { Integer.toString(comicId) });
 	}
 	
 	public void setComicBorrowed(int comicId, String borrower) {

@@ -56,6 +56,7 @@ public class Edit extends BaseFragmentActivity
 	private EditText etPublished;
 	private EditText etAdded;
 	private EditText etPageCount;
+	private EditText etIssues;
 	private ImageView ivImage;
 	private String newImage = null;
 	private Spinner spGroup;
@@ -64,6 +65,7 @@ public class Edit extends BaseFragmentActivity
 	private RelativeLayout rowPublishDate;
 	private RelativeLayout rowAdded;
 	private RelativeLayout rowPageCount;
+	private RelativeLayout rowIssues;
 	
 	private ArrayAdapter<Group> adapterGroups;		
 	private AutoCompleteAdapter adapterAuthors;
@@ -78,6 +80,7 @@ public class Edit extends BaseFragmentActivity
 		etTitle = (EditText)findViewById(R.id.comicEdit_etTitle);
 		etSubtitle = (EditText)findViewById(R.id.comicEdit_etSubtitle);
 		etIssue = (EditText)findViewById(R.id.comicEdit_etIssue);
+		etIssues = (EditText)findViewById(R.id.comicEdit_etIssues);
 		etAuthor = (AutoCompleteTextView)findViewById(R.id.comicEdit_actAuthor);
 		etIllustrator = (AutoCompleteTextView)findViewById(R.id.comicEdit_actIllustrator);
 		etPublisher = (AutoCompleteTextView)findViewById(R.id.comicEdit_actPublisher);
@@ -90,7 +93,8 @@ public class Edit extends BaseFragmentActivity
 		rowIssue = (RelativeLayout)findViewById(R.id.comicEdit_issue);
 		rowPublishDate = (RelativeLayout)findViewById(R.id.comicEdit_publishDate);
 		rowAdded = (RelativeLayout)findViewById(R.id.comicEdit_added);
-		rowPageCount = (RelativeLayout)findViewById(R.id.comicEdit_pageCount);	
+		rowPageCount = (RelativeLayout)findViewById(R.id.comicEdit_pageCount);
+		rowIssues = (RelativeLayout)findViewById(R.id.comicEdit_issues);
 		SlidingDrawer drawer = (SlidingDrawer)findViewById(R.id.comicEdit_drawer);
 		
 		Intent intent = getIntent();
@@ -174,6 +178,7 @@ public class Edit extends BaseFragmentActivity
 			rowPublishDate.setVisibility(View.VISIBLE);
 			rowAdded.setVisibility(View.VISIBLE);
 			rowPageCount.setVisibility(View.VISIBLE);
+			rowIssues.setVisibility(View.VISIBLE);
 			
 			setTextField(etTitle, comic.getTitle(), false);
 			setTextField(etSubtitle, comic.getSubTitle(), false);
@@ -181,6 +186,7 @@ public class Edit extends BaseFragmentActivity
 			setTextField(etAuthor, comic.getAuthor(), false);
 			setTextField(etIllustrator, comic.getIllustrator(), false);
 			setTextField(etPublisher, comic.getPublisher(), false);
+			setTextField(etIssues, comic.getIssues(), false);
 			
 			if (comic.getPublishDateTimestamp() > 0)
 				setTextField(etPublished, new SimpleDateFormat("yyyy-MM-dd").format(comic.getPublishDate()), false);
@@ -215,7 +221,8 @@ public class Edit extends BaseFragmentActivity
 			rowIssue.setVisibility(View.GONE);
 			rowPublishDate.setVisibility(View.GONE);
 			rowAdded.setVisibility(View.GONE);
-			rowPageCount.setVisibility(View.GONE);		
+			rowPageCount.setVisibility(View.GONE);
+			rowIssues.setVisibility(View.GONE);
 			setTextField(etTitle, comic.getTitle(), true);
 			setTextField(etSubtitle, comic.getSubTitle(), true);			
 			setTextField(etAuthor, comic.getAuthor(), true);
@@ -263,9 +270,11 @@ public class Edit extends BaseFragmentActivity
 				values.put("SubTitle", etSubtitle.getText().toString());
 				values.put("Author", etAuthor.getText().toString());
 				values.put("Illustrator", etIllustrator.getText().toString());
-				values.put("Publisher", etPublisher.getText().toString());				
+				values.put("Publisher", etPublisher.getText().toString());
 				if (!isEmpty(etIssue))
 					values.put("Issue", Integer.parseInt(etIssue.getText().toString()));
+				if (!isEmpty(etIssues))
+					values.put("Issues", etIssues.getText().toString());
 				if (!isEmpty(etPageCount))
 					values.put("PageCount", Integer.parseInt(etPageCount.getText().toString()));
 				if (!isEmpty(etPublished))

@@ -111,7 +111,7 @@ public class Comics extends BaseFragmentActivity
 	//Loader Implementation
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
-		String sql = "SELECT _id AS _id, Title, Subtitle, Author, Image, Issue, IsBorrowed FROM tblBooks ";
+		String sql = "SELECT _id AS _id, Title, Subtitle, Author, Image, Issue, IsBorrowed, IsRead, Rating FROM tblBooks ";
 		
 		switch (viewType) {
 			case VIEWTYPE_GROUP:

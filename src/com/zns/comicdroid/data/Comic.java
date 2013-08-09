@@ -29,12 +29,15 @@ public class Comic
 	private int addedDate;
 	private int pageCount;
 	private int isBorrowed;
+	private int isRead;
+	private int rating;
 	private String borrower;
 	private int borrowedDate;
 	private String image;
 	private String imageUrl;
 	private String ISBN;
 	private int issue;
+	private String issues;
 	
 	public Comic() {
 	}
@@ -57,9 +60,12 @@ public class Comic
 		this.imageUrl = in.readString();
 		this.ISBN = in.readString();
 		this.issue = in.readInt();
+		this.isRead = in.readInt();
+		this.rating = in.readInt();
+		this.issues = in.readString();
 	}
 	 
-	public Comic(int id, String title, String subTitle, String author, String illustrator, String publisher, int publishDate, int addedDate, int pageCount, int isBorrowed, String borrower, String image, String isbn, int issue, int groupId, String imageUrl, int borrowedDate)
+	public Comic(int id, String title, String subTitle, String author, String illustrator, String publisher, int publishDate, int addedDate, int pageCount, int isBorrowed, String borrower, String image, String isbn, int issue, int groupId, String imageUrl, int borrowedDate, int isRead, int rating, String issues)
 	{
 		this.id = id;
 		this.groupId = groupId;
@@ -78,6 +84,9 @@ public class Comic
 		this.imageUrl = imageUrl;
 		this.ISBN = isbn;
 		this.issue = issue;
+		this.isRead = isRead;
+		this.rating = rating;
+		this.issues = issues;
 	}
 
 	public static Comic fromVolumeInfo(VolumeInfo info, String imageDirectory)
@@ -270,6 +279,13 @@ public class Comic
 		this.isBorrowed = isBorrowed ? 1 : 0;
 	}
 	
+	public Boolean getIsRead() {
+		return isRead == 1;
+	}
+	public void setIsRead(Boolean isRead) {
+		this.isRead = isRead ? 1 : 0;
+	}
+	
 	public String getBorrower() {
 		return borrower != null ? borrower : "";
 	}
@@ -307,6 +323,20 @@ public class Comic
 
 	public void setIssue(int issue) {
 		this.issue = issue;
+	}
+	
+	public int getRating() {
+		return rating;
+	}
+	public void setRating(int rating) {
+		this.rating = rating;
+	}
+	
+	public String getIssues() {
+		return issues;
+	}
+	public void setIssues(String issues) {
+		this.issues = issues;
 	}
 	
 	@Override
@@ -352,6 +382,9 @@ public class Comic
 		dest.writeString(imageUrl);
 		dest.writeString(ISBN);
 		dest.writeInt(issue);
+		dest.writeInt(isRead);
+		dest.writeInt(rating);
+		dest.writeString(issues);
 	}
 	
     public static final Parcelable.Creator<Comic> CREATOR = new Parcelable.Creator<Comic>() {

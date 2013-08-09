@@ -1,4 +1,4 @@
-	package com.zns.comicdroid.activity;
+package com.zns.comicdroid.activity;
 
 import java.util.HashMap;
 import java.util.Map;

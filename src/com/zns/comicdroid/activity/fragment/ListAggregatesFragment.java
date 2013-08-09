@@ -64,17 +64,17 @@ public class ListAggregatesFragment extends BaseListFragment {
 	
 	@Override
 	public String getSQLDefault() {
-		return "SELECT _id, Title, Subtitle, Author, Image, 1 AS ItemType, 0 AS BookCount, IsBorrowed, 0 AS TotalBookCount, 0 AS IsFinished, 0 AS IsComplete, 0 AS IsWatched FROM tblBooks WHERE GroupId = 0 OR ifnull(GroupId, '') = '' " +
+		return "SELECT _id, Title, Subtitle, Author, Image, 1 AS ItemType, 0 AS BookCount, IsBorrowed, 0 AS TotalBookCount, 0 AS IsFinished, 0 AS IsComplete, 0 AS IsWatched, IsRead, Rating FROM tblBooks WHERE GroupId = 0 OR ifnull(GroupId, '') = '' " +
 				"UNION " +
-				"SELECT _id, Name AS Title, '' AS Subtitle, '' AS Author, Image, 2 AS ItemType, BookCount, 0 AS IsBorrowed, TotalBookCount, IsFinished, IsComplete, IsWatched FROM tblGroups " +
+				"SELECT _id, Name AS Title, '' AS Subtitle, '' AS Author, Image, 2 AS ItemType, BookCount, 0 AS IsBorrowed, TotalBookCount, IsFinished, IsComplete, IsWatched, 0 AS IsRead, 0 AS Rating FROM tblGroups " +
 				"ORDER BY Title";
 	}
 	
 	@Override
 	public String getSQLFilter() {
-		return "SELECT _id, Title, Subtitle, Author, Image, 1 AS ItemType, 0 AS BookCount, IsBorrowed, 0 AS TotalBookCount, 0 AS IsFinished, 0 AS IsComplete, 0 AS IsWatched FROM tblBooks WHERE (GroupId = 0 OR ifnull(GroupId, '') = '') AND Title LIKE ? " +
+		return "SELECT _id, Title, Subtitle, Author, Image, 1 AS ItemType, 0 AS BookCount, IsBorrowed, 0 AS TotalBookCount, 0 AS IsFinished, 0 AS IsComplete, 0 AS IsWatched, IsRead, Rating FROM tblBooks WHERE (GroupId = 0 OR ifnull(GroupId, '') = '') AND Title LIKE ? " +
 				"UNION " +
-				"SELECT _id AS _id, Name AS Title, '' AS Subtitle, '' AS Author, Image, 2 AS ItemType, BookCount, 0 AS IsBorrowed, TotalBookCount, IsFinished, IsComplete, IsWatched FROM tblGroups WHERE Title LIKE ? " +
+				"SELECT _id AS _id, Name AS Title, '' AS Subtitle, '' AS Author, Image, 2 AS ItemType, BookCount, 0 AS IsBorrowed, TotalBookCount, IsFinished, IsComplete, IsWatched, 0 AS IsRead, 0 AS Rating FROM tblGroups WHERE Title LIKE ? " +
 				"ORDER BY Title";
 	}	
 }

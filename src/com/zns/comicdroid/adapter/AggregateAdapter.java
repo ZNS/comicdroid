@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -32,6 +33,7 @@ public class AggregateAdapter extends SimpleCursorAdapter {
 		ImageView ivGroupWatched;
 		ImageView ivGroupCompleted;
 		ImageView ivGroupFinished;
+		RatingBar rbComic;
 		RelativeLayout rlRow;
 	}
 	
@@ -73,7 +75,7 @@ public class AggregateAdapter extends SimpleCursorAdapter {
 	    		holder.ivGroupCompleted = (ImageView)convertView.findViewById(R.id.ivGroupCompleted);
 	    		holder.ivGroupFinished = (ImageView)convertView.findViewById(R.id.ivGroupFinished);
 	    		holder.ivGroupWatched = (ImageView)convertView.findViewById(R.id.ivGroupWatched);
-	    		
+	    		holder.rbComic = (RatingBar)convertView.findViewById(R.id.rbComicList);
 	    		convertView.setTag(holder);
 	    	}
 	    	else
@@ -92,6 +94,8 @@ public class AggregateAdapter extends SimpleCursorAdapter {
 			boolean isFinished = cursor.getInt(9) == 1;
 			boolean isComplete = cursor.getInt(10) == 1;
 			boolean isWatched = cursor.getInt(11) == 1;
+			boolean isRead = cursor.getInt(12) == 1;
+			int rating = cursor.getInt(13);
 			
 			holder.tvTitle.setText(title + (subTitle != null && !subTitle.equals("") ? " - " + subTitle : ""));
 			holder.tvAuthor.setText(author);
@@ -101,6 +105,7 @@ public class AggregateAdapter extends SimpleCursorAdapter {
 				holder.ivGroupFinished.setVisibility(isFinished ? View.VISIBLE : View.GONE);
 				holder.ivGroupCompleted.setVisibility(isComplete ? View.VISIBLE : View.GONE);
 				holder.ivGroupWatched.setVisibility(isWatched ? View.VISIBLE : View.GONE);
+				holder.rbComic.setVisibility(View.GONE);
 			}
 			else
 			{
@@ -109,6 +114,8 @@ public class AggregateAdapter extends SimpleCursorAdapter {
 				holder.ivGroupFinished.setVisibility(View.GONE);
 				holder.ivGroupWatched.setVisibility(View.GONE);
 				holder.tvCount.setText("");
+				holder.rbComic.setVisibility(rating > 0 ? View.VISIBLE : View.GONE);
+				holder.rbComic.setRating(rating);
 			}
 			if (image != null)
 			{

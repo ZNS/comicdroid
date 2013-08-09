@@ -13,8 +13,13 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RatingBar;
+import android.widget.RatingBar.OnRatingBarChangeListener;
 import android.widget.TextView;
 
 import com.actionbarsherlock.view.Menu;
@@ -43,6 +48,9 @@ public class ComicView extends BaseFragmentActivity {
 	private TextView tvPageCount;
 	private EditText etBorrower;
 	private ImageView ivImage;
+	private TextView tvIssues;
+	private CheckBox cbIsRead;
+	private RatingBar rbRating;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +69,25 @@ public class ComicView extends BaseFragmentActivity {
 		tvPageCount = (TextView)findViewById(R.id.comicView_txtPageCount);
 		etBorrower = (EditText)findViewById(R.id.comicView_etBorrower);
 		ivImage = (ImageView)findViewById(R.id.comicView_ivImage);		
+		tvIssues = (TextView)findViewById(R.id.comicView_txtIssues);
+		cbIsRead = (CheckBox)findViewById(R.id.comicView_cbIsRead);
+		rbRating = (RatingBar)findViewById(R.id.rbComicView);
+		
+		cbIsRead.setOnCheckedChangeListener(new OnCheckedChangeListener() {			
+			@Override
+			public void onCheckedChanged(CompoundButton btn, boolean checked) {
+				getDBHelper().setComicRead(currentComic.getId(), checked);
+			}
+		});
+		
+		rbRating.setOnRatingBarChangeListener(new OnRatingBarChangeListener() {
+			@Override
+			public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+				if (fromUser) {
+					getDBHelper().setComicRating(currentComic.getId(), (int)rating);
+				}
+			}
+		});
 		
 		etBorrower.setOnEditorActionListener(new TextView.OnEditorActionListener() {			
 			@Override
@@ -120,6 +147,12 @@ public class ComicView extends BaseFragmentActivity {
 		tvPublished.setText(new SimpleDateFormat("yyyy-MM-dd").format(comic.getPublishDate()));
 		tvAdded.setText(new SimpleDateFormat("yyyy-MM-dd").format(comic.getAddedDate()));
 		tvPageCount.setText(Integer.toString(comic.getPageCount()));
+		tvIssues.setText(comic.getIssues());
+		
+		cbIsRead.setChecked(comic.getIsRead());
+		if (comic.getRating() > 0)
+			rbRating.setRating(comic.getRating());
+		
 		etBorrower.setText(comic.getBorrower());
 		if (comic.getImage() != null)
 			ivImage.setImageBitmap(BitmapFactory.decodeFile(comic.getImage()));		

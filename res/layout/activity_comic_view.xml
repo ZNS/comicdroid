@@ -8,218 +8,274 @@
 	    android:layout_height="match_parent"
 	    android:padding="5dp" 
 	    tools:context=".ComicView">
-	       
+	    
 		<LinearLayout
 		    android:layout_width="match_parent"
 		    android:layout_height="match_parent"
-		    android:orientation="vertical"
-		    android:background="@color/contentBg"
-		    android:padding="5dp" >
-	    
-			<LinearLayout 
-			    android:layout_width="fill_parent"
-			    android:layout_height="wrap_content"
-			    android:orientation="horizontal" >
-			
-			    <ImageView
-			        android:id="@+id/comicView_ivImage"
+		    android:orientation="vertical">
+
+	    <TextView
+	        android:id="@+id/comicView_txtTitle"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:text=""
+			android:padding="10dp"
+	        android:paddingTop="5dp"
+	        android:layout_marginBottom="2dp"
+	        android:textColor="@color/altFg1"
+	        android:background="@color/contentBg"
+	        android:textSize="25sp"
+	        android:textStyle="bold" />
+		    	    		    
+		    <RelativeLayout
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:layout_marginBottom="2dp"
+		        android:background="@color/contentBg"	 
+		        android:padding="5dp"
+		        android:paddingLeft="10dp"
+		        android:paddingRight="10dp"       
+		        android:orientation="horizontal" >
+		        
+		        <CheckBox
+		            android:id="@+id/comicView_cbIsRead"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:text="@string/comic_isread" />	        
+		        
+		        <RatingBar
+		            android:id="@+id/rbComicView"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            style="?android:attr/ratingBarStyleIndicator"
+		            android:layout_alignParentRight="true"		            
+		            android:isIndicator="false"
+				    android:numStars="5"
+				    android:stepSize="1" />
+		        		        
+		    </RelativeLayout>
+
+		    <ScrollView
+		        android:id="@+id/comicView_svContent"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content" >
+		        			    	    
+			<LinearLayout
+			    android:layout_width="match_parent"
+			    android:layout_height="match_parent"
+			    android:orientation="vertical"
+			    android:background="@color/contentBg"
+			    android:padding="5dp" >
+		    		    
+				<LinearLayout 
+				    android:layout_width="fill_parent"
+				    android:layout_height="wrap_content"
+				    android:orientation="horizontal" >
+				
+				    <ImageView
+				        android:id="@+id/comicView_ivImage"
+				        android:layout_width="wrap_content"
+				        android:layout_height="wrap_content"
+				        android:layout_weight="0"
+				        android:layout_marginRight="10dp"
+				        android:src="@drawable/ic_launcher" />				    
+					<LinearLayout
+					    android:layout_width="0dip"
+					    android:layout_height="wrap_content"
+					    android:layout_weight="1"
+					    android:orientation="vertical" >
+					
+						<!-- Subtitle -->
+		
+					    <TextView
+					        android:id="@+id/comicView_tvSubtitleHeading"
+					        android:layout_width="wrap_content"
+					        android:layout_height="wrap_content"
+					        android:layout_marginBottom="-2dp"
+					        android:text="@string/comic_subtitle"
+					        android:textAppearance="?android:attr/textAppearanceSmall" />
+					
+					    <TextView
+					        android:id="@+id/comicView_txtSubtitle"
+					        android:layout_width="wrap_content"
+					        android:layout_height="wrap_content"
+					        android:text=""
+					        android:paddingBottom="5dp"
+					        android:textAppearance="?android:attr/textAppearanceMedium" />
+					
+						<View
+						    android:id="@+id/comicView_vSubtitleDivider"
+					    	android:layout_width="fill_parent"
+					    	android:layout_height="1dp"
+					    	android:background="@android:color/darker_gray"/>
+							
+						<!-- AUTHOR -->
+		
+					    <TextView
+					        android:layout_width="wrap_content"
+					        android:layout_height="wrap_content"
+					        android:layout_marginBottom="-2dp"
+					        android:text="@string/comic_author"
+					        android:textAppearance="?android:attr/textAppearanceSmall" />
+					
+					    <TextView
+					        android:id="@+id/comicView_txtAuthor"
+					        android:layout_width="wrap_content"
+					        android:layout_height="wrap_content"
+					        android:text=""
+					        android:paddingBottom="5dp"
+					        android:textAppearance="?android:attr/textAppearanceMedium" />
+					
+						<View
+					    	android:layout_width="fill_parent"
+					    	android:layout_height="1dp"
+					    	android:background="@android:color/darker_gray"/>	
+					</LinearLayout>
+				</LinearLayout>
+				
+				<!-- Illustrator -->
+		
+			    <TextView
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
-			        android:layout_weight="0"
-			        android:layout_marginRight="10dp"
-			        android:src="@drawable/ic_launcher" />			    
-				<LinearLayout
-				    android:layout_width="0dip"
-				    android:layout_height="wrap_content"
-				    android:layout_weight="1"
-				    android:orientation="vertical" >
-			        
-				    <TextView
-				        android:layout_width="wrap_content"
-				        android:layout_height="wrap_content"
-				        android:layout_marginBottom="-2dp"
-				        android:text="@string/comic_title"
-				        android:textAppearance="?android:attr/textAppearanceSmall" />
-				
-				    <TextView
-				        android:id="@+id/comicView_txtTitle"
-				        android:layout_width="wrap_content"
-				        android:layout_height="wrap_content"
-				        android:paddingBottom="5dp"
-				        android:textAppearance="?android:attr/textAppearanceMedium" />
-				
-					<View
-				    	android:layout_width="fill_parent"
-				    	android:layout_height="1dp"
-				    	android:background="@android:color/darker_gray"/>
-				
-					<!-- Subtitle -->
-	
-				    <TextView
-				        android:id="@+id/comicView_tvSubtitleHeading"
-				        android:layout_width="wrap_content"
-				        android:layout_height="wrap_content"
-				        android:layout_marginBottom="-2dp"
-				        android:text="@string/comic_subtitle"
-				        android:textAppearance="?android:attr/textAppearanceSmall" />
-				
-				    <TextView
-				        android:id="@+id/comicView_txtSubtitle"
-				        android:layout_width="wrap_content"
-				        android:layout_height="wrap_content"
-				        android:text=""
-				        android:paddingBottom="5dp"
-				        android:textAppearance="?android:attr/textAppearanceMedium" />
-				
-					<View
-					    android:id="@+id/comicView_vSubtitleDivider"
-				    	android:layout_width="fill_parent"
-				    	android:layout_height="1dp"
-				    	android:background="@android:color/darker_gray"/>
-						
-					<!-- AUTHOR -->
-	
-				    <TextView
-				        android:layout_width="wrap_content"
-				        android:layout_height="wrap_content"
-				        android:layout_marginBottom="-2dp"
-				        android:text="@string/comic_author"
-				        android:textAppearance="?android:attr/textAppearanceSmall" />
-				
-				    <TextView
-				        android:id="@+id/comicView_txtAuthor"
-				        android:layout_width="wrap_content"
-				        android:layout_height="wrap_content"
-				        android:text=""
-				        android:paddingBottom="5dp"
-				        android:textAppearance="?android:attr/textAppearanceMedium" />
-				
-					<View
-				    	android:layout_width="fill_parent"
-				    	android:layout_height="1dp"
-				    	android:background="@android:color/darker_gray"/>	
-				</LinearLayout>
-			</LinearLayout>
+			        android:layout_marginBottom="-2dp"
+			        android:text="@string/comic_illustrator"
+			        android:textAppearance="?android:attr/textAppearanceSmall" />
 			
-			<!-- Illustrator -->
-	
-		    <TextView
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content"
-		        android:layout_marginBottom="-2dp"
-		        android:text="@string/comic_illustrator"
-		        android:textAppearance="?android:attr/textAppearanceSmall" />
-		
-		    <TextView
-		        android:id="@+id/comicView_txtIllustrator"
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content"
-		        android:paddingBottom="5dp"
-		        android:textAppearance="?android:attr/textAppearanceMedium" />
-		
-			<View
-		    	android:layout_width="fill_parent"
-		    	android:layout_height="1dp"
-		    	android:background="@android:color/darker_gray"/>
-						
-			<!-- Publisher -->
-			    <TextView
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content"
-		        android:layout_marginBottom="-2dp"
-		        android:text="@string/comic_publisher"
-		        android:textAppearance="?android:attr/textAppearanceSmall" />
-		
-		    <TextView
-		        android:id="@+id/comicView_txtPublisher"
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content"
-		        android:paddingBottom="5dp"
-		        android:textAppearance="?android:attr/textAppearanceMedium" />
-		
-			<View
-		    	android:layout_width="fill_parent"
-		    	android:layout_height="1dp"
-		    	android:background="@android:color/darker_gray"/>
+			    <TextView
+			        android:id="@+id/comicView_txtIllustrator"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:paddingBottom="5dp"
+			        android:textAppearance="?android:attr/textAppearanceMedium" />
 			
-			<!-- Publishdate -->
-			    <TextView
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content"
-		        android:layout_marginBottom="-2dp"
-		        android:text="@string/comic_datepublished"
-		        android:textAppearance="?android:attr/textAppearanceSmall" />
-		
-		    <TextView
-		        android:id="@+id/comicView_txtPublished"
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content"
-		        android:paddingBottom="5dp"
-		        android:textAppearance="?android:attr/textAppearanceMedium" />
-		
-			<View
-		    	android:layout_width="fill_parent"
-		    	android:layout_height="1dp"
-		    	android:background="@android:color/darker_gray"/>
-			
-			<!-- Added -->
-			    <TextView
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content"
-		        android:layout_marginBottom="-2dp"
-		        android:text="@string/comic_dateadded"
-		        android:textAppearance="?android:attr/textAppearanceSmall" />
-		
-		    <TextView
-		        android:id="@+id/comicView_txtAdded"
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content"
-		        android:paddingBottom="5dp"
-		        android:textAppearance="?android:attr/textAppearanceMedium" />
-		
-			<View
-		    	android:layout_width="fill_parent"
-		    	android:layout_height="1dp"
-		    	android:background="@android:color/darker_gray"/>
-			
-			<!-- Pagecount -->
-			    <TextView
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content"
-		        android:layout_marginBottom="-2dp"
-		        android:text="@string/comic_pagecount"
-		        android:textAppearance="?android:attr/textAppearanceSmall" />
-		
-		    <TextView
-		        android:id="@+id/comicView_txtPageCount"
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content"
-		        android:paddingBottom="5dp"
-		        android:textAppearance="?android:attr/textAppearanceMedium" />
-		
-			<View
-		    	android:layout_width="fill_parent"
-		    	android:layout_height="1dp"
-		    	android:background="@android:color/darker_gray"/>
-			
-			<!-- Borrowed -->
-			    <TextView
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content"
-		        android:layout_marginBottom="-2dp"
-		        android:text="@string/comicview_borrowed"
-		        android:textAppearance="?android:attr/textAppearanceSmall" />
-		
-			<EditText
-			    android:id="@+id/comicView_etBorrower"
-			    android:layout_width="fill_parent"
-			    android:layout_height="wrap_content"
-			    android:imeOptions="actionDone"
-			    android:inputType="text|textPersonName"
-			    android:singleLine="true" >
-	
-			</EditText>
+				<View
+			    	android:layout_width="fill_parent"
+			    	android:layout_height="1dp"
+			    	android:background="@android:color/darker_gray"/>
 							
+				<!-- Publisher -->
+					    <TextView
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_marginBottom="-2dp"
+			        android:text="@string/comic_publisher"
+			        android:textAppearance="?android:attr/textAppearanceSmall" />
+			
+			    <TextView
+			        android:id="@+id/comicView_txtPublisher"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:paddingBottom="5dp"
+			        android:textAppearance="?android:attr/textAppearanceMedium" />
+			
+				<View
+			    	android:layout_width="fill_parent"
+			    	android:layout_height="1dp"
+			    	android:background="@android:color/darker_gray"/>
+
+				<!-- Issues -->
+		
+			    <TextView
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_marginBottom="-2dp"
+			        android:text="@string/comic_issues"
+			        android:textAppearance="?android:attr/textAppearanceSmall" />
+			
+			    <TextView
+			        android:id="@+id/comicView_txtIssues"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:paddingBottom="5dp"
+			        android:textAppearance="?android:attr/textAppearanceMedium" />
+			
+				<View
+			    	android:layout_width="fill_parent"
+			    	android:layout_height="1dp"
+			    	android:background="@android:color/darker_gray"/>
+												
+				<!-- Publishdate -->
+					    <TextView
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_marginBottom="-2dp"
+			        android:text="@string/comic_datepublished"
+			        android:textAppearance="?android:attr/textAppearanceSmall" />
+			
+			    <TextView
+			        android:id="@+id/comicView_txtPublished"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:paddingBottom="5dp"
+			        android:textAppearance="?android:attr/textAppearanceMedium" />
+			
+				<View
+			    	android:layout_width="fill_parent"
+			    	android:layout_height="1dp"
+			    	android:background="@android:color/darker_gray"/>
+				
+				<!-- Added -->
+					    <TextView
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_marginBottom="-2dp"
+			        android:text="@string/comic_dateadded"
+			        android:textAppearance="?android:attr/textAppearanceSmall" />
+			
+			    <TextView
+			        android:id="@+id/comicView_txtAdded"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:paddingBottom="5dp"
+			        android:textAppearance="?android:attr/textAppearanceMedium" />
+			
+				<View
+			    	android:layout_width="fill_parent"
+			    	android:layout_height="1dp"
+			    	android:background="@android:color/darker_gray"/>
+				
+				<!-- Pagecount -->
+					    <TextView
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_marginBottom="-2dp"
+			        android:text="@string/comic_pagecount"
+			        android:textAppearance="?android:attr/textAppearanceSmall" />
+			
+			    <TextView
+			        android:id="@+id/comicView_txtPageCount"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:paddingBottom="5dp"
+			        android:textAppearance="?android:attr/textAppearanceMedium" />
+			
+				<View
+			    	android:layout_width="fill_parent"
+			    	android:layout_height="1dp"
+			    	android:background="@android:color/darker_gray"/>
+				
+				<!-- Borrowed -->
+					    <TextView
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_marginBottom="-2dp"
+			        android:text="@string/comicview_borrowed"
+			        android:textAppearance="?android:attr/textAppearanceSmall" />
+			
+				<EditText
+				    android:id="@+id/comicView_etBorrower"
+				    android:layout_width="fill_parent"
+				    android:layout_height="wrap_content"
+				    android:imeOptions="actionDone"
+				    android:inputType="text|textPersonName"
+				    android:singleLine="true" >
+		
+				</EditText>
+								
+			</LinearLayout>
+			</ScrollView>
+			
 		</LinearLayout>
 	</FrameLayout>
 	

@@ -2,4 +2,5 @@
 <resources>
     <color name="contentBg">#f0ffff</color>
     <color name="listViewBorrowed">#e0efef</color>
+    <color name="altFg1">#0099CC</color>
 </resources>
