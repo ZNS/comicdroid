@@ -46,6 +46,7 @@
     <string name="add_search_notfound">Kunde tyvärr inte hitta boken</string>
     <string name="add_search_invalidisbn">Ogiltigt ISBN</string>
     <string name="add_search_isduplicate">Boken är redan tillagd</string>
+    <string name="add_isread">Markera tillagda serier som lästa</string>
     <string name="edit_listhandle">Serier som redigeras</string>
     <string name="edit_done">Sparat och klart!</string>
     <string name="edit_needtosave">Du måste spara innan du kan lägga till en bild.</string>
@@ -67,15 +68,26 @@
     <string name="comic_issue">Volym</string>
     <string name="comic_isread">Läst</string>
     <string name="comic_issues">Samlar följande</string>
-    <string name="hello_world">Hello world!</string>
     <string name="borrow_etBorrower">Utlånad till..</string>
     <string name="borrow_btnClear">Rensa</string>
     <string name="borrow_notadded">Efterfrågad bok är inte tillagd</string>
     <string name="borrow_added">Serien markerad som utlånad</string>
     <string name="dialog_group_create">Spara samling</string>
     <string name="borrowed_empty">Ingenting är utlånat! Passa på att läsa lite..</string>
-    <string name="settings_drivelabel">Publicera arkiv på google drive</string>
+    <string name="settings_drivelabel">Publicera på drive</string>
+    <string name="settings_drivesub">Gör ditt arkiv publikt på nätet genom att publicera en HTML-sida på ditt google drive-konto.</string>
+    <string name="settings_publishlabel">Publicera nu</string>
+    <string name="settings_publishsub">Om google drive inte är uppdaterat så kan du publicera nu genom att trycka på knappen. Observera att publicering måste vara påslaget ovan.</string>
+    <string name="settings_btnPublish">Publicera nu</string>
+    <string name="settings_readlabel">Markera som läst</string>
+    <string name="settings_readsub">Tryck på knappen nedan för att markera alla serier som lästa.</string>
+    <string name="settings_btnRead">Markera allt som läst</string>    
+    <string name="settings_groupcountlabel">Uppdatera samlingar</string>
+    <string name="settings_groupcountsub">Om antalet böcker som rapporteras för samlingar är felaktigt kan du rätta till det genom att trycka på knappen nedan.</string>
+    <string name="settings_btnGroupCount">Uppdatera samlingsräknare</string>        
     <string name="settings_linktext">Visa arkiv på google drive</string>
+    <string name="settings_publish_notification">Arkivet har publicerats till google drive.</string>
+    <string name="settings_updateGroupCount_notification">Räknare för samlingar har uppdaterats.</string>
     <string name="drawer_open">Öppna</string>
     <string name="drawer_close">Stäng</string>
     <string name="group_delete_title">Radera samling?</string>
@@ -89,4 +101,5 @@
     <string name="group_complete">Komplett</string>
     <string name="action_settings">Settings</string>
     <string name="watched_empty">Du bevakar inga samlingar för tillfället.</string>
+    <string name="sort_rating">Betyg</string>
 </resources>

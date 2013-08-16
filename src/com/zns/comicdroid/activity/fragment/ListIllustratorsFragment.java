@@ -1,5 +1,6 @@
 package com.zns.comicdroid.activity.fragment;
 
+import android.app.backup.BackupManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -17,7 +18,6 @@ import com.zns.comicdroid.activity.Comics;
 import com.zns.comicdroid.adapter.GroupedItemAdapter;
 import com.zns.comicdroid.data.DBHelper;
 import com.zns.comicdroid.dialog.RenameDialogFragment;
-import com.zns.comicdroid.service.UploadService;
 
 public class ListIllustratorsFragment extends BaseListFragment
 	implements RenameDialogFragment.OnRenameDialogListener
@@ -104,8 +104,8 @@ public class ListIllustratorsFragment extends BaseListFragment
 	public void onDialogPositiveClick(String oldName, String newName) {
 		DBHelper.getHelper(getActivity()).renameIllustrator(oldName, newName);
 		this.update();
-		//Sync with google drive
-		Intent intent = new Intent(getActivity(), UploadService.class);
-		getActivity().startService(intent);
+		//Backup
+		BackupManager m = new BackupManager(getActivity());
+		m.dataChanged();
 	}	
 }

@@ -8,7 +8,12 @@
 	    android:layout_height="match_parent"
 	    android:padding="5dp" 
 	    tools:context=".Settings">
-	       
+
+	    <ScrollView
+	        android:id="@+id/settings_svContent"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content" >	    	       
+	        
 		<LinearLayout
 		    android:layout_width="match_parent"
 		    android:layout_height="match_parent"
@@ -16,6 +21,19 @@
 		    android:background="@color/contentBg"
 		    android:padding="5dp" >
 	
+		    <TextView
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:textAppearance="?android:attr/textAppearanceLarge"
+		        android:text="Inställningar" />
+
+			<View
+		    	android:layout_width="fill_parent"
+		    	android:layout_height="2dp"
+		    	android:layout_marginTop="2dp"
+		    	android:layout_marginBottom="8dp"
+		    	android:background="@android:color/darker_gray"/>
+					    		    
 		    <RelativeLayout
 		        android:layout_width="match_parent"
 		        android:layout_height="wrap_content" >
@@ -24,16 +42,28 @@
 		            android:id="@+id/settings_tbDropbox"
 		            android:layout_width="wrap_content"
 		            android:layout_height="wrap_content"
+		            android:layout_centerVertical="true"
 		            android:layout_alignParentRight="true" />
 		
 		        <TextView
+		            android:id="@+id/settings_tvDriveHeading"
 		            android:layout_width="wrap_content"
 		            android:layout_height="wrap_content"
 		            android:layout_alignParentLeft="true"
-		            android:layout_centerVertical="true"
+		            android:layout_toLeftOf="@id/settings_tbDropbox"
 		            android:text="@string/settings_drivelabel"
 		            android:textAppearance="?android:attr/textAppearanceMedium" />
 		
+		        <TextView
+		            android:id="@+id/settings_tvDriveSub"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:layout_alignParentLeft="true"		            
+		            android:layout_below="@id/settings_tvDriveHeading"
+		            android:layout_toLeftOf="@id/settings_tbDropbox"		            
+		            android:text="@string/settings_drivesub"
+		            android:textAppearance="?android:attr/textAppearanceSmall" />
+		        		        
 		    </RelativeLayout>
 	
 		    <TextView
@@ -42,8 +72,107 @@
 		        android:layout_height="wrap_content" 
 		        android:textColor="@color/altFg1"
 		        android:textSize="13sp" />
+							    
+		    <!--  ACTIONS  -->
+		    <TextView
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_marginTop="10dp"
+		        android:textAppearance="?android:attr/textAppearanceLarge"
+		        android:text="Aktiviteter" />
+		    		    
+			<View
+		    	android:layout_width="fill_parent"
+		    	android:layout_height="2dp"
+		    	android:layout_marginTop="2dp"
+		    	android:layout_marginBottom="8dp"
+		    	android:background="@android:color/darker_gray"/>
+			
+			<!-- Publish -->
+			<TextView
+	            android:id="@+id/settings_tvPublishHeading"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="@string/settings_publishlabel"
+	            android:textAppearance="?android:attr/textAppearanceMedium" />
 	
+	        <TextView
+	            android:id="@+id/settings_tvPublishSub"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="@string/settings_publishsub"
+	            android:textAppearance="?android:attr/textAppearanceSmall" />
+	        		        
+	        <Button
+	            android:id="@+id/settings_btnPublish"
+	            android:layout_width="fill_parent"
+	            android:layout_height="30dp"
+			    style="@style/ButtonText"		        
+		        android:background="@drawable/button"
+		        android:text="@string/settings_btnPublish"
+		        android:onClick="publishToDriveClick" />
+		        		    			
+			<View
+		    	android:layout_width="fill_parent"
+		    	android:layout_height="1dp"
+		    	android:layout_marginTop="10dp"
+		    	android:layout_marginBottom="10dp"
+		    	android:background="@android:color/darker_gray"/>
+				        			
+			<!-- Set Read -->
+			<TextView
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="@string/settings_readlabel"
+	            android:textAppearance="?android:attr/textAppearanceMedium" />
+	
+	        <TextView
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="@string/settings_readsub"
+	            android:textAppearance="?android:attr/textAppearanceSmall" />
+	        		        
+	        <Button
+	            android:id="@+id/settings_btnSetRead"
+	            android:layout_width="fill_parent"
+	            android:layout_height="30dp"
+			    style="@style/ButtonText"		        
+		        android:background="@drawable/button"
+		        android:text="@string/settings_btnRead"
+		        android:onClick="setReadClick" />
+	        	        
+			<View
+		    	android:layout_width="fill_parent"
+		    	android:layout_height="1dp"
+		    	android:layout_marginTop="10dp"
+		    	android:layout_marginBottom="10dp"
+		    	android:background="@android:color/darker_gray"/>
+				        			
+			<!-- Update Group Count -->
+			<TextView
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="@string/settings_groupcountlabel"
+	            android:textAppearance="?android:attr/textAppearanceMedium" />
+	
+	        <TextView
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="@string/settings_groupcountsub"
+	            android:textAppearance="?android:attr/textAppearanceSmall" />
+	        		        
+	        <Button
+	            android:id="@+id/settings_btnGroupCount"
+	            android:layout_width="fill_parent"
+	            android:layout_height="30dp"
+			    style="@style/ButtonText"		        
+		        android:background="@drawable/button"
+		        android:text="@string/settings_btnGroupCount"
+		        android:onClick="updateGroupCountClick" />
+	        	        
 		</LinearLayout>
+		</ScrollView>
+		
 	</FrameLayout>
 	<include layout="@layout/navigation_drawer_left" />
 </android.support.v4.widget.DrawerLayout>

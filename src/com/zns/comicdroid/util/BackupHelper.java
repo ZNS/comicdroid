@@ -16,6 +16,7 @@ import android.app.backup.BackupAgent;
 import android.app.backup.BackupDataInput;
 import android.app.backup.BackupDataOutput;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
@@ -24,7 +25,9 @@ import android.preference.PreferenceManager;
 
 import com.google.common.base.Joiner;
 import com.zns.comicdroid.Application;
+import com.zns.comicdroid.activity.Settings;
 import com.zns.comicdroid.data.DBHelper;
+import com.zns.comicdroid.service.UploadService;
 
 public class BackupHelper extends BackupAgent {
 	private final static String BACKUP_KEY_PREFS = "com.zns.comicdroid.backup.prefs";
@@ -101,15 +104,15 @@ public class BackupHelper extends BackupAgent {
 				
 				try
 				{
-					cb = db.getCursor("SELECT _id, GroupId, Title, Subtitle, Publisher, Author, Image, ImageUrl, PublishDate, AddedDate, PageCount, IsBorrowed, Borrower, BorrowedDate, ISBN, Issue" +
+					cb = db.getCursor("SELECT _id, GroupId, Title, Subtitle, Publisher, Author, Image, ImageUrl, PublishDate, AddedDate, PageCount, IsBorrowed, Borrower, BorrowedDate, ISBN, Issue, Issues, IsRead, Rating" +
 							" FROM tblBooks ORDER BY _id", null);
 					int count = cb.getCount();
 					writer.writeInt(count);					
 					while (cb.moveToNext())
 					{
 						writer.writeInt(cb.getInt(0));
-						writer.writeUTF(String.format("INSERT INTO tblBooks(_id, GroupId, Title, Subtitle, Publisher, Author, Image, ImageUrl, PublishDate, AddedDate, PageCount, IsBorrowed, Borrower, BorrowedDate, ISBN, Issue)" +
-								" VALUES(%d ,%d, %s, %s, %s, %s, %s, %s, %d, %d, %d, %d, %s, %d, %s, %d);", 
+						writer.writeUTF(String.format("INSERT INTO tblBooks(_id, GroupId, Title, Subtitle, Publisher, Author, Image, ImageUrl, PublishDate, AddedDate, PageCount, IsBorrowed, Borrower, BorrowedDate, ISBN, Issue, Issues, IsRead, Rating)" +
+								" VALUES(%d ,%d, %s, %s, %s, %s, %s, %s, %d, %d, %d, %d, %s, %d, %s, %d, %s, %d, %d);", 
 								cb.getInt(0),
 								cb.getInt(1),
 								dbString(cb.getString(2)),
@@ -125,7 +128,10 @@ public class BackupHelper extends BackupAgent {
 								dbString(cb.getString(12)),
 								cb.getInt(13),
 								dbString(cb.getString(14)),
-								cb.getInt(15)));
+								cb.getInt(15),
+								dbString(cb.getString(16)),
+								cb.getInt(17),
+								cb.getInt(18)));
 					}
 				}
 				finally {
@@ -166,6 +172,10 @@ public class BackupHelper extends BackupAgent {
 					writer.close();
 			}
 		}
+		
+		//Upload to google drive
+		Intent intent = new Intent(getApplicationContext(), UploadService.class);
+		startService(intent);
 		
 		//Write newstate
 		FileOutputStream outstream = null;

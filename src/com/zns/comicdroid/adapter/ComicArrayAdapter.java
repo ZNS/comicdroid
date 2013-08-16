@@ -73,11 +73,10 @@ public class ComicArrayAdapter extends ArrayAdapter<Comic> {
 		  if (comic.getIssue() > 0)
 		  {
 			  holder.tvIssue.setText("Vol. " + Integer.toString(comic.getIssue()));
-			  holder.tvIssue.setVisibility(View.VISIBLE);
 		  }
 		  else
 		  {
-			  holder.tvIssue.setVisibility(View.GONE);
+			  holder.tvIssue.setText("");
 		  }
 		  if (comic.getImage() != null)
 		  {

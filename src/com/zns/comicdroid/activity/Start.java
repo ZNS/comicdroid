@@ -1,13 +1,13 @@
 package com.zns.comicdroid.activity;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.lang.ref.WeakReference;
 
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -16,6 +16,7 @@ import android.support.v4.view.ViewPager;
 import android.text.InputType;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.Tab;
 import com.actionbarsherlock.view.Menu;
@@ -105,7 +106,7 @@ public class Start extends BaseFragmentActivity
 	protected void onResume() {
 		super.onResume();		
 		//Refresh data
-		BaseListFragment fragment = fragmentAdapter.getFragment(viewPager.getCurrentItem());
+		BaseListFragment fragment = getCurrentFragment();
 		if (fragment != null) {
 			fragment.update();
 		}
@@ -122,7 +123,10 @@ public class Start extends BaseFragmentActivity
             String query = intent.getStringExtra(SearchManager.QUERY);
             if (menuSearch != null)
             	menuSearch.collapseActionView();
-            fragmentAdapter.getFragment(viewPager.getCurrentItem()).setFilter(query);
+            BaseListFragment fragment = getCurrentFragment();
+            if (fragment != null) {
+            	fragment.setFilter(query);
+            }
         }
     }
     
@@ -144,14 +148,20 @@ public class Start extends BaseFragmentActivity
 					String query = searchView.getQuery().toString();
 					if (query.trim().length() == 0) {
 						menuSearch.collapseActionView();
-			            fragmentAdapter.getFragment(viewPager.getCurrentItem()).clearFilter();
+						BaseListFragment fragment = getCurrentFragment();
+						if (fragment != null) {
+							fragment.clearFilter();
+						}
 					}
 				}
 				else {
-					String filter = fragmentAdapter.getFragment(viewPager.getCurrentItem()).getFilter();
-					if (filter != null && filter.length() > 0) {
-						searchView.setQuery(filter, false);
-					}	
+					BaseListFragment fragment = getCurrentFragment();
+					if (fragment != null) {					
+						String filter = fragment.getFilter();
+						if (filter != null && filter.length() > 0) {
+							searchView.setQuery(filter, false);
+						}	
+					}
 				}
 			}
 	    });
@@ -170,27 +180,33 @@ public class Start extends BaseFragmentActivity
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // Handle item selection
-	    switch (item.getItemId()) {
-        	case R.id.menu_edit:
-	        	Intent intent = new Intent(this, Edit.class);
-	        	BaseListFragment fragment = fragmentAdapter.getFragment(viewPager.getCurrentItem());
-	        	int[] ids = fragment.getItemIds();
-				intent.putExtra(Edit.INTENT_COMIC_IDS, ids);
-	        	startActivity(intent);
-	            return true;
-        	case R.id.sort_title:
-        		fragmentAdapter.getFragment(viewPager.getCurrentItem()).setOrderBy("Title, Issue");
-        		return true;
-        	case R.id.sort_added:
-        		fragmentAdapter.getFragment(viewPager.getCurrentItem()).setOrderBy("AddedDate DESC, Title, Issue");
-        		return true;        		
-	    }
+		BaseListFragment fragment = getCurrentFragment();		
+		if (fragment != null)
+		{
+		    switch (item.getItemId()) {
+	        	case R.id.menu_edit:
+		        	Intent intent = new Intent(this, Edit.class);
+		        	int[] ids = fragment.getItemIds();
+					intent.putExtra(Edit.INTENT_COMIC_IDS, ids);
+		        	startActivity(intent);
+		            return true;
+	        	case R.id.sort_title:
+	        		fragment.setOrderBy("Title, Issue");
+	        		return true;
+	        	case R.id.sort_added:
+	        		fragment.setOrderBy("AddedDate DESC, Title, Issue");
+	        		return true;
+	        	case R.id.sort_rating:
+	        		fragment.setOrderBy("Rating DESC, Title, Issue");
+	        		return true;        		
+		    }
+		}
 	    return super.onOptionsItemSelected(item);
 	}
 	
 	@Override
 	public void onListLoaded() {
-		BaseListFragment fragment = fragmentAdapter.getFragment(viewPager.getCurrentItem());
+		BaseListFragment fragment = getCurrentFragment();
 		if (fragment != null && menuEdit != null)
 		{
 			if (currentTab == TAB_TITLES && fragment.getFilter() != null && !fragment.getFilter().equals("") && fragment.adapter.getCount() > 0) {
@@ -230,8 +246,18 @@ public class Start extends BaseFragmentActivity
 		
 	}		
 	
+	private BaseListFragment getCurrentFragment() 
+	{
+		int index = viewPager.getCurrentItem();
+		if (index > -1) {			
+			return fragmentAdapter.getFragment(index);			
+		}
+		return null;
+	}
+	
 	class TabFragmentAdapter extends FragmentStatePagerAdapter {
-		private Map<Integer, BaseListFragment> mPageReferenceMap = new HashMap<Integer, BaseListFragment>();
+		@SuppressWarnings("unchecked")
+		final WeakReference<BaseListFragment>[] m_fragments = new WeakReference[TAB_COUNT];
 		
 		public TabFragmentAdapter(FragmentManager fm) {
 			super(fm);
@@ -252,16 +278,17 @@ public class Start extends BaseFragmentActivity
 				fragment = ListPublishersFragment.newInstance(pos);
 			else
 				fragment = ListAggregatesFragment.newInstance(pos);
-			
-			mPageReferenceMap.put(Integer.valueOf(pos), fragment);
-			
+						
+			m_fragments[pos] = new WeakReference<BaseListFragment>(fragment);
+				
 			return fragment;
 		}
 
 		@Override
 		public void destroyItem(ViewGroup container, int position, Object object) {
 			super.destroyItem(container, position, object);
-			mPageReferenceMap.remove(Integer.valueOf(position));
+			if (m_fragments[position] != null)
+				m_fragments[position].clear();
 		}
 		
 		@Override
@@ -269,9 +296,35 @@ public class Start extends BaseFragmentActivity
 			return TAB_COUNT;
 		}
 		
-		public BaseListFragment getFragment(int pos) {
-			BaseListFragment fragment = mPageReferenceMap.get(pos);
-			return fragment;
+		//We need to keep track of when fragments are restored via state. This is ripped from android source code...
+		@Override
+	    public void restoreState(Parcelable state, ClassLoader loader) {
+			super.restoreState(state, loader);
+			if (state != null)
+			{
+				for (int i = 0; i < m_fragments.length; i++) {
+					if (m_fragments[i] != null)
+						m_fragments[i].clear();
+				}
+				
+				Bundle bundle = (Bundle)state;
+				bundle.setClassLoader(loader);
+				Iterable<String> keys = bundle.keySet();
+	            for (String key: keys) {
+	                if (key.startsWith("f")) {
+	                    int index = Integer.parseInt(key.substring(1));
+	                    Fragment f = getSupportFragmentManager().getFragment(bundle, key);
+	                    if (f != null && f instanceof BaseListFragment) {
+	                    	m_fragments[index] = new WeakReference<BaseListFragment>((BaseListFragment)f);
+	                    }
+	                }
+	            }
+			}
 		}
+		
+	    public BaseListFragment getFragment(final int position) {
+	        return m_fragments[position] == null ? null :
+	            m_fragments[position].get();
+	    }		
 	}
 }

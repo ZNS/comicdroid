@@ -93,7 +93,7 @@
 	    android:numStars="5"
 	    android:stepSize="1" 
 	    style="?android:attr/ratingBarStyleSmall"
-	    android:visibility="visible" />
+	    android:visibility="gone" />
 	
 	<ImageView
 	    android:id="@+id/ivGroupMark"

@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.backup.BackupManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -27,7 +28,6 @@ import com.actionbarsherlock.view.MenuItem;
 import com.zns.comicdroid.BaseFragmentActivity;
 import com.zns.comicdroid.R;
 import com.zns.comicdroid.data.Comic;
-import com.zns.comicdroid.service.UploadService;
 
 @SuppressLint("SimpleDateFormat")
 public class ComicView extends BaseFragmentActivity {
@@ -122,6 +122,16 @@ public class ComicView extends BaseFragmentActivity {
 		}
 	}
 	
+	@Override
+	protected void onPause()
+	{
+		if (currentComic != null && !currentComic.getBorrower().equals(etBorrower.getText().toString()))
+		{
+			getDBHelper().setComicBorrowed(currentComic.getId(), etBorrower.getText().toString());
+		}
+		super.onPause();
+	}
+	
 	private void BindComic(Comic comic)
 	{
 		if (comic == null)
@@ -183,9 +193,9 @@ public class ComicView extends BaseFragmentActivity {
         	    .setPositiveButton(R.string.common_yes, new DialogInterface.OnClickListener() {
         	        public void onClick(DialogInterface dialog, int which) { 
         	        	getDBHelper().deleteComic(currentComic.getId());
-        				//Sync with google drive
-        				Intent intent = new Intent(ComicView.this, UploadService.class);
-        				startService(intent);
+        	    		//Backup
+        	    		BackupManager m = new BackupManager(ComicView.this);
+        	    		m.dataChanged();
         				//Back to start
         	        	Intent intent2 = new Intent(ComicView.this, Start.class);
         	        	startActivity(intent2);

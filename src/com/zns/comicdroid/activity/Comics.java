@@ -1,6 +1,7 @@
 package com.zns.comicdroid.activity;
 
 import android.app.AlertDialog;
+import android.app.backup.BackupManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -24,7 +25,6 @@ import com.zns.comicdroid.adapter.ComicAdapter;
 import com.zns.comicdroid.data.Group;
 import com.zns.comicdroid.dialog.GroupDialogFragment;
 import com.zns.comicdroid.dialog.RenameDialogFragment;
-import com.zns.comicdroid.service.UploadService;
 
 public class Comics extends BaseFragmentActivity
 	implements	LoaderCallbacks<Cursor>,
@@ -183,9 +183,9 @@ public class Comics extends BaseFragmentActivity
         	    .setPositiveButton(R.string.common_yes, new DialogInterface.OnClickListener() {
         	        public void onClick(DialogInterface dialog, int which) { 
         	        	getDBHelper().deleteGroup(groupId, deleteComics);
-        				//Sync with google drive
-        				Intent intent = new Intent(Comics.this, UploadService.class);
-        				startService(intent);
+        	    		//Backup
+        	    		BackupManager m = new BackupManager(Comics.this);
+        	    		m.dataChanged();
         				//Back to start
         	        	Intent intent2 = new Intent(Comics.this, Start.class);
         	        	startActivity(intent2);
@@ -217,9 +217,9 @@ public class Comics extends BaseFragmentActivity
 				break;
 		}
 		tvHeading.setText(newName);
-		//Sync with google drive
-		Intent intent = new Intent(Comics.this, UploadService.class);
-		startService(intent);
+		//Backup
+		BackupManager m = new BackupManager(this);
+		m.dataChanged();
 	}
 
 	@Override

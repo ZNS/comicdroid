@@ -90,6 +90,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		db.execSQL(tblMeta);
 		db.execSQL("INSERT INTO tblMeta(_id,LastModified) VALUES(1, strftime('%s','now'))");
 		
+		//Update cover for group
 		String triggerGroupId = "CREATE TRIGGER update_boook_groupid_image AFTER UPDATE OF GroupId ON tblBooks " +
 				"WHEN new.Issue = 1 " +
 				"BEGIN " +
@@ -102,6 +103,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				"UPDATE tblGroups SET Image = new.Image, ImageUrl = new.ImageUrl WHERE new.GroupId <> 0 AND _id = new.GroupId; " +
 				"END;";
 		
+		//Track count of books for groups
 		String triggerGroupId2 = "CREATE TRIGGER update_book_groupid_count AFTER UPDATE OF GroupId ON tblBooks " +
 				"WHEN new.GroupId <> old.GroupId " +
 				"BEGIN " +
@@ -115,6 +117,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				"UPDATE tblGroups SET BookCount=BookCount+1 WHERE _id = new.GroupId; " +
 				"END;";
 		
+		//Track updates
 		String triggerModUpd  = "CREATE TRIGGER update_book AFTER UPDATE ON tblBooks " +
 				"BEGIN " +
 				"UPDATE tblMeta SET LastModified = strftime('%s','now'); " +
@@ -368,6 +371,11 @@ public class DBHelper extends SQLiteOpenHelper {
 		db.delete("tblBooks", "_id=?", new String[] { Integer.toString(id) });
 	}
 	
+	public void setAllComicsRead()
+	{
+		db.execSQL("UPDATE tblBooks SET IsRead=1");
+	}
+	
 	public void setComicRead(int comicId, boolean isRead) {
 		ContentValues values = new ContentValues();
 		values.put("IsRead", isRead ? 1 : 0);
@@ -560,6 +568,11 @@ public class DBHelper extends SQLiteOpenHelper {
 		ContentValues values = new ContentValues();
 		values.put("IsComplete", complete ? 1 : 0);
 		db.update("tblGroups", values, "_id=?", new String[] { Integer.toString(groupId) });
+	}
+	
+	public void updateGroupBookCount()
+	{
+		db.execSQL("UPDATE tblGroups SET BookCount = (SELECT Count(*) FROM tblBooks WHERE GroupId = tblGroups._id)");
 	}
 	
 	public boolean isDuplicateComic(String isbn) {

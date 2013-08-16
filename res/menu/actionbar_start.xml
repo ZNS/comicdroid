@@ -17,6 +17,7 @@
             <menu>
                 <item android:id="@+id/sort_title" android:title="@string/sort_title"/>
                 <item android:id="@+id/sort_added" android:title="@string/sort_added"/>
+                <item android:id="@+id/sort_rating" android:title="@string/sort_rating"/>
             </menu>
         </item>
        

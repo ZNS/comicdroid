@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.backup.BackupManager;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -36,7 +37,6 @@ import com.zns.comicdroid.adapter.ComicArrayAdapter;
 import com.zns.comicdroid.data.Comic;
 import com.zns.comicdroid.data.Group;
 import com.zns.comicdroid.dialog.GroupDialogFragment;
-import com.zns.comicdroid.service.UploadService;
 import com.zns.comicdroid.util.ImageHandler;
 
 public class Edit extends BaseFragmentActivity
@@ -323,9 +323,9 @@ public class Edit extends BaseFragmentActivity
 			}
 		}
 		
-		//Sync with google drive
-		Intent intent = new Intent(this, UploadService.class);
-		startService(intent);
+		//Backup
+		BackupManager m = new BackupManager(this);
+		m.dataChanged();
 		
 		setResult(RESULT_OK);
 		

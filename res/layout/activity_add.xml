@@ -26,7 +26,7 @@
 		    <RelativeLayout
 		        android:layout_width="fill_parent"
 		        android:layout_height="wrap_content"
-		        android:layout_marginBottom="10dp" >
+		        android:layout_marginBottom="2dp" >
 				
 				<ImageView
 				    android:id="@+id/add_ivGroupAdd"
@@ -42,7 +42,14 @@
 				    android:layout_toLeftOf="@id/add_ivGroupAdd" />
 				
 		    </RelativeLayout>
-				        	
+			
+		    <CheckBox
+				android:id="@+id/add_cbIsRead"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginBottom="8dp"
+				android:text="@string/add_isread" />
+		    	        	
 			<RelativeLayout
 			    android:layout_width="fill_parent"
 			    android:layout_height="wrap_content"
@@ -63,6 +70,7 @@
 			        android:layout_width="fill_parent"
 			        android:layout_height="wrap_content"
 			        android:layout_toLeftOf="@id/btnSearch"
+			        android:inputType="number"
 			        android:hint="ISBN" />
 			    	    
 			</RelativeLayout>

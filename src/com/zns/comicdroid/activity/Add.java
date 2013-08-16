@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import android.app.backup.BackupManager;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.support.v4.app.DialogFragment;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -26,7 +28,6 @@ import com.zns.comicdroid.data.Comic;
 import com.zns.comicdroid.data.Group;
 import com.zns.comicdroid.dialog.AuthorIllustratorDialogFragment;
 import com.zns.comicdroid.dialog.GroupDialogFragment;
-import com.zns.comicdroid.service.UploadService;
 import com.zns.comicdroid.task.BooksQueryResult;
 import com.zns.comicdroid.task.BooksQueryTask;
 
@@ -42,6 +43,7 @@ public class Add extends BaseFragmentActivity
 	private ComicArrayAdapter adapter;
 	private Spinner spGroup;
 	private boolean isScanning = false;
+	private CheckBox cbIsRead;
 		
 	private ArrayAdapter<Group> adapterGroups;
 	
@@ -52,6 +54,7 @@ public class Add extends BaseFragmentActivity
                 
         etISBN = (EditText)findViewById(R.id.etISBN);        
         spGroup = (Spinner)findViewById(R.id.add_spGroup);
+        cbIsRead = (CheckBox)findViewById(R.id.add_cbIsRead);
         ListView lvComics = (ListView)findViewById(R.id.add_lvComics);
         ImageView ivGroupAdd = (ImageView)findViewById(R.id.add_ivGroupAdd);
         
@@ -103,9 +106,9 @@ public class Add extends BaseFragmentActivity
 		if (!isScanning)
 		{
 			if (adapter != null && adapter.getCount() > 0) {
-				//Sync with google drive
-				Intent intent = new Intent(this, UploadService.class);
-				startService(intent);
+				//Backup
+				BackupManager m = new BackupManager(this);
+				m.dataChanged();
 			}
 		}
 		super.onStop();
@@ -150,6 +153,9 @@ public class Add extends BaseFragmentActivity
 			if (spGroup.getSelectedItemPosition() > 0) {
 				Group g = (Group)spGroup.getSelectedItem();
 				result.comic.setGroupId(g.getId());
+			}
+			if (cbIsRead.isChecked()) {
+				result.comic.setIsRead(true);
 			}
 			int comicId = getDBHelper().storeComic(result.comic);			
 			if (result.comic.getAuthor().contains(","))

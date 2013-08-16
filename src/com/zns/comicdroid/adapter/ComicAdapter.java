@@ -95,10 +95,9 @@ public class ComicAdapter extends SimpleCursorAdapter
 			holder.tvAuthor.setText(author);
 			if (issue > 0) {
 				holder.tvIssue.setText("Vol. " + Integer.toString(issue));
-				holder.tvIssue.setVisibility(View.VISIBLE);
 			}
 			else {
-				holder.tvIssue.setVisibility(View.GONE);
+				holder.tvIssue.setText("");
 			}
 			
 			if (image != null) {

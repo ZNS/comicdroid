@@ -3,12 +3,16 @@ package com.zns.comicdroid.activity;
 import java.util.Arrays;
 
 import android.accounts.AccountManager;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.view.View;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
@@ -59,7 +63,7 @@ public class Settings extends BaseFragmentActivity
 			tvLink.setText(Html.fromHtml("<a href=\"https://googledrive.com/host/" + pref.getString(Application.PREF_DRIVE_WEBFOLDERID, "") + "/\">" + getResources().getString(R.string.settings_linktext) + "</a>"));
 			tvLink.setMovementMethod(LinkMovementMethod.getInstance());
 		}
-		
+				
 		//If called from notification, stop upload service
 		Intent intent = getIntent();
 		if (intent != null && intent.getExtras() != null)
@@ -136,5 +140,31 @@ public class Settings extends BaseFragmentActivity
 				editor.commit();
 			}
 		}
-	}	
+	}
+	
+	private void showNotificationDialog(int text) {
+		new AlertDialog.Builder(this)
+			.setMessage(text)
+			.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+	           public void onClick(DialogInterface dialog, int id) {
+	        	   dialog.cancel();
+	           }
+			}).show();
+	}
+	
+	public void publishToDriveClick(View view) {
+		Intent intent = new Intent(getApplicationContext(), UploadService.class);
+		startService(intent);
+		showNotificationDialog(R.string.settings_publish_notification);
+	}
+	
+	public void updateGroupCountClick(View view) {
+		getDBHelper().updateGroupBookCount();
+		showNotificationDialog(R.string.settings_updateGroupCount_notification);
+	}
+	
+	public void setReadClick(View view) {
+		getDBHelper().setAllComicsRead();
+	}
+	
 }
