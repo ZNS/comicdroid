@@ -16,13 +16,13 @@ import android.support.v4.view.ViewPager;
 import android.text.InputType;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.Tab;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
-import com.actionbarsherlock.widget.SearchView.OnQueryTextListener;
 import com.zns.comicdroid.BaseFragmentActivity;
 import com.zns.comicdroid.BaseListFragment;
 import com.zns.comicdroid.R;
@@ -50,6 +50,7 @@ public class Start extends BaseFragmentActivity
 	private SearchView searchView;
 	private ViewPager viewPager;
 	private TabFragmentAdapter fragmentAdapter;
+	private TextView tvEmpty;
 	    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +91,9 @@ public class Start extends BaseFragmentActivity
 		tab4.setTag(TAB_PUBLISHERS);
 		tab4.setTabListener(this);
 		getSupportActionBar().addTab(tab4);
+		
+		//Layout elements
+		tvEmpty = (TextView)findViewById(R.id.start_tvEmpty);
 		
 		//View pager
 		fragmentAdapter = new TabFragmentAdapter(getSupportFragmentManager());
@@ -206,6 +210,14 @@ public class Start extends BaseFragmentActivity
 			}
 			else {
 				menuEdit.setVisible(false);
+			}
+		}
+		
+		tvEmpty.setVisibility(View.GONE);
+		if (viewPager != null && viewPager.getCurrentItem() == 0) {
+			if (!getCurrentFragment().hasItems())
+			{
+				tvEmpty.setVisibility(View.VISIBLE);
 			}
 		}
 	}

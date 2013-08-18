@@ -89,7 +89,7 @@ public class Comic
 		this.issues = issues;
 	}
 
-	public static Comic fromVolumeInfo(VolumeInfo info, String imageDirectory)
+	public static Comic fromVolumeInfo(VolumeInfo info, String imageDirectory, String isbn)
 			throws ParseException
 	{
 		if (info == null || info.getTitle() == null)
@@ -128,7 +128,11 @@ public class Comic
 		//Set title
 		comic.setTitle(title.trim());
 		
-		if (info.getIndustryIdentifiers() != null)
+		//Set isbn to the passed if available
+		if (isbn != null & isbn.length() > 0) {
+			comic.setISBN(isbn);		
+		}
+		else if (info.getIndustryIdentifiers() != null)
 		{
 			List<IndustryIdentifiers> ids = info.getIndustryIdentifiers();
 			for (IndustryIdentifiers id : ids)
@@ -142,6 +146,7 @@ public class Comic
 			if (comic.getISBN() == null)
 				comic.setISBN(ids.get(0).getIdentifier());
 		}
+		
 		if (info.getSubtitle() != null)
 			comic.setSubTitle(info.getSubtitle());
 		if (info.getAuthors() != null)

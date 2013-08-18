@@ -78,7 +78,7 @@ public class ComicArrayAdapter extends ArrayAdapter<Comic> {
 		  {
 			  holder.tvIssue.setText("");
 		  }
-		  if (comic.getImage() != null)
+		  if (comic.getImage() != null && !comic.getImage().equals(""))
 		  {
 			  Bitmap bmp = BitmapFactory.decodeFile(comic.getImage());
 			  if (bmp != null)

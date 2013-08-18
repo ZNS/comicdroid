@@ -154,6 +154,17 @@ public abstract class BaseListFragment extends BaseFragment
 		return null;
 	}
 	
+	public boolean hasItems() {
+		if (adapter.getCursor() != null)
+		{
+			int pos = adapter.getCursor().getPosition();
+			if (pos <= 0 && !adapter.getCursor().moveToFirst()) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	//Loader Implementation
 	@Override
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {

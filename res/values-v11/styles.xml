@@ -8,4 +8,17 @@
         <!-- API 11 theme customizations can go here. -->
     </style>
 
+    <!-- Text for listboxes, non-inverted starting with Android 3.0 -->
+
+    <style name="MyListTextAppearanceSmall">
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+    </style>
+
+    <style name="MyListTextAppearanceDefault">
+        <item name="android:textAppearance">?android:attr/textAppearance</item>
+    </style>
+
+    <style name="MyListTextAppearanceMedium">
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    </style>    
 </resources>

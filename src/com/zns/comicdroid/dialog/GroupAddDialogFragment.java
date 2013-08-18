@@ -20,6 +20,11 @@ public class GroupAddDialogFragment extends DialogFragment {
     
 	OnGroupAddDialogListener groupAddCallback;
 	
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+    
 	@Override
 	public void onAttach(Activity activity) {
 	    super.onAttach(activity);	    

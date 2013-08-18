@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">ComicDroid</string>
-    <string name="title_activity_start"></string>
+    <string name="title_activity_start">ComicDroid</string>
     <string name="title_activity_add">Lägg till</string>
     <string name="title_activity_comic_view"></string>
     <string name="title_activity_authors"></string>
@@ -49,6 +49,7 @@
     <string name="add_search_invalidisbn">Ogiltigt ISBN</string>
     <string name="add_search_isduplicate">Boken är redan tillagd</string>
     <string name="add_isread">Markera tillagda serier som lästa</string>
+    <string name="add_success">Hittade och arkiverade serie</string>
     <string name="edit_listhandle">Serier som redigeras</string>
     <string name="edit_done">Sparat och klart!</string>
     <string name="edit_needtosave">Du måste spara innan du kan lägga till en bild.</string>
@@ -106,4 +107,5 @@
     <string name="sort_rating">Betyg</string>
     <string name="comics_heading_read">Att läsa</string>
     <string name="watched_heading">Bevakade samlingar</string>
+    <string name="archive_empty">Du har inte lagt till några serier än. Dra in menyn från vänsterkanten och välj "Lägg till".</string>
 </resources>

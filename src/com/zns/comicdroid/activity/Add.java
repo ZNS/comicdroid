@@ -177,6 +177,8 @@ public class Add extends BaseFragmentActivity
 			}			
 			adapter.insert(result.comic, 0);
 			adapter.notifyDataSetChanged();
+			
+			Toast.makeText(Add.this, getResources().getString(R.string.add_success), Toast.LENGTH_SHORT).show();
 			return;
 		}
 		

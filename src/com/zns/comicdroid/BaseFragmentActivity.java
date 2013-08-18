@@ -1,7 +1,10 @@
 package com.zns.comicdroid;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.view.View;
@@ -65,6 +68,16 @@ public class BaseFragmentActivity
 	        }
 	    };
 	    drawer.setDrawerListener(drawerToggle);
+	    
+		//First use check
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		boolean isFirstTime = prefs.getBoolean(Application.PREF_FIRST_TIME_USE, true);
+		if (isFirstTime) {			
+			drawer.openDrawer(drawerList);
+			Editor prefsEdit = prefs.edit();
+			prefsEdit.putBoolean(Application.PREF_FIRST_TIME_USE, false);
+			prefsEdit.commit();
+		}	    
 	}
 	
 	@Override

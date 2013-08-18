@@ -1,0 +1,22 @@
+<resources>
+    <!--
+        Base application theme for API 8+. This theme completely replaces
+        AppBaseTheme from BOTH res/values/styles.xml and
+        res/values-v8/styles.xml on API 8+ devices.
+    -->
+    <style name="AppBaseTheme" parent="android:Theme.Holo.Light">
+        <!-- API 8 theme customizations can go here. -->
+    </style>
+        
+	<style name="MyListTextAppearanceSmall">
+	    <item name="android:textAppearance">?android:attr/textAppearanceSmallInverse</item>
+	</style>
+	
+	<style name="MyListTextAppearanceDefault">
+	    <item name="android:textAppearance">?android:attr/textAppearanceInverse</item>
+	</style>
+	
+	<style name="MyListTextAppearanceMedium">
+	    <item name="android:textAppearance">?android:attr/textAppearanceMediumInverse</item>
+	</style>
+</resources>
