@@ -26,6 +26,7 @@ public abstract class BaseListFragment extends BaseFragment
 	}
 	
 	private static final String STATE_SCROLLY = "LISTVIEW_SCROLL_Y";
+	private static final String STATE_FILTER = "FILTER";
 	public OnListLoadedListener listLoadedCallback = null;
 	public SimpleCursorAdapter adapter;	
 	private String filter;
@@ -51,7 +52,10 @@ public abstract class BaseListFragment extends BaseFragment
             index = args.getInt("index");
         }
         if (savedInstanceState != null)
+        {
         	scrollPos = savedInstanceState.getIntArray(STATE_SCROLLY);
+        	filter = savedInstanceState.getString(STATE_FILTER);
+        }
     }
 	
 	@Override
@@ -89,6 +93,7 @@ public abstract class BaseListFragment extends BaseFragment
 	public void onSaveInstanceState(Bundle outState) {
 	    super.onSaveInstanceState(outState);
 	    outState.putIntArray(STATE_SCROLLY, scrollPos);
+	    outState.putString(STATE_FILTER, filter);
 	}
 		
 	@Override
@@ -158,7 +163,7 @@ public abstract class BaseListFragment extends BaseFragment
 			List<String> params = new ArrayList<String>();
 			int paramIndex = -1;
 			while((paramIndex = sql.indexOf("?", paramIndex + 1)) > -1) {
-				params.add(filter + "%");
+				params.add("%" + filter + "%");
 			}
 			loader = new SQLiteCursorLoader(getActivity(), DBHelper.getHelper(getActivity()), appendOrderBy(getSQLFilter()), params.toArray(new String[params.size()]));
 		}

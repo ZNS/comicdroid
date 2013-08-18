@@ -24,6 +24,8 @@
     <string name="menu_settings_sub">Diverse inställningar för ComicDroid</string>
     <string name="menu_watched">Bevakas</string>
     <string name="menu_watched_sub">Se vilka samlingar du bevakar</string>
+    <string name="menu_read">Att läsa</string>
+    <string name="menu_read_sub">Visa alla serier markerade som olästa</string>
     <string name="menu_returncomic">Återlämnade</string>
     <string name="common_addtogroup">Lägg tillagda serier till samling:</string>
     <string name="common_search">Sök</string>
@@ -102,4 +104,6 @@
     <string name="action_settings">Settings</string>
     <string name="watched_empty">Du bevakar inga samlingar för tillfället.</string>
     <string name="sort_rating">Betyg</string>
+    <string name="comics_heading_read">Att läsa</string>
+    <string name="watched_heading">Bevakade samlingar</string>
 </resources>

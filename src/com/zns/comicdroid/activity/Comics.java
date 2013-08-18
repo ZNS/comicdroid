@@ -40,6 +40,7 @@ public class Comics extends BaseFragmentActivity
 	public static final int VIEWTYPE_AUTHOR = 2;
 	public static final int VIEWTYPE_PUBLISHER = 3;
 	public static final int VIEWTYPE_ILLUSTRATOR = 4;
+	public static final int VIEWTYPE_READ = 5;
 	
 	private SQLiteCursorLoader loader;
 	private ComicAdapter adapter;
@@ -126,6 +127,9 @@ public class Comics extends BaseFragmentActivity
 			case VIEWTYPE_ILLUSTRATOR:
 				sql += "WHERE Illustrator = ? ORDER BY Title, Issue";
 				break;
+			case VIEWTYPE_READ:
+				sql += " WHERE IsRead = ? ORDER BY Title, Issue";
+				break;
 		}
 			
 		loader = new SQLiteCursorLoader(Comics.this, getDBHelper(), sql, new String[] { viewWhereValue });
@@ -147,6 +151,9 @@ public class Comics extends BaseFragmentActivity
 		super.onCreateOptionsMenu(menu);
 		com.actionbarsherlock.view.MenuInflater inflater = getSupportMenuInflater();
 		inflater.inflate(R.menu.actionbar_view, (com.actionbarsherlock.view.Menu) menu);
+		if (viewType == VIEWTYPE_READ) {
+			menu.getItem(0).setVisible(false);
+		}
 		if (viewType != VIEWTYPE_GROUP) {
 			//Hide delete
 			menu.getItem(1).setVisible(false);

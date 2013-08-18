@@ -22,6 +22,7 @@ import com.actionbarsherlock.app.ActionBar.Tab;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
+import com.actionbarsherlock.widget.SearchView.OnQueryTextListener;
 import com.zns.comicdroid.BaseFragmentActivity;
 import com.zns.comicdroid.BaseListFragment;
 import com.zns.comicdroid.R;
@@ -121,8 +122,8 @@ public class Start extends BaseFragmentActivity
     private void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
-            if (menuSearch != null)
-            	menuSearch.collapseActionView();
+            //if (menuSearch != null)
+            //	menuSearch.collapseActionView();
             BaseListFragment fragment = getCurrentFragment();
             if (fragment != null) {
             	fragment.setFilter(query);
@@ -152,15 +153,6 @@ public class Start extends BaseFragmentActivity
 						if (fragment != null) {
 							fragment.clearFilter();
 						}
-					}
-				}
-				else {
-					BaseListFragment fragment = getCurrentFragment();
-					if (fragment != null) {					
-						String filter = fragment.getFilter();
-						if (filter != null && filter.length() > 0) {
-							searchView.setQuery(filter, false);
-						}	
 					}
 				}
 			}
@@ -221,6 +213,7 @@ public class Start extends BaseFragmentActivity
 	//Tab Implementation
 	@Override
 	public void onTabSelected(Tab tab, FragmentTransaction ft) {
+		//Sorting
 		String tag = (String)tab.getTag();
 		if (menuSort != null) {
 			if (tag.equals(TAB_TITLES))
@@ -228,6 +221,22 @@ public class Start extends BaseFragmentActivity
 			else
 				menuSort.setVisible(false);
 		}
+		
+		//Searchview
+		BaseListFragment fragment = getCurrentFragment();
+		if (fragment != null)
+		{
+			if (fragment.getFilter() != null) {
+				menuSearch.expandActionView();
+				searchView.setQuery(fragment.getFilter(), false);
+				searchView.clearFocus();
+			}
+			else {
+				menuSearch.collapseActionView();
+				searchView.setQuery(null, false);				
+			}
+		}
+		
 		if (tag.equals(currentTab))
 			return;
 		viewPager.setCurrentItem(tab.getPosition());
@@ -248,9 +257,12 @@ public class Start extends BaseFragmentActivity
 	
 	private BaseListFragment getCurrentFragment() 
 	{
-		int index = viewPager.getCurrentItem();
-		if (index > -1) {			
-			return fragmentAdapter.getFragment(index);			
+		if (viewPager != null)
+		{
+			int index = viewPager.getCurrentItem();
+			if (index > -1) {			
+				return fragmentAdapter.getFragment(index);			
+			}
 		}
 		return null;
 	}
