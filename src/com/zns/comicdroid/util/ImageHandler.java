@@ -3,6 +3,7 @@ package com.zns.comicdroid.util;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,6 +32,23 @@ public final class ImageHandler {
 	private ImageHandler() {		
 	}
 
+	public static void storeImage(Bitmap bmp, String filePath, int quality)
+	{
+		FileOutputStream out = null;
+		try {
+			out = new FileOutputStream(filePath);
+			bmp.compress(COMPRESSFORMAT, quality, out);			
+		} 
+		catch (FileNotFoundException e) {}
+		finally {
+			try {
+				if (out != null)
+					out.close();
+			} 
+			catch (IOException e1) {}			
+		}
+	}
+	
 	public static String storeImage(URL url, String directory)
 			throws IOException, MediaNotReadyException {
 		

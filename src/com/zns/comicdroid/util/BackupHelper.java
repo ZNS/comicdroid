@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,12 +21,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.ParcelFileDescriptor;
 import android.preference.PreferenceManager;
 
 import com.google.common.base.Joiner;
 import com.zns.comicdroid.Application;
-import com.zns.comicdroid.activity.Settings;
 import com.zns.comicdroid.data.DBHelper;
 import com.zns.comicdroid.service.UploadService;
 
@@ -132,6 +134,32 @@ public class BackupHelper extends BackupAgent {
 								dbString(cb.getString(16)),
 								cb.getInt(17),
 								cb.getInt(18)));
+						//Image
+						String imgPath = cb.getString(6);
+						String imgUrl = cb.getString(7);
+						if ((imgUrl == null || imgUrl.length() == 0) && (imgPath != null && imgPath.length() > 0))
+						{							
+							Bitmap bmp = BitmapFactory.decodeFile(imgPath);
+							if (bmp != null)
+							{
+								int size = bmp.getRowBytes() * bmp.getHeight();
+								ByteBuffer buffer = ByteBuffer.allocate(size);
+								bmp.copyPixelsToBuffer(buffer);
+								//Write image size
+								writer.writeInt(size);
+								//Write image path
+								writer.writeUTF(imgPath);	
+								//Write image data							
+								writer.write(buffer.array());
+							}
+							else {
+								writer.writeInt(0);
+							}
+						}
+						else
+						{
+							writer.writeInt(0);
+						}
 					}
 				}
 				finally {
@@ -173,10 +201,6 @@ public class BackupHelper extends BackupAgent {
 			}
 		}
 		
-		//Upload to google drive
-		Intent intent = new Intent(getApplicationContext(), UploadService.class);
-		startService(intent);
-		
 		//Write newstate
 		FileOutputStream outstream = null;
 		DataOutputStream out = null;
@@ -190,6 +214,10 @@ public class BackupHelper extends BackupAgent {
 			if (out != null)
 				out.close();
 		}
+		
+		//Upload to google drive
+		Intent intent = new Intent(getApplicationContext(), UploadService.class);
+		startService(intent);		
 	}
 
 	@Override
@@ -262,6 +290,22 @@ public class BackupHelper extends BackupAgent {
 								//Failed to restore comic...
 							}
 						}
+						
+						//Restore local images, read image size
+						int imgSize = in.readInt();
+						if (imgSize > 0)
+						{
+							//Read image path
+							String imgPath = in.readUTF();
+							//Read image data
+							byte[] imgData = new byte[imgSize];							
+							in.readFully(imgData, 0, imgSize);
+							Bitmap bmp = BitmapFactory.decodeByteArray(imgData, 0, imgSize);
+							if (bmp != null)
+							{
+								ImageHandler.storeImage(bmp, imgPath, 100);
+							}
+						}
 					}
 					
 					//Groups
@@ -279,7 +323,7 @@ public class BackupHelper extends BackupAgent {
 						}
 					}
 					
-					//Fix images
+					//Fix images with urls
 					Cursor cb = null;
 					String imageDirectory = getExternalFilesDir(null).toString();					
 					try 

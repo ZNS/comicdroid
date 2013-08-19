@@ -4,10 +4,20 @@
         AppBaseTheme from BOTH res/values/styles.xml and
         res/values-v8/styles.xml on API 8+ devices.
     -->
-    <style name="AppBaseTheme" parent="android:Theme.Holo.Light">
+    <style name="AppBaseTheme" parent="Theme.Sherlock.Light.DarkActionBar">
         <!-- API 8 theme customizations can go here. -->
+	    <item name="android:autoCompleteTextViewStyle">@style/Widget.AutoCompleteTextViewLight</item>
+	    <item name="android:dropDownItemStyle">@style/Widget.DropDownItemLight</item>                        
     </style>
         
+	<style name="Widget.AutoCompleteTextViewLight" parent="@android:style/Widget.AutoCompleteTextView">
+	    <item name="android:textColor">@android:color/primary_text_light</item>
+	</style>
+	
+	<style name="Widget.DropDownItemLight" parent="@android:style/Widget.DropDownItem">
+	    <item name="android:textColor">@android:color/primary_text_light</item>
+	</style>    
+	    
 	<style name="MyListTextAppearanceSmall">
 	    <item name="android:textAppearance">?android:attr/textAppearanceSmallInverse</item>
 	</style>

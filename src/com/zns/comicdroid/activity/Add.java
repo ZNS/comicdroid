@@ -12,6 +12,7 @@ import android.support.v4.app.DialogFragment;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -44,6 +45,7 @@ public class Add extends BaseFragmentActivity
 	private Spinner spGroup;
 	private boolean isScanning = false;
 	private CheckBox cbIsRead;
+	private Button btnScan;
 		
 	private ArrayAdapter<Group> adapterGroups;
 	
@@ -57,6 +59,7 @@ public class Add extends BaseFragmentActivity
         cbIsRead = (CheckBox)findViewById(R.id.add_cbIsRead);
         ListView lvComics = (ListView)findViewById(R.id.add_lvComics);
         ImageView ivGroupAdd = (ImageView)findViewById(R.id.add_ivGroupAdd);
+        btnScan = (Button)findViewById(R.id.btnScan);
         
 		EventBus.getDefault().register(this, "onBookQueryComplete", BooksQueryResult.class);
 		
@@ -182,6 +185,7 @@ public class Add extends BaseFragmentActivity
 			return;
 		}
 		
+    	btnScan.setEnabled(true);
 		etISBN.setText("");
 		Toast
 			.makeText(Add.this, getResources().getString(R.string.add_search_notfound), Toast.LENGTH_LONG)
@@ -218,7 +222,7 @@ public class Add extends BaseFragmentActivity
 	    		}
 	    	}
 	    	if (!isValid) {
-	    		Toast.makeText(this, getResources().getString(R.string.add_search_invalidisbn), Toast.LENGTH_LONG).show();
+	    		Toast.makeText(this, getResources().getString(R.string.add_search_invalidisbn), Toast.LENGTH_LONG).show();	    		
 	    		return;
 	    	}
 	    	
@@ -230,6 +234,7 @@ public class Add extends BaseFragmentActivity
     	}
     	
     	//Fire query
+    	btnScan.setEnabled(false);    	
     	String q = "isbn:" + isbn;
     	if (isbn.contains(":"))
     		q = isbn;

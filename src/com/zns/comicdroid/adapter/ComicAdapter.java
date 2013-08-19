@@ -52,6 +52,23 @@ public class ComicAdapter extends SimpleCursorAdapter
 		return 0;
 	}
 	
+	public int[] getComicIds()
+	{
+		int[] ids = null;
+		if (getCursor() != null)
+		{
+			Cursor cursor = getCursor();
+			ids = new int[cursor.getCount()];
+			int i = 0;
+			cursor.moveToPosition(-1);
+			while(cursor.moveToNext()) {
+				ids[i] = cursor.getInt(0);
+				i++;
+			}
+		}
+		return ids;		
+	}
+	
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		Cursor cursor = getCursor();

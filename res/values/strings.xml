@@ -27,6 +27,7 @@
     <string name="menu_read">Att läsa</string>
     <string name="menu_read_sub">Visa alla serier markerade som olästa</string>
     <string name="menu_returncomic">Återlämnade</string>
+    <string name="menu_editall">Redigera alla</string>
     <string name="common_addtogroup">Lägg tillagda serier till samling:</string>
     <string name="common_search">Sök</string>
     <string name="common_group">Samling</string>

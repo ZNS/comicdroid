@@ -154,9 +154,9 @@ public class Comics extends BaseFragmentActivity
 		if (viewType == VIEWTYPE_READ) {
 			menu.getItem(0).setVisible(false);
 		}
-		if (viewType != VIEWTYPE_GROUP) {
-			//Hide delete
-			menu.getItem(1).setVisible(false);
+		if (viewType == VIEWTYPE_GROUP) {
+			//Show sub menu
+			menu.getItem(1).setVisible(true);
 		}
 		return true;
 	}	
@@ -205,6 +205,12 @@ public class Comics extends BaseFragmentActivity
         	        }
         	     })
         	     .show();        		
+        		return true;
+        	case R.id.menu_editall:
+	        	Intent intent = new Intent(this, Edit.class);
+	        	int[] ids = adapter.getComicIds();
+				intent.putExtra(Edit.INTENT_COMIC_IDS, ids);
+	        	startActivity(intent);        		
         		return true;
 	    }
 	    return super.onOptionsItemSelected(item);
