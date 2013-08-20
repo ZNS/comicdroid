@@ -77,10 +77,8 @@ public class BackupHelper extends BackupAgent {
 		try
 		{
 			instream = new FileInputStream(oldState.getFileDescriptor());
-			in = new DataInputStream(instream);
-			
-			int lastBackup = in.readInt();			
-			
+			in = new DataInputStream(instream);			
+			int lastBackup = in.readInt();						
 			if (lastBackup >= dataModifed)
 				performBackup = false;
 			}
@@ -199,6 +197,10 @@ public class BackupHelper extends BackupAgent {
 				if (writer != null)
 					writer.close();
 			}
+			
+			//Upload to google drive
+			Intent intent = new Intent(getApplicationContext(), UploadService.class);
+			startService(intent);			
 		}
 		
 		//Write newstate
@@ -214,10 +216,6 @@ public class BackupHelper extends BackupAgent {
 			if (out != null)
 				out.close();
 		}
-		
-		//Upload to google drive
-		Intent intent = new Intent(getApplicationContext(), UploadService.class);
-		startService(intent);		
 	}
 
 	@Override

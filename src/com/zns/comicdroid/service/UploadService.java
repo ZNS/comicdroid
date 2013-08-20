@@ -62,9 +62,9 @@ public class UploadService extends IntentService {
 		
 		PendingIntent pendingIntent = stack.getPendingIntent(0, PendingIntent.FLAG_CANCEL_CURRENT);
 		NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
-		.setContentTitle("ComicDroid kunde inte publicera till google drive")
+		.setContentTitle(getString(R.string.nUploaderrorheading))
 		.setSmallIcon(R.drawable.ic_launcher)
-		.setContentText("Klicka här för att aktivera publiceringen igen")
+		.setContentText(getString(R.string.nUploaderrorsub))
 		.setAutoCancel(true)
 		.setContentIntent(pendingIntent);
 		
