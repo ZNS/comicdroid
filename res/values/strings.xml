@@ -81,7 +81,7 @@
     <string name="settings_drivelabel">Publish on drive</string>
     <string name="settings_drivesub">Make your archive public by publishing an HTML-page on your google drive account.</string>
     <string name="settings_publishlabel">Publish now</string>
-    <string name="settings_publishsub">If google drive isn't up to date you can publish now. You need to have publishing enabled above.</string>
+    <string name="settings_publishsub">If google drive isn\'t up to date you can publish now. You need to have publishing enabled above.</string>
     <string name="settings_btnPublish">Publish now</string>
     <string name="settings_readlabel">Mark as read</string>
     <string name="settings_readsub">Press the button below to mark all comics as read.</string>
@@ -108,7 +108,7 @@
     <string name="sort_rating">Rating</string>
     <string name="comics_heading_read">To read</string>
     <string name="watched_heading">Watched collections</string>
-    <string name="archive_empty">You haven't added any comics yet. Pull in the menu from the left and choose "Add"</string>
-    <string name="nUploaderrorheading">ComicDroid couldn't publish on google drive</string>
+    <string name="archive_empty">You haven\'t added any comics yet. Pull in the menu from the left and choose "Add"</string>
+    <string name="nUploaderrorheading">ComicDroid couldn\'t publish on google drive</string>
     <string name="nUploaderrorsub">Click here to enable publishing again</string>
 </resources>
