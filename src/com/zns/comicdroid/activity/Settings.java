@@ -151,6 +151,11 @@ public class Settings extends BaseFragmentActivity
 							//Check checkbox
 							tbDriveBackup.setChecked(true);
 						}
+						else
+						{
+							Toast.makeText(Settings.this, R.string.error_driveappdataaccess, Toast.LENGTH_SHORT).show();
+							tbDriveBackup.setChecked(false);
+						}						
 					}
 				}.execute(args);
 			}

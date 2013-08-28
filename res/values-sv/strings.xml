@@ -116,4 +116,5 @@
     <string name="archive_empty">Du har inte lagt till några serier än. Dra in menyn från vänsterkanten och välj "Lägg till"</string>
     <string name="nUploaderrorheading">ComicDroid kunde inte publicera till google drive</string>
     <string name="nUploaderrorsub">Klicka här för att aktivera publiceringen igen</string>
+    <string name="error_driveappdataaccess">Kunde inte använda google drive</string>
 </resources>

@@ -1,9 +1,24 @@
 package com.zns.comicdroid.service;
 
+import java.io.DataInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
+
+import android.app.IntentService;
+import android.content.ContentValues;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.preference.PreferenceManager;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
@@ -13,13 +28,10 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.ChildList;
 import com.google.api.services.drive.model.ChildReference;
+import com.google.common.base.Joiner;
 import com.zns.comicdroid.Application;
-
-import android.app.IntentService;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-import android.preference.PreferenceManager;
+import com.zns.comicdroid.data.DBHelper;
+import com.zns.comicdroid.util.ImageHandler;
 
 public class RestoreFromDriveService extends IntentService {
 	
@@ -95,9 +107,115 @@ public class RestoreFromDriveService extends IntentService {
 				} 
 				catch (IOException e) {}
 			}
-			//editor.commit();
+			editor.commit();
 		}
 		
+		//-------------------------Restore Data------------------------------------
+		if (gFileData != null && gFileData.getDownloadUrl() != null && gFileData.getDownloadUrl().length() > 0)
+		{		
+			DBHelper db = DBHelper.getHelper(getApplicationContext());
+			DataInputStream in = null;		
+			try
+			{
+				HttpResponse response = service.getRequestFactory().buildGetRequest(new GenericUrl(gFileData.getDownloadUrl())).execute();		
+				in = new DataInputStream(response.getContent());
+				 
+				//Comics
+				List<Integer> addedComics = new ArrayList<Integer>();
+				int rows = in.readInt();
+				for (int i = 0; i < rows; i++)
+				{
+					int id = in.readInt();
+					String sql = in.readUTF();
+					if (sql != null && !sql.equals("")) {
+						try {
+							db.execSQL(sql);
+							addedComics.add(id);
+						}
+						catch (Exception x) {
+							//Failed to restore comic...
+						}
+					}
+					
+					//Restore local images, read image size
+					int imgSize = in.readInt();
+					if (imgSize > 0)
+					{
+						//Read image path
+						String imgPath = in.readUTF();
+						//Read image data
+						byte[] imgData = new byte[imgSize];							
+						in.readFully(imgData, 0, imgSize);
+						Bitmap bmp = BitmapFactory.decodeByteArray(imgData, 0, imgSize);
+						if (bmp != null)
+						{
+							ImageHandler.storeImage(bmp, imgPath, 100);
+						}
+					}
+				}
+				
+				//Groups
+				rows = in.readInt();
+				for (int i = 0; i < rows; i++)
+				{
+					String sql = in.readUTF();
+					if (sql != null && !sql.equals("")) {
+						try {
+							db.execSQL(sql);
+						}
+						catch (Exception x) {
+							//Failed to restore group...
+						}
+					}
+				}
+				
+				//Fix images with urls
+				Cursor cb = null;
+				String imageDirectory = getExternalFilesDir(null).toString();
+				try 
+				{
+					String ids = Joiner.on(',').join(addedComics);
+					cb = db.getCursor("SELECT _id, Image, ImageUrl FROM tblBooks WHERE _id IN (" + ids  + ")", null);
+					while (cb.moveToNext()) {
+						String filePath = cb.getString(1);
+						if (filePath.length() > 0) {
+							File file = new File(filePath);
+							if (file.exists())
+								continue;
+						}
+						String url = cb.getString(2);
+						if (url.length() > 0) {
+							try
+							{
+								filePath = ImageHandler.storeImage(new URL(url), imageDirectory);
+								ContentValues val = new ContentValues();
+								val.put("Image", filePath);
+								db.update("tblBooks", val, "_id=?", new String[] { Integer.toString(cb.getInt(0)) });
+							}
+							catch (Exception x)
+							{
+								//Unable to save image to disk
+							}
+						}
+					}
+				}
+				finally
+				{
+					cb.close();
+				}
+			}
+			catch (Exception e) {				
+			}
+			finally {
+				if (in != null) {
+					try {
+						in.close();
+					}
+					catch (IOException e) {}
+				}
+			}
+		}
+ 	
 		stopSelf();
  	}
 }

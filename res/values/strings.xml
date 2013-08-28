@@ -118,4 +118,5 @@
     <string name="archive_empty">You haven\'t added any comics yet. Pull in the menu from the left and choose "Add"</string>
     <string name="nUploaderrorheading">ComicDroid couldn\'t publish on google drive</string>
     <string name="nUploaderrorsub">Click here to enable publishing again</string>
+    <string name="error_driveappdataaccess">Unable to access google drive</string>
 </resources>
