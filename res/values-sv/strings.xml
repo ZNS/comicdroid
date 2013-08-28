@@ -89,9 +89,14 @@
     <string name="settings_groupcountlabel">Uppdatera samlingar</string>
     <string name="settings_groupcountsub">Om antalet böcker som rapporteras för samlingar är felaktigt kan du rätta till det genom att trycka på knappen nedan.</string>
     <string name="settings_btnGroupCount">Uppdatera samlingsräknare</string>        
+    <string name="settings_restorelabel">Återställ data</string>
+    <string name="settings_restoresub">Försöker återställa data från google backup. DETTA KOMMER RADERA ALLT!</string>
+    <string name="settings_btnRestore">Återställ från google-backup</string>    
     <string name="settings_linktext">Visa arkiv på google drive</string>
     <string name="settings_publish_notification">Arkivet har publicerats till google drive.</string>
     <string name="settings_updateGroupCount_notification">Räknare för samlingar har uppdaterats</string>
+    <string name="settings_restoresuccess">Återställningen av data lyckades!</string>
+    <string name="settings_restoreerror">Kunde inte återställa data!</string>    
     <string name="drawer_open">Öppna</string>
     <string name="drawer_close">Stäng</string>
     <string name="group_delete_title">Radera samling?</string>

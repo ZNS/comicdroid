@@ -62,8 +62,7 @@
 		            android:layout_below="@id/settings_tvDriveHeading"
 		            android:layout_toLeftOf="@id/settings_tbDropbox"		            
 		            android:text="@string/settings_drivesub"
-		            android:textAppearance="?android:attr/textAppearanceSmall" />
-		        		        
+		            android:textAppearance="?android:attr/textAppearanceSmall" />		        		        
 		    </RelativeLayout>
 	
 		    <TextView
@@ -72,7 +71,46 @@
 		        android:layout_height="wrap_content" 
 		        android:textColor="@color/altFg1"
 		        android:textSize="13sp" />
-							    
+							 
+			<View
+		    	android:layout_width="fill_parent"
+		    	android:layout_height="1dp"
+		    	android:layout_marginTop="10dp"
+		    	android:layout_marginBottom="10dp"
+		    	android:background="@android:color/darker_gray"/>
+					    
+			<!-- Drive Backup -->
+		    <RelativeLayout
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content" >
+		
+		        <ToggleButton
+		            android:id="@+id/settings_tbDriveBackup"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:layout_centerVertical="true"
+		            android:layout_alignParentRight="true" />
+		
+		        <TextView
+		            android:id="@+id/settings_tvDriveBackupHeading"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:layout_alignParentLeft="true"
+		            android:layout_toLeftOf="@id/settings_tbDriveBackup"
+		            android:text="@string/settings_drivebackuplabel"
+		            android:textAppearance="?android:attr/textAppearanceMedium" />
+		
+		        <TextView
+		            android:id="@+id/settings_tvDriveBackupSub"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:layout_alignParentLeft="true"		            
+		            android:layout_below="@id/settings_tvDriveBackupHeading"
+		            android:layout_toLeftOf="@id/settings_tbDriveBackup"		            
+		            android:text="@string/settings_drivebackupsub"
+		            android:textAppearance="?android:attr/textAppearanceSmall" />		        		        
+		    </RelativeLayout>
+		    			
 		    <!--  ACTIONS  -->
 		    <TextView
 		        android:layout_width="wrap_content"
@@ -169,6 +207,28 @@
 		        android:background="@drawable/button"
 		        android:text="@string/settings_btnGroupCount"
 		        android:onClick="updateGroupCountClick" />
+	        	        
+			<!-- Restore -->
+			<TextView
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="@string/settings_restorelabel"
+	            android:textAppearance="?android:attr/textAppearanceMedium" />
+	
+	        <TextView
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="@string/settings_restoresub"
+	            android:textAppearance="?android:attr/textAppearanceSmall" />
+	        		        
+	        <Button
+	            android:id="@+id/settings_btnRestore"
+	            android:layout_width="fill_parent"
+	            android:layout_height="30dp"
+			    style="@style/ButtonText"		        
+		        android:background="@drawable/button"
+		        android:text="@string/settings_btnRestore"
+		        android:onClick="restoreClick" />
 	        	        
 		</LinearLayout>
 		</ScrollView>

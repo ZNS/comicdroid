@@ -31,10 +31,15 @@
             android:value="AEdPqrEAAAAIiyMVCBSADUqYW_4cLdlakdFXkNHGSLwkPucGKA" />
 
         <service
-            android:name="com.zns.comicdroid.service.UploadService"
+            android:name="com.zns.comicdroid.service.GoogleDriveService"
             android:exported="false" >
         </service>
 
+        <service
+            android:name="com.zns.comicdroid.service.RestoreFromDriveService"
+            android:exported="false" >
+        </service>
+                
         <activity
             android:name="com.zns.comicdroid.activity.Start"
             android:label="@string/title_activity_start"

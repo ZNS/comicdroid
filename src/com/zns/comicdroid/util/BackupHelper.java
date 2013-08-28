@@ -29,7 +29,7 @@ import android.preference.PreferenceManager;
 import com.google.common.base.Joiner;
 import com.zns.comicdroid.Application;
 import com.zns.comicdroid.data.DBHelper;
-import com.zns.comicdroid.service.UploadService;
+import com.zns.comicdroid.service.GoogleDriveService;
 
 public class BackupHelper extends BackupAgent {
 	private final static String BACKUP_KEY_PREFS = "com.zns.comicdroid.backup.prefs";
@@ -49,7 +49,7 @@ public class BackupHelper extends BackupAgent {
 			
 			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 			String drive_account = prefs.getString(Application.PREF_DRIVE_ACCOUNT, null);
-			boolean drive_authenticated = prefs.getBoolean(Application.PREF_DRIVE_AUTHENTICATED, false);
+			boolean drive_authenticated = prefs.getBoolean(Application.PREF_DRIVE_PUBLISH, false);
 			String drive_webFolderId = prefs.getString(Application.PREF_DRIVE_WEBFOLDERID, null);
 			
 			writer.writeUTF(drive_account);
@@ -199,7 +199,7 @@ public class BackupHelper extends BackupAgent {
 			}
 			
 			//Upload to google drive
-			Intent intent = new Intent(getApplicationContext(), UploadService.class);
+			Intent intent = new Intent(getApplicationContext(), GoogleDriveService.class);
 			startService(intent);			
 		}
 		
@@ -249,7 +249,7 @@ public class BackupHelper extends BackupAgent {
 					
 					if (drive_account != null)
 						prefsEdit.putString(Application.PREF_DRIVE_ACCOUNT, drive_account);
-					prefsEdit.putBoolean(Application.PREF_DRIVE_AUTHENTICATED, drive_enabled);
+					prefsEdit.putBoolean(Application.PREF_DRIVE_PUBLISH, drive_enabled);
 					if (drive_webFolderId != null)
 						prefsEdit.putString(Application.PREF_DRIVE_WEBFOLDERID, drive_webFolderId);
 					prefsEdit.commit();

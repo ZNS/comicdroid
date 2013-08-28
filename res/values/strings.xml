@@ -89,9 +89,16 @@
     <string name="settings_groupcountlabel">Update collections</string>
     <string name="settings_groupcountsub">If the number of comics for collections are incorrect you can fix it by pressing the button below.</string>
     <string name="settings_btnGroupCount">Update collection count</string>        
+    <string name="settings_restorelabel">Restore data</string>
+    <string name="settings_restoresub">Tries to restore data from google backup. THIS WILL DELETE EVERYTHING!</string>
+    <string name="settings_btnRestore">Restore from google backup</string>    
     <string name="settings_linktext">View archive on google drive</string>
     <string name="settings_publish_notification">The archive has been published to google drive.</string>
     <string name="settings_updateGroupCount_notification">Collection counts have been updated</string>
+    <string name="settings_restoresuccess">Data has been restored successfully</string>
+    <string name="settings_restoreerror">Data could not be restored!</string>
+    <string name="settings_drivebackuplabel">Backup to drive</string>
+    <string name="settings_drivebackupsub">Enable this to backup ComicDroid to your google drive account</string>
     <string name="drawer_open">Open</string>
     <string name="drawer_close">Close</string>
     <string name="group_delete_title">Delete collection?</string>
