@@ -266,6 +266,7 @@ public class BackupHelper extends BackupAgent {
 				
 				ByteArrayInputStream baStream = null;
 				DataInputStream in = null;
+				String imageDirectory = getExternalFilesDir(null).toString();
 				
 				try
 				{
@@ -295,13 +296,16 @@ public class BackupHelper extends BackupAgent {
 						{
 							//Read image path
 							String imgPath = in.readUTF();
+							//Parse image name
+							String[] parts = imgPath.split("/");
+							String fileName = parts[parts.length - 1];
 							//Read image data
 							byte[] imgData = new byte[imgSize];							
 							in.readFully(imgData, 0, imgSize);
 							Bitmap bmp = BitmapFactory.decodeByteArray(imgData, 0, imgSize);
 							if (bmp != null)
 							{
-								ImageHandler.storeImage(bmp, imgPath, 100);
+								ImageHandler.storeImage(bmp, imageDirectory, fileName, 100);
 							}
 						}
 					}
@@ -322,8 +326,7 @@ public class BackupHelper extends BackupAgent {
 					}
 					
 					//Fix images with urls
-					Cursor cb = null;
-					String imageDirectory = getExternalFilesDir(null).toString();					
+					Cursor cb = null;									
 					try 
 					{
 						String ids = Joiner.on(',').join(addedComics);

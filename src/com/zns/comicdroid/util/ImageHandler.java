@@ -32,14 +32,18 @@ public final class ImageHandler {
 	private ImageHandler() {		
 	}
 
-	public static void storeImage(Bitmap bmp, String filePath, int quality)
+	public static String storeImage(Bitmap bmp, String filePath, String fileName, int quality)
 	{
 		FileOutputStream out = null;
+		File file = null;
 		try {
-			out = new FileOutputStream(filePath);
+			file = new File(filePath, fileName);
+			out = new FileOutputStream(file);
 			bmp.compress(COMPRESSFORMAT, quality, out);			
 		} 
-		catch (FileNotFoundException e) {}
+		catch (FileNotFoundException e) {
+			return "";
+		}
 		finally {
 			try {
 				if (out != null)
@@ -47,6 +51,7 @@ public final class ImageHandler {
 			} 
 			catch (IOException e1) {}			
 		}
+		return file.toString();
 	}
 	
 	public static String storeImage(URL url, String directory)

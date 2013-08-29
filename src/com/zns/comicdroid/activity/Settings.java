@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.google.android.gms.common.AccountPicker;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.zns.comicdroid.Application;
 import com.zns.comicdroid.BaseFragmentActivity;
@@ -35,18 +36,13 @@ public class Settings extends BaseFragmentActivity
 	public final static String INTENT_STOP_UPLOAD = "com.zns.comicdroid.SETTINGS_STOP_UPLOAD";
 	private ToggleButton tbDropbox;
 	private ToggleButton tbDriveBackup;
-	private String mAccount;
-	private GoogleAccountCredential mCredential;
 	private TextView tvLink;
+	private String mAccount;
 	
-	private String getAccount() {
-		if (mAccount != null && !mAccount.equals("")) {
-			return mAccount;
-		}
-		else {
-			SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-			return pref.getString(Application.PREF_DRIVE_ACCOUNT, null);
-		}
+	private void pickAccount(int code) {
+		Intent intent = AccountPicker.newChooseAccountIntent(null, null, new String[]{"com.google"},
+				false, null, null, null, null);
+		startActivityForResult(intent, code);
 	}
 	
 	@Override
@@ -82,9 +78,8 @@ public class Settings extends BaseFragmentActivity
 		{
 			final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());			
 			if (requestCode == 101 || requestCode == 201) {
-				mAccount = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);			
-				mCredential.setSelectedAccountName(getAccount());
-				
+				//Get Account name from result
+				mAccount = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);							
 				//Store account			
 				SharedPreferences.Editor editor = pref.edit();
 				editor.putString(Application.PREF_DRIVE_ACCOUNT, mAccount);
@@ -95,7 +90,9 @@ public class Settings extends BaseFragmentActivity
 			{
 				//Try to create folder on drive
 				DriveWebFolderTaskArg args = new DriveWebFolderTaskArg();
-				args.credentials = mCredential;
+				GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(getApplicationContext(), Arrays.asList(Application.DRIVE_SCOPE_PUBLISH));
+				credential.setSelectedAccountName(mAccount);				
+				args.credentials = credential;
 				args.webFolderId = pref.getString(Application.PREF_DRIVE_WEBFOLDERID, null);
 				new DriveWebFolderTask() {
 					protected void onPostExecute(DriveWebFolderTaskResult result) {
@@ -132,7 +129,9 @@ public class Settings extends BaseFragmentActivity
 			{
 				//Make sure we have access to appdata folder
 				DriveBackupInitTaskArg args = new DriveBackupInitTaskArg();
-				args.credentials = mCredential;
+				GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(getApplicationContext(), Arrays.asList(Application.DRIVE_SCOPE_BACKUP));
+				credential.setSelectedAccountName(mAccount);				
+				args.credentials = credential;
 				new DriveBackupInitTask() {
 					protected void onPostExecute(DriveBackupInitTaskResult result) {
 						if (result.intent != null) {
@@ -165,10 +164,9 @@ public class Settings extends BaseFragmentActivity
 	@Override
 	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 		if (buttonView == tbDropbox) {
-			mCredential = GoogleAccountCredential.usingOAuth2(getApplicationContext(), Arrays.asList(Application.DRIVE_SCOPE_PUBLISH));
 			if (isChecked)
 			{
-				startActivityForResult(mCredential.newChooseAccountIntent(), 101);
+				pickAccount(101);
 			}
 			else
 			{
@@ -179,10 +177,9 @@ public class Settings extends BaseFragmentActivity
 			}
 		}
 		else if (buttonView == tbDriveBackup) {
-			mCredential = GoogleAccountCredential.usingOAuth2(getApplicationContext(), Arrays.asList(Application.DRIVE_SCOPE_BACKUP));
 			if (isChecked)
 			{
-				startActivityForResult(mCredential.newChooseAccountIntent(), 201);
+				pickAccount(201);
 			}
 			else
 			{

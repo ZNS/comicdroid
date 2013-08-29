@@ -2,6 +2,7 @@ package com.zns.comicdroid.service;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -9,7 +10,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -24,6 +24,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
@@ -112,7 +113,7 @@ public class GoogleDriveService extends IntentService {
 		//Backup
 		if (backupEnabled) {
 			if (account != null) {
-				Backup(account);
+				//Backup(account);
 			}
 			else {
 				NotifyAuthentication();
@@ -207,15 +208,14 @@ public class GoogleDriveService extends IntentService {
 				while (cb.moveToNext())
 				{
 					writer.writeInt(cb.getInt(0));
-					writer.writeUTF(String.format("INSERT INTO tblBooks(_id, GroupId, Title, Subtitle, Publisher, Author, Image, ImageUrl, PublishDate, AddedDate, PageCount, IsBorrowed, Borrower, BorrowedDate, ISBN, Issue, Issues, IsRead, Rating)" +
-							" VALUES(%d ,%d, %s, %s, %s, %s, %s, %s, %d, %d, %d, %d, %s, %d, %s, %d, %s, %d, %d);", 
+					writer.writeUTF(String.format("INSERT OR REPLACE INTO tblBooks(_id, GroupId, Title, Subtitle, Publisher, Author, ImageUrl, PublishDate, AddedDate, PageCount, IsBorrowed, Borrower, BorrowedDate, ISBN, Issue, Issues, IsRead, Rating)" +
+							" VALUES(%d ,%d, %s, %s, %s, %s, %s, %d, %d, %d, %d, %s, %d, %s, %d, %s, %d, %d);", 
 							cb.getInt(0),
 							cb.getInt(1),
 							dbString(cb.getString(2)),
 							dbString(cb.getString(3)),
 							dbString(cb.getString(4)),
 							dbString(cb.getString(5)),
-							dbString(cb.getString(6)),
 							dbString(cb.getString(7)),
 							cb.getInt(8),
 							cb.getInt(9),
@@ -236,15 +236,17 @@ public class GoogleDriveService extends IntentService {
 						Bitmap bmp = BitmapFactory.decodeFile(imgPath);
 						if (bmp != null)
 						{
-							int size = bmp.getRowBytes() * bmp.getHeight();
-							ByteBuffer buffer = ByteBuffer.allocate(size);
-							bmp.copyPixelsToBuffer(buffer);
+						    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+						    bmp.compress(CompressFormat.JPEG, 100, stream);
+						    byte[] data = stream.toByteArray();
 							//Write image size
-							writer.writeInt(size);
-							//Write image path
-							writer.writeUTF(imgPath);
+							writer.writeInt(data.length);
+							//Write file name
+							String[] parts = imgPath.split("/");
+							String fileName = parts[parts.length - 1];							
+							writer.writeUTF(fileName);
 							//Write image data							
-							writer.write(buffer.array());
+							writer.write(data);
 						}
 						else {
 							writer.writeInt(0);
@@ -262,22 +264,21 @@ public class GoogleDriveService extends IntentService {
 			
 			try
 			{
-				cb = db.getCursor("SELECT _id, Name, Image, ImageUrl, BookCount, TotalBookCount, IsWatched, IsFinished, IsComplete" +
+				cb = db.getCursor("SELECT _id, Name, ImageUrl, BookCount, TotalBookCount, IsWatched, IsFinished, IsComplete" +
 						" FROM tblGroups ORDER BY _id", null);
 				writer.writeInt(cb.getCount());
 				while (cb.moveToNext())
 				{
-					writer.writeUTF(String.format("INSERT INTO tblGroups(_id, Name, Image, ImageUrl, BookCount, TotalBookCount, IsWatched, IsFinished, IsComplete)" +
-							" VALUES(%d, %s, %s, %s, %d, %d, %d, %d, %d);", 
+					writer.writeUTF(String.format("INSERT OR REPLACE INTO tblGroups(_id, Name, ImageUrl, BookCount, TotalBookCount, IsWatched, IsFinished, IsComplete)" +
+							" VALUES(%d, %s, %s, %d, %d, %d, %d, %d);", 
 							cb.getInt(0),
 							dbString(cb.getString(1)),
 							dbString(cb.getString(2)),
-							dbString(cb.getString(3)),
+							cb.getInt(3),
 							cb.getInt(4),
 							cb.getInt(5),
 							cb.getInt(6),
-							cb.getInt(7),
-							cb.getInt(8)));
+							cb.getInt(7)));
 				}
 			}
 			finally {

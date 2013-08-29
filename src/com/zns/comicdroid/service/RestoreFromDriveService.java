@@ -114,6 +114,8 @@ public class RestoreFromDriveService extends IntentService {
 		if (gFileData != null && gFileData.getDownloadUrl() != null && gFileData.getDownloadUrl().length() > 0)
 		{		
 			DBHelper db = DBHelper.getHelper(getApplicationContext());
+			String imageDirectory = getExternalFilesDir(null).toString();
+			
 			DataInputStream in = null;		
 			try
 			{
@@ -128,9 +130,9 @@ public class RestoreFromDriveService extends IntentService {
 					int id = in.readInt();
 					String sql = in.readUTF();
 					if (sql != null && !sql.equals("")) {
-						try {
+						try {						
 							db.execSQL(sql);
-							addedComics.add(id);
+							addedComics.add(id);							
 						}
 						catch (Exception x) {
 							//Failed to restore comic...
@@ -142,14 +144,22 @@ public class RestoreFromDriveService extends IntentService {
 					if (imgSize > 0)
 					{
 						//Read image path
-						String imgPath = in.readUTF();
+						String fileName = in.readUTF();
 						//Read image data
-						byte[] imgData = new byte[imgSize];							
-						in.readFully(imgData, 0, imgSize);
-						Bitmap bmp = BitmapFactory.decodeByteArray(imgData, 0, imgSize);
-						if (bmp != null)
-						{
-							ImageHandler.storeImage(bmp, imgPath, 100);
+						byte[] imgData = new byte[imgSize];
+						try {
+							in.readFully(imgData, 0, imgSize);
+							Bitmap bmp = BitmapFactory.decodeByteArray(imgData, 0, imgSize);
+							if (bmp != null)
+							{
+								String filePath = ImageHandler.storeImage(bmp, imageDirectory, fileName, 100);
+								ContentValues val = new ContentValues();
+								val.put("Image", filePath);
+								db.update("tblBooks", val, "_id=?", new String[] { Integer.toString(id) });
+							}							
+						}
+						catch (IOException x) {
+							x.printStackTrace();
 						}
 					}
 				}
@@ -170,12 +180,11 @@ public class RestoreFromDriveService extends IntentService {
 				}
 				
 				//Fix images with urls
-				Cursor cb = null;
-				String imageDirectory = getExternalFilesDir(null).toString();
+				Cursor cb = null;				
 				try 
 				{
 					String ids = Joiner.on(',').join(addedComics);
-					cb = db.getCursor("SELECT _id, Image, ImageUrl FROM tblBooks WHERE _id IN (" + ids  + ")", null);
+					cb = db.getCursor("SELECT _id, Image, ImageUrl FROM tblBooks WHERE _id IN (" + ids  + ") AND ImageUrl <> ''", null);
 					while (cb.moveToNext()) {
 						String filePath = cb.getString(1);
 						if (filePath.length() > 0) {
@@ -195,6 +204,7 @@ public class RestoreFromDriveService extends IntentService {
 							catch (Exception x)
 							{
 								//Unable to save image to disk
+								x.printStackTrace();
 							}
 						}
 					}
@@ -203,6 +213,10 @@ public class RestoreFromDriveService extends IntentService {
 				{
 					cb.close();
 				}
+				
+				//Fix group images
+				db.execSQL("UPDATE tblGroups SET Image = (SELECT Image FROM tblBooks WHERE GroupId = tblGroups._id AND Issue = 1 LIMIT 1)");
+				
 			}
 			catch (Exception e) {				
 			}

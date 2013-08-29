@@ -286,6 +286,7 @@ public class Edit extends BaseFragmentActivity
 					values.put("GroupId", g.getId());
 				}
 				if (newImage != null) {					
+					values.put("ImageUrl", "");
 					values.put("Image", newImage);
 				}
 			}
