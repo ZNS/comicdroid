@@ -16,10 +16,11 @@ import com.zns.comicdroid.data.Group;
 import com.zns.comicdroid.util.ImageWorker;
 
 public class GroupAdapter extends ArrayAdapter<Group> {
-	private final List<Group> values;
-	private final ImageWorker imageWorker = new ImageWorker();
-	private final LayoutInflater inflater;
-	
+	private final List<Group> mValues;
+	private final ImageWorker mImageWorker = new ImageWorker();
+	private final LayoutInflater mInflater;
+	private final String mImagePath;
+
 	static class GroupHolder
 	{
 		TextView tvTitle;
@@ -32,67 +33,68 @@ public class GroupAdapter extends ArrayAdapter<Group> {
 		ImageView ivGroupFinished;
 		RelativeLayout rlRow;		  
 	}
-	  
-	public GroupAdapter(Context context, List<Group> values) 
+
+	public GroupAdapter(Context context, List<Group> values, String imagePath) 
 	{
 		super(context, R.layout.list_comicrow, values);
-		inflater = LayoutInflater.from(context);		
-		this.values = values;
+		mInflater = LayoutInflater.from(context);		
+		this.mValues = values;
+		this.mImagePath = imagePath;
 	}
-	  
+
 	public Group getGroup(int position)
 	{
-		if (position < values.size())
-			return values.get(position);
+		if (position < mValues.size())
+			return mValues.get(position);
 		return null;
 	}
-	  
+
 	public List<Group> getAll(){
-		return this.values;  
+		return this.mValues;  
 	}	
-	
+
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		GroupHolder holder = null;
-		
+
 		if (convertView == null)
 		{	    	
-			convertView = inflater.inflate(R.layout.list_comicrow, parent, false);
-				
+			convertView = mInflater.inflate(R.layout.list_comicrow, parent, false);
+
 			holder = new GroupHolder();
-    		holder.tvTitle = (TextView)convertView.findViewById(R.id.tvTitle);
-    		holder.tvAuthor = (TextView)convertView.findViewById(R.id.tvAuthor);
-    		holder.ivImage = (ImageView)convertView.findViewById(R.id.ivImage);
-    		holder.tvCount = (TextView)convertView.findViewById(R.id.tvCount);
-    		holder.ivGroupMark = (ImageView)convertView.findViewById(R.id.ivGroupMark);
-    		holder.rlRow = (RelativeLayout)convertView.findViewById(R.id.rlRow);
-    		holder.ivGroupCompleted = (ImageView)convertView.findViewById(R.id.ivGroupCompleted);
-    		holder.ivGroupFinished = (ImageView)convertView.findViewById(R.id.ivGroupFinished);
-    		holder.ivGroupWatched = (ImageView)convertView.findViewById(R.id.ivGroupWatched);			
+			holder.tvTitle = (TextView)convertView.findViewById(R.id.tvTitle);
+			holder.tvAuthor = (TextView)convertView.findViewById(R.id.tvAuthor);
+			holder.ivImage = (ImageView)convertView.findViewById(R.id.ivImage);
+			holder.tvCount = (TextView)convertView.findViewById(R.id.tvCount);
+			holder.ivGroupMark = (ImageView)convertView.findViewById(R.id.ivGroupMark);
+			holder.rlRow = (RelativeLayout)convertView.findViewById(R.id.rlRow);
+			holder.ivGroupCompleted = (ImageView)convertView.findViewById(R.id.ivGroupCompleted);
+			holder.ivGroupFinished = (ImageView)convertView.findViewById(R.id.ivGroupFinished);
+			holder.ivGroupWatched = (ImageView)convertView.findViewById(R.id.ivGroupWatched);			
 			convertView.setTag(holder);
 		}
 		else
 		{
 			holder = (GroupHolder)convertView.getTag();
 		}
-		
-		Group group = values.get(position);
+
+		Group group = mValues.get(position);
 		holder.tvTitle.setText(group.getName());
 		holder.ivGroupFinished.setVisibility(group.getIsFinished() ? View.VISIBLE : View.GONE);
 		holder.ivGroupCompleted.setVisibility(group.getIsComplete() ? View.VISIBLE : View.GONE);
 		holder.ivGroupWatched.setVisibility(group.getIsWatched() ? View.VISIBLE : View.GONE);		
 		holder.ivGroupMark.setVisibility(View.VISIBLE);
 		holder.tvCount.setText("(" + group.getBookCount() + (group.getTotalBookCount() > 0 ? "/" + group.getTotalBookCount() : "") + ")");		
-		if (group.getImage() != null)
+		if (group.getImage() != null && !group.getImage().equals(""))
 		{
-			imageWorker.load(group.getImage(), holder.ivImage);
+			mImageWorker.load(mImagePath.concat(group.getImage()), holder.ivImage);
 			holder.ivImage.setVisibility(View.VISIBLE);
 		}
 		else
 		{
 			holder.ivImage.setVisibility(View.GONE);
 		}
-		
+
 		return convertView;
 	}
 }

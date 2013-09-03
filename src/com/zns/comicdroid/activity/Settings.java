@@ -31,39 +31,39 @@ import com.zns.comicdroid.task.DriveWebFolderTask;
 import com.zns.comicdroid.task.DriveWebFolderTask.DriveWebFolderTaskArg;
 
 public class Settings extends BaseFragmentActivity
-	implements OnCheckedChangeListener {
+implements OnCheckedChangeListener {
 
 	public final static String INTENT_STOP_UPLOAD = "com.zns.comicdroid.SETTINGS_STOP_UPLOAD";
-	private ToggleButton tbDropbox;
-	private ToggleButton tbDriveBackup;
-	private TextView tvLink;
+	private ToggleButton mTbDrivePublish;
+	private ToggleButton mTbDriveBackup;
+	private TextView mTvLink;
 	private String mAccount;
-	
+
 	private void pickAccount(int code) {
 		Intent intent = AccountPicker.newChooseAccountIntent(null, null, new String[]{"com.google"},
 				false, null, null, null, null);
 		startActivityForResult(intent, code);
 	}
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		setContentView(R.layout.activity_settings);
 		super.onCreate(savedInstanceState);	
 
 		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-		tbDropbox = (ToggleButton)findViewById(R.id.settings_tbDropbox);		
-		tbDropbox.setChecked(pref.getBoolean(Application.PREF_DRIVE_PUBLISH, false));
-		tbDropbox.setOnCheckedChangeListener(this);
-		tbDriveBackup = (ToggleButton)findViewById(R.id.settings_tbDriveBackup);
-		tbDriveBackup.setChecked(pref.getBoolean(Application.PREF_DRIVE_BACKUP, false));
-		tbDriveBackup.setOnCheckedChangeListener(this);
-		
-		tvLink = (TextView)findViewById(R.id.settings_tvLink);
+		mTbDrivePublish = (ToggleButton)findViewById(R.id.settings_tbDropbox);		
+		mTbDrivePublish.setChecked(pref.getBoolean(Application.PREF_DRIVE_PUBLISH, false));
+		mTbDrivePublish.setOnCheckedChangeListener(this);
+		mTbDriveBackup = (ToggleButton)findViewById(R.id.settings_tbDriveBackup);
+		mTbDriveBackup.setChecked(pref.getBoolean(Application.PREF_DRIVE_BACKUP, false));
+		mTbDriveBackup.setOnCheckedChangeListener(this);
+
+		mTvLink = (TextView)findViewById(R.id.settings_tvLink);
 		if (pref.getString(Application.PREF_DRIVE_WEBFOLDERID, null) != null) {
-			tvLink.setText(Html.fromHtml("<a href=\"https://googledrive.com/host/" + pref.getString(Application.PREF_DRIVE_WEBFOLDERID, "") + "/\">" + getResources().getString(R.string.settings_linktext) + "</a>"));
-			tvLink.setMovementMethod(LinkMovementMethod.getInstance());
+			mTvLink.setText(Html.fromHtml("<a href=\"https://googledrive.com/host/" + pref.getString(Application.PREF_DRIVE_WEBFOLDERID, "") + "/\">" + getResources().getString(R.string.settings_linktext) + "</a>"));
+			mTvLink.setMovementMethod(LinkMovementMethod.getInstance());
 		}
-				
+
 		//If called from notification, stop upload service
 		Intent intent = getIntent();
 		if (intent != null && intent.getExtras() != null)
@@ -72,7 +72,7 @@ public class Settings extends BaseFragmentActivity
 				stopService(new Intent(this, GoogleDriveService.class));
 		}		
 	}	
-	
+
 	protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
 		if (resultCode == RESULT_OK)
 		{
@@ -85,7 +85,7 @@ public class Settings extends BaseFragmentActivity
 				editor.putString(Application.PREF_DRIVE_ACCOUNT, mAccount);
 				editor.commit();			
 			}	
-			
+
 			if (requestCode == 101 || requestCode == 102)
 			{
 				//Try to create folder on drive
@@ -112,15 +112,15 @@ public class Settings extends BaseFragmentActivity
 							Intent intent = new Intent(Settings.this, GoogleDriveService.class);
 							startService(intent);						
 							//Update link
-							tvLink.setText(Html.fromHtml("<a href=\"https://googledrive.com/host/" + result.fileId + "/\">" + getResources().getString(R.string.settings_linktext) + "</a>"));
-							tvLink.setMovementMethod(LinkMovementMethod.getInstance());						
+							mTvLink.setText(Html.fromHtml("<a href=\"https://googledrive.com/host/" + result.fileId + "/\">" + getResources().getString(R.string.settings_linktext) + "</a>"));
+							mTvLink.setMovementMethod(LinkMovementMethod.getInstance());						
 							//Check checkbox
-							tbDropbox.setChecked(true);
+							mTbDrivePublish.setChecked(true);
 						}
 						else
 						{
 							Toast.makeText(Settings.this, R.string.error_webfoldercreate, Toast.LENGTH_SHORT).show();
-							tbDropbox.setChecked(false);
+							mTbDrivePublish.setChecked(false);
 						}
 					}
 				}.execute(args);
@@ -148,22 +148,22 @@ public class Settings extends BaseFragmentActivity
 							Intent intent = new Intent(Settings.this, GoogleDriveService.class);
 							startService(intent);							
 							//Check checkbox
-							tbDriveBackup.setChecked(true);
+							mTbDriveBackup.setChecked(true);
 						}
 						else
 						{
 							Toast.makeText(Settings.this, R.string.error_driveappdataaccess, Toast.LENGTH_SHORT).show();
-							tbDriveBackup.setChecked(false);
+							mTbDriveBackup.setChecked(false);
 						}						
 					}
 				}.execute(args);
 			}
 		}
 	}
-	
+
 	@Override
 	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-		if (buttonView == tbDropbox) {
+		if (buttonView == mTbDrivePublish) {
 			if (isChecked)
 			{
 				pickAccount(101);
@@ -176,7 +176,7 @@ public class Settings extends BaseFragmentActivity
 				editor.commit();
 			}
 		}
-		else if (buttonView == tbDriveBackup) {
+		else if (buttonView == mTbDriveBackup) {
 			if (isChecked)
 			{
 				pickAccount(201);
@@ -190,32 +190,32 @@ public class Settings extends BaseFragmentActivity
 			}
 		}
 	}
-	
+
 	private void showNotificationDialog(int text) {
 		new AlertDialog.Builder(this)
-			.setMessage(text)
-			.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
-	           public void onClick(DialogInterface dialog, int id) {
-	        	   dialog.cancel();
-	           }
-			}).show();
+		.setMessage(text)
+		.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				dialog.cancel();
+			}
+		}).show();
 	}
-	
+
 	public void publishToDriveClick(View view) {
 		Intent intent = new Intent(getApplicationContext(), GoogleDriveService.class);
 		startService(intent);
 		showNotificationDialog(R.string.settings_publish_notification);
 	}
-	
+
 	public void updateGroupCountClick(View view) {
 		getDBHelper().updateGroupBookCount();
 		showNotificationDialog(R.string.settings_updateGroupCount_notification);
 	}
-	
+
 	public void setReadClick(View view) {
 		getDBHelper().setAllComicsRead();
 	}
-	
+
 	public void restoreClick(View view) {
 		//Restore
 		Intent intent = new Intent(Settings.this, RestoreFromDriveService.class);

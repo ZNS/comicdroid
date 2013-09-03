@@ -2,13 +2,8 @@ package com.zns.comicdroid.adapter;
 
 import java.util.List;
 
-import com.zns.comicdroid.R;
-import com.zns.comicdroid.data.Comic;
-
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,82 +11,85 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.zns.comicdroid.R;
+import com.zns.comicdroid.data.Comic;
+import com.zns.comicdroid.util.ImageWorker;
+
 public class ComicArrayAdapter extends ArrayAdapter<Comic> {
-	  private final List<Comic> values;
+	private final ImageWorker mImageWorker = new ImageWorker();
+	private final List<Comic> mValues;
+	private final String mImagePath;
 
-	  static class ComicHolder
-	  {
-		  TextView tvTitle;
-		  TextView tvAuthor;
-		  ImageView ivImage;
-		  TextView tvIssue;
-	  }
-	  
-	  public ComicArrayAdapter(Context context, List<Comic> values) 
-	  {
-	    super(context, R.layout.list_comicrow, values);
-	    this.values = values;
-	  }
-	  
-	  public Comic getComic(int position)
-	  {
-		  if (position < values.size())
-			  return values.get(position);
-		  return null;
-	  }
-	  
-	  public List<Comic> getAll(){
-		return this.values;  
-	  }
-	  
-	  public View getView(int position, View convertView, ViewGroup parent) 
-	  {		  
-		  View row = convertView;
-		  ComicHolder holder = null;
+	static class ComicHolder
+	{
+		TextView tvTitle;
+		TextView tvAuthor;
+		ImageView ivImage;
+		TextView tvIssue;
+	}
 
-		  if (row == null)
-		  {
-			  LayoutInflater inflater = ((Activity)getContext()).getLayoutInflater();
-			  row = inflater.inflate(R.layout.list_comicrow, parent, false);
-			  
-			  holder = new ComicHolder();
-			  holder.tvTitle = (TextView)row.findViewById(R.id.tvTitle);
-			  holder.tvAuthor = (TextView)row.findViewById(R.id.tvAuthor);
-			  holder.ivImage = (ImageView)row.findViewById(R.id.ivImage);
-			  holder.tvIssue = (TextView)row.findViewById(R.id.tvIssue);
-			  
-			  row.setTag(holder);
-		  }
-		  else
-		  {
-			  holder = (ComicHolder)row.getTag();
-		  }
-		  
-		  Comic comic = values.get(position);
-		  holder.tvTitle.setText(comic.getTitle() + (comic.getIssue() > 0 && comic.getSubTitle() != null ? " - " + comic.getSubTitle() : ""));
-		  holder.tvAuthor.setText(comic.getAuthor());
-		  if (comic.getIssue() > 0)
-		  {
-			  holder.tvIssue.setText("Vol. " + Integer.toString(comic.getIssue()));
-		  }
-		  else
-		  {
-			  holder.tvIssue.setText("");
-		  }
-		  if (comic.getImage() != null && !comic.getImage().equals(""))
-		  {
-			  Bitmap bmp = BitmapFactory.decodeFile(comic.getImage());
-			  if (bmp != null)
-			  {
-				  holder.ivImage.setImageBitmap(bmp);
-				  holder.ivImage.setVisibility(View.VISIBLE);
-			  }
-		  }
-		  else
-		  {
-			  holder.ivImage.setVisibility(View.GONE);
-		  }
-		  
-		  return row;
-	  }
+	public ComicArrayAdapter(Context context, List<Comic> values, String imagePath) 
+	{
+		super(context, R.layout.list_comicrow, values);
+		this.mValues = values;
+		this.mImagePath =imagePath; 
+	}
+
+	public Comic getComic(int position)
+	{
+		if (position < mValues.size())
+			return mValues.get(position);
+		return null;
+	}
+
+	public List<Comic> getAll(){
+		return this.mValues;  
+	}
+
+	public View getView(int position, View convertView, ViewGroup parent) 
+	{		  
+		View row = convertView;
+		ComicHolder holder = null;
+
+		if (row == null)
+		{
+			LayoutInflater inflater = ((Activity)getContext()).getLayoutInflater();
+			row = inflater.inflate(R.layout.list_comicrow, parent, false);
+
+			holder = new ComicHolder();
+			holder.tvTitle = (TextView)row.findViewById(R.id.tvTitle);
+			holder.tvAuthor = (TextView)row.findViewById(R.id.tvAuthor);
+			holder.ivImage = (ImageView)row.findViewById(R.id.ivImage);
+			holder.tvIssue = (TextView)row.findViewById(R.id.tvIssue);
+
+			row.setTag(holder);
+		}
+		else
+		{
+			holder = (ComicHolder)row.getTag();
+		}
+
+		Comic comic = mValues.get(position);
+		holder.tvTitle.setText(comic.getTitle() + (comic.getIssue() > 0 && comic.getSubTitle() != null ? " - " + comic.getSubTitle() : ""));
+		holder.tvAuthor.setText(comic.getAuthor());
+		if (comic.getIssue() > 0)
+		{
+			holder.tvIssue.setText("Vol. " + Integer.toString(comic.getIssue()));
+		}
+		else
+		{
+			holder.tvIssue.setText("");
+		}
+		if (comic.getImage() != null && !comic.getImage().equals(""))
+		{
+			mImageWorker.load(mImagePath.concat(comic.getImage()), holder.ivImage);			  
+			holder.ivImage.setVisibility(View.VISIBLE);
+		}
+		else
+		{
+			holder.ivImage.setVisibility(View.GONE);
+		}
+
+		return row;
+	}
 }

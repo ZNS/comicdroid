@@ -20,8 +20,8 @@ import com.zns.comicdroid.data.DBHelper;
 import com.zns.comicdroid.dialog.RenameDialogFragment;
 
 public class ListPublishersFragment extends BaseListFragment
-	implements RenameDialogFragment.OnRenameDialogListener {
-	
+implements RenameDialogFragment.OnRenameDialogListener {
+
 	public static ListPublishersFragment newInstance(int index)
 	{
 		ListPublishersFragment fragment = new ListPublishersFragment();
@@ -30,14 +30,14 @@ public class ListPublishersFragment extends BaseListFragment
 		fragment.setArguments(b);
 		return fragment;
 	}
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = super.onCreateView(inflater, container, savedInstanceState);	 
 
-		adapter = new GroupedItemAdapter(getActivity());	
+		mAdapter = new GroupedItemAdapter(getActivity());	
 
-		listView.setOnItemClickListener(new android.widget.AdapterView.OnItemClickListener() {
+		mListView.setOnItemClickListener(new android.widget.AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) 
 			{
 				String name = getAdapter().getGroupedItemName(position);
@@ -51,32 +51,32 @@ public class ListPublishersFragment extends BaseListFragment
 				}
 			}			
 		});		
-		registerForContextMenu(listView);
-		
+		registerForContextMenu(mListView);
+
 		return view;
 	}
-	
+
 	private GroupedItemAdapter getAdapter()
 	{
-		return (GroupedItemAdapter)adapter;
+		return (GroupedItemAdapter)mAdapter;
 	}
-	
+
 	@Override
 	public String getSQLDefault() {
 		return "SELECT 0 AS _id, Publisher AS Name, COUNT(*) AS Count FROM tblBooks GROUP BY Publisher ORDER BY Publisher COLLATE NOCASE";
 	}
-	
+
 	@Override
 	public String getSQLFilter() {
 		return "SELECT 0 AS _id, Publisher AS Name, COUNT(*) AS Count FROM tblBooks WHERE Publisher LIKE ? GROUP BY Publisher ORDER BY Publisher COLLATE NOCASE";
 	}	
-	
+
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		getActivity().getMenuInflater().inflate(R.menu.edit_context_menu, menu);
 	}
-	
+
 	//Handle click on Context Menu
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
@@ -87,19 +87,19 @@ public class ListPublishersFragment extends BaseListFragment
 			if (name != null)
 			{
 				switch (item.getItemId()) {
-					case R.id.context_edit:
-						RenameDialogFragment dialogRename = new RenameDialogFragment();
-						dialogRename.setName(name);			
-						dialogRename.setTargetFragment(this, 0);
-						dialogRename.show(getActivity().getSupportFragmentManager(), "PUBLISHERRENAME");
-						return true;
+				case R.id.context_edit:
+					RenameDialogFragment dialogRename = new RenameDialogFragment();
+					dialogRename.setName(name);			
+					dialogRename.setTargetFragment(this, 0);
+					dialogRename.show(getActivity().getSupportFragmentManager(), "PUBLISHERRENAME");
+					return true;
 				}
 			}
 			return true;
 		}
 		return false;
 	}
-	
+
 	@Override
 	public void onDialogPositiveClick(String oldName, String newName) {
 		DBHelper.getHelper(getActivity()).renamePublisher(oldName, newName);

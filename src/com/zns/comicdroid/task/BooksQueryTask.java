@@ -14,36 +14,36 @@ import de.greenrobot.event.EventBus;
 import android.os.AsyncTask;
 
 public class BooksQueryTask extends AsyncTask<String, Void, Void> {
-	public Exception exception = null;
-	
+	public Exception mException = null;
+
 	protected Void doInBackground(String... param)
 	{
-    	NetHttpTransport httpTransport = new NetHttpTransport();
-    	JsonFactory jsonFactory = new JacksonFactory();
-    	BooksQueryResult result = new BooksQueryResult(false, null);
-    	
-        try 
-        {
-            Books books = new Books.Builder(httpTransport, jsonFactory, null)
-        	.setApplicationName("ComicsDroid/1.0")
-        	.setGoogleClientRequestInitializer(new BooksRequestInitializer())
-        	.build();
-            
+		NetHttpTransport httpTransport = new NetHttpTransport();
+		JsonFactory jsonFactory = new JacksonFactory();
+		BooksQueryResult result = new BooksQueryResult(false, null);
+
+		try 
+		{
+			Books books = new Books.Builder(httpTransport, jsonFactory, null)
+			.setApplicationName("ComicsDroid/1.0")
+			.setGoogleClientRequestInitializer(new BooksRequestInitializer())
+			.build();
+
 			Volumes list = books.volumes().list(param[0]).execute();
 
 			if (list != null && list.getTotalItems() > 0)
 			{
 				Volume item = list.getItems().get(0);
 				Volume.VolumeInfo info = item.getVolumeInfo();				
-				result.comic = Comic.fromVolumeInfo(info, param[1], param[2]);				
-				result.success = true;				
+				result.mComic = Comic.fromVolumeInfo(info, param[1], param[2]);				
+				result.mSuccess = true;				
 			}			
 		} 
-        catch (Exception e) {
-        	this.exception = e;
+		catch (Exception e) {
+			this.mException = e;
 		}
-        
-        EventBus.getDefault().post(result);
+
+		EventBus.getDefault().post(result);
 		return null;
 	}	
 }

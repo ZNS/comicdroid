@@ -16,89 +16,89 @@ import com.google.common.base.Joiner;
 import com.zns.comicdroid.util.ImageHandler;
 
 public class Comic
-	implements Parcelable {
-   
-	private int id;
-	private int groupId;
-	private String title;
-	private String subTitle;
-	private String author;
-	private String illustrator;
-	private String publisher;
-	private int publishDate;
-	private int addedDate;
-	private int pageCount;
-	private int isBorrowed;
-	private int isRead;
-	private int rating;
-	private String borrower;
-	private int borrowedDate;
-	private String image;
-	private String imageUrl;
-	private String ISBN;
-	private int issue;
-	private String issues;
-	
+implements Parcelable {
+
+	private int mId;
+	private int mGroupId;
+	private String mTitle;
+	private String mSubTitle;
+	private String mAuthor;
+	private String mIllustrator;
+	private String mPublisher;
+	private int mPublishDate;
+	private int mAddedDate;
+	private int mPageCount;
+	private int mIsBorrowed;
+	private int mIsRead;
+	private int mRating;
+	private String mBorrower;
+	private int mBorrowedDate;
+	private String mImage;
+	private String mImageUrl;
+	private String mISBN;
+	private int mIssue;
+	private String mIssues;
+
 	public Comic() {
 	}
 
 	private Comic(Parcel in) {
-		this.id = in.readInt();
-		this.groupId = in.readInt();
-		this.title = in.readString();
-		this.subTitle = in.readString();
-		this.author = in.readString();
-		this.illustrator = in.readString();
-		this.publisher = in.readString();
-		this.publishDate = in.readInt();
-		this.addedDate = in.readInt();
-		this.pageCount = in.readInt();
-		this.isBorrowed = in.readInt();
-		this.borrower = in.readString();
-		this.borrowedDate = in.readInt();
-		this.image = in.readString();
-		this.imageUrl = in.readString();
-		this.ISBN = in.readString();
-		this.issue = in.readInt();
-		this.isRead = in.readInt();
-		this.rating = in.readInt();
-		this.issues = in.readString();
+		this.mId = in.readInt();
+		this.mGroupId = in.readInt();
+		this.mTitle = in.readString();
+		this.mSubTitle = in.readString();
+		this.mAuthor = in.readString();
+		this.mIllustrator = in.readString();
+		this.mPublisher = in.readString();
+		this.mPublishDate = in.readInt();
+		this.mAddedDate = in.readInt();
+		this.mPageCount = in.readInt();
+		this.mIsBorrowed = in.readInt();
+		this.mBorrower = in.readString();
+		this.mBorrowedDate = in.readInt();
+		this.mImage = in.readString();
+		this.mImageUrl = in.readString();
+		this.mISBN = in.readString();
+		this.mIssue = in.readInt();
+		this.mIsRead = in.readInt();
+		this.mRating = in.readInt();
+		this.mIssues = in.readString();
 	}
-	 
+
 	public Comic(int id, String title, String subTitle, String author, String illustrator, String publisher, int publishDate, int addedDate, int pageCount, int isBorrowed, String borrower, String image, String isbn, int issue, int groupId, String imageUrl, int borrowedDate, int isRead, int rating, String issues)
 	{
-		this.id = id;
-		this.groupId = groupId;
-		this.title = title;
-		this.subTitle = subTitle;
-		this.author = author;
-		this.illustrator = illustrator;
-		this.publisher = publisher;
-		this.publishDate = publishDate;
-		this.addedDate = addedDate;
-		this.pageCount = pageCount;
-		this.isBorrowed = isBorrowed;
-		this.borrower = borrower;
-		this.borrowedDate = borrowedDate;
-		this.image = image;
-		this.imageUrl = imageUrl;
-		this.ISBN = isbn;
-		this.issue = issue;
-		this.isRead = isRead;
-		this.rating = rating;
-		this.issues = issues;
+		this.mId = id;
+		this.mGroupId = groupId;
+		this.mTitle = title;
+		this.mSubTitle = subTitle;
+		this.mAuthor = author;
+		this.mIllustrator = illustrator;
+		this.mPublisher = publisher;
+		this.mPublishDate = publishDate;
+		this.mAddedDate = addedDate;
+		this.mPageCount = pageCount;
+		this.mIsBorrowed = isBorrowed;
+		this.mBorrower = borrower;
+		this.mBorrowedDate = borrowedDate;
+		this.mImage = image;
+		this.mImageUrl = imageUrl;
+		this.mISBN = isbn;
+		this.mIssue = issue;
+		this.mIsRead = isRead;
+		this.mRating = rating;
+		this.mIssues = issues;
 	}
 
 	public static Comic fromVolumeInfo(VolumeInfo info, String imageDirectory, String isbn)
 			throws ParseException
-	{
+			{
 		if (info == null || info.getTitle() == null)
 			return null;
 
 		Comic comic = new Comic();		
-		
+
 		String title = info.getTitle();
-		
+
 		//Try to parse Issue
 		String[] parts = title.split(" ");
 		for (String part : parts)
@@ -110,7 +110,7 @@ public class Comic
 				break;
 			}
 		}
-				
+
 		//Try to parse subtitle/title
 		title = title.replaceAll("(i?)(Vol|Vol\\.|Volume)\\s{1}[0-9]+", "");
 		if (title.contains(":"))
@@ -127,7 +127,7 @@ public class Comic
 
 		//Set title
 		comic.setTitle(title.trim());
-		
+
 		//Set isbn to the passed if available
 		if (isbn != null & isbn.length() > 0) {
 			comic.setISBN(isbn);		
@@ -146,7 +146,7 @@ public class Comic
 			if (comic.getISBN() == null)
 				comic.setISBN(ids.get(0).getIdentifier());
 		}
-		
+
 		if (info.getSubtitle() != null)
 			comic.setSubTitle(info.getSubtitle());
 		if (info.getAuthors() != null)
@@ -157,16 +157,16 @@ public class Comic
 		{
 			if (info.getPageCount() > 0)
 				comic.setPageCount(info.getPageCount());
-			}
+		}
 		catch (Exception e) {}
-		
+
 		if (info.getPublishedDate() != null && info.getPublishedDate().length() >= 10)
 		{
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 			Date date = dateFormat.parse(info.getPublishedDate());
 			comic.setPublishDate(date);
 		}
-		
+
 		if (info.getImageLinks() != null)
 		{
 			ImageLinks images = info.getImageLinks();
@@ -175,175 +175,175 @@ public class Comic
 			{
 				comic.setImageUrl(imageUrl);
 				try {
-		             URL url = new URL(imageUrl);
-		             String filePath = ImageHandler.storeImage(url, imageDirectory);
-		             comic.setImage(filePath);
-			     } catch (Exception e) {
-			    	 if (e != null)
-			    		 System.out.println(e.getMessage());
-			     }
+					URL url = new URL(imageUrl);
+					String fileName = ImageHandler.storeImage(url, imageDirectory);
+					comic.setImage(fileName);
+				} catch (Exception e) {
+					if (e != null)
+						System.out.println(e.getMessage());
+				}
 			}
 		}
-				
+
 		return comic;
-	}
-	
+			}
+
 	public int getId() {
-		return id;
+		return mId;
 	}
 	public void setId(int id) {
-		this.id = id;
+		this.mId = id;
 	}
 
 	public int getGroupId() {
-		return groupId;
+		return mGroupId;
 	}
 	public void setGroupId(int groupId) {
-		this.groupId = groupId;
+		this.mGroupId = groupId;
 	}
-	
+
 	public String getTitle() {
-		return title != null ? title : "";
+		return mTitle != null ? mTitle : "";
 	}
 	public void setTitle(String title) {
-		this.title = title;
+		this.mTitle = title;
 	}
-	
+
 	public String getSubTitle() {
-		return subTitle != null ? subTitle : "";
+		return mSubTitle != null ? mSubTitle : "";
 	}
 	public void setSubTitle(String subTitle) {
-		this.subTitle = subTitle;
+		this.mSubTitle = subTitle;
 	}
-	
+
 	public String getAuthor() {
-		return author != null ? author : "";
+		return mAuthor != null ? mAuthor : "";
 	}
 	public void setAuthor(String author) {
-		this.author = author;
+		this.mAuthor = author;
 	}
-	
+
 	public String getIllustrator() {
-		return illustrator != null ? illustrator : "";
+		return mIllustrator != null ? mIllustrator : "";
 	}
 	public void setIllustrator(String illustrator) {
-		this.illustrator = illustrator;
+		this.mIllustrator = illustrator;
 	}
-	
+
 	public String getPublisher() {
-		return publisher != null ? publisher : "";
+		return mPublisher != null ? mPublisher : "";
 	}
 	public void setPublisher(String publisher) {
-		this.publisher = publisher;
+		this.mPublisher = publisher;
 	}
-	
+
 	public int getPublishDateTimestamp()
 	{
-		return publishDate;
+		return mPublishDate;
 	}
 	public Date getPublishDate() {
-		return new Date(publishDate * 1000L);
+		return new Date(mPublishDate * 1000L);
 	}
 	public void setPublishDate(Date publishDate) {
-		this.publishDate = (int)(publishDate.getTime() / 1000L);
+		this.mPublishDate = (int)(publishDate.getTime() / 1000L);
 	}	
-	
+
 	public int getAddedDateTimestamp()
 	{
-		return addedDate;
+		return mAddedDate;
 	}	
 	public Date getAddedDate() {
-		return new Date(addedDate * 1000L);
+		return new Date(mAddedDate * 1000L);
 	}	
 	public void setAddedDate(Date addedDate) {
-		this.addedDate = (int)(addedDate.getTime() / 1000L);
+		this.mAddedDate = (int)(addedDate.getTime() / 1000L);
 	}
-	
+
 	public int getBorrowedDateTimestamp()
 	{
-		return borrowedDate;
+		return mBorrowedDate;
 	}
 	public Date getBorrowedDate() {
-		return new Date(borrowedDate * 1000L);
+		return new Date(mBorrowedDate * 1000L);
 	}
 	public void setBorrowedDate(Date borrowedDate) {
-		this.borrowedDate = (int)(borrowedDate.getTime() / 1000L);
+		this.mBorrowedDate = (int)(borrowedDate.getTime() / 1000L);
 	}
-	
+
 	public int getPageCount() {
-		return pageCount;
+		return mPageCount;
 	}
 	public void setPageCount(int pageCount) {
-		this.pageCount = pageCount;
+		this.mPageCount = pageCount;
 	}
-	
+
 	public Boolean getIsBorrowed() {
-		return isBorrowed == 1;
+		return mIsBorrowed == 1;
 	}
 	public void setIsBorrowed(Boolean isBorrowed) {
-		this.isBorrowed = isBorrowed ? 1 : 0;
+		this.mIsBorrowed = isBorrowed ? 1 : 0;
 	}
-	
+
 	public Boolean getIsRead() {
-		return isRead == 1;
+		return mIsRead == 1;
 	}
 	public void setIsRead(Boolean isRead) {
-		this.isRead = isRead ? 1 : 0;
+		this.mIsRead = isRead ? 1 : 0;
 	}
-	
+
 	public String getBorrower() {
-		return borrower != null ? borrower : "";
+		return mBorrower != null ? mBorrower : "";
 	}
 	public void setBorrower(String borrower) {
-		this.borrower = borrower;
+		this.mBorrower = borrower;
 	}
 
 	public String getImage() {
-		return image != null ? image : "";
+		return mImage != null ? mImage : "";
 	}
 
 	public void setImage(String image) {
-		this.image = image;
+		this.mImage = image;
 	}
 
 	public String getImageUrl() {
-		return imageUrl;
+		return mImageUrl;
 	}
 
 	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
+		this.mImageUrl = imageUrl;
 	}
 
 	public String getISBN() {
-		return ISBN;
+		return mISBN;
 	}
 
 	public void setISBN(String iSBN) {
-		ISBN = iSBN;
+		mISBN = iSBN;
 	}
 
 	public int getIssue() {
-		return issue;
+		return mIssue;
 	}
 
 	public void setIssue(int issue) {
-		this.issue = issue;
+		this.mIssue = issue;
 	}
-	
+
 	public int getRating() {
-		return rating;
+		return mRating;
 	}
 	public void setRating(int rating) {
-		this.rating = rating;
+		this.mRating = rating;
 	}
-	
+
 	public String getIssues() {
-		return issues;
+		return mIssues;
 	}
 	public void setIssues(String issues) {
-		this.issues = issues;
+		this.mIssues = issues;
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) 
@@ -353,7 +353,7 @@ public class Comic
 		Comic c = (Comic)obj;
 		return c.getId() == this.getId();
 	}
-	
+
 	@Override
 	public int hashCode() {
 		if (this.getISBN() != null && !this.getISBN().equals(""))
@@ -370,35 +370,35 @@ public class Comic
 
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
-		dest.writeInt(id);
-		dest.writeInt(groupId);
-		dest.writeString(title);
-		dest.writeString(subTitle);
-		dest.writeString(author);
-		dest.writeString(illustrator);
-		dest.writeString(publisher);
-		dest.writeInt(publishDate);
-		dest.writeInt(addedDate);
-		dest.writeInt(pageCount);
-		dest.writeInt(isBorrowed);
-		dest.writeString(borrower);
-		dest.writeInt(borrowedDate);
-		dest.writeString(image);
-		dest.writeString(imageUrl);
-		dest.writeString(ISBN);
-		dest.writeInt(issue);
-		dest.writeInt(isRead);
-		dest.writeInt(rating);
-		dest.writeString(issues);
+		dest.writeInt(mId);
+		dest.writeInt(mGroupId);
+		dest.writeString(mTitle);
+		dest.writeString(mSubTitle);
+		dest.writeString(mAuthor);
+		dest.writeString(mIllustrator);
+		dest.writeString(mPublisher);
+		dest.writeInt(mPublishDate);
+		dest.writeInt(mAddedDate);
+		dest.writeInt(mPageCount);
+		dest.writeInt(mIsBorrowed);
+		dest.writeString(mBorrower);
+		dest.writeInt(mBorrowedDate);
+		dest.writeString(mImage);
+		dest.writeString(mImageUrl);
+		dest.writeString(mISBN);
+		dest.writeInt(mIssue);
+		dest.writeInt(mIsRead);
+		dest.writeInt(mRating);
+		dest.writeString(mIssues);
 	}
-	
-    public static final Parcelable.Creator<Comic> CREATOR = new Parcelable.Creator<Comic>() {
+
+	public static final Parcelable.Creator<Comic> CREATOR = new Parcelable.Creator<Comic>() {
 		public Comic createFromParcel(Parcel in) {
-		    return new Comic(in);
+			return new Comic(in);
 		}
-		
+
 		public Comic[] newArray(int size) {
-		    return new Comic[size];
+			return new Comic[size];
 		}
-    };	
+	};	
 }

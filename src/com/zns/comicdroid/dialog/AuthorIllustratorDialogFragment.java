@@ -15,12 +15,12 @@ import android.widget.TextView;
 import com.zns.comicdroid.R;
 
 public class AuthorIllustratorDialogFragment extends DialogFragment {
-	
+
 	public interface OnAuthorIllustratorDialogListener {
-        public void onDialogPositiveClick(int comicId, String authors, String illustrators);
-    }
-	
-	OnAuthorIllustratorDialogListener authorIllustratorCallback;
+		public void onDialogPositiveClick(int comicId, String authors, String illustrators);
+	}
+
+	private OnAuthorIllustratorDialogListener mAuthorIllustratorCallback;
 
 	public static AuthorIllustratorDialogFragment newInstance(int comicId, String names)
 	{
@@ -31,27 +31,27 @@ public class AuthorIllustratorDialogFragment extends DialogFragment {
 		dialog.setArguments(args);
 		return dialog;
 	}
-	
+
 	@Override
 	public void onAttach(Activity activity) {
-	    super.onAttach(activity);
-	    if (getTargetFragment() instanceof OnAuthorIllustratorDialogListener) {
-	    	authorIllustratorCallback = (OnAuthorIllustratorDialogListener)getTargetFragment();
-	    }
-	    else if (activity instanceof OnAuthorIllustratorDialogListener) {
-	    	authorIllustratorCallback = (OnAuthorIllustratorDialogListener)activity;
-	    }
+		super.onAttach(activity);
+		if (getTargetFragment() instanceof OnAuthorIllustratorDialogListener) {
+			mAuthorIllustratorCallback = (OnAuthorIllustratorDialogListener)getTargetFragment();
+		}
+		else if (activity instanceof OnAuthorIllustratorDialogListener) {
+			mAuthorIllustratorCallback = (OnAuthorIllustratorDialogListener)activity;
+		}
 	}	
-	
+
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		
+
 		final int comicId = getArguments().getInt("ComicId");
 		final String[] names = getArguments().getStringArray("Names");
-		
+
 		LayoutInflater inflater = getActivity().getLayoutInflater();
-		
+
 		final LinearLayout parent = new LinearLayout(getActivity());
 		parent.setOrientation(1);
 		for(String name : names)
@@ -62,7 +62,7 @@ public class AuthorIllustratorDialogFragment extends DialogFragment {
 		}
 		builder
 		.setView(parent);
-		
+
 		builder
 		.setPositiveButton(getResources().getString(R.string.common_save), new DialogInterface.OnClickListener() {			
 			@Override
@@ -82,18 +82,18 @@ public class AuthorIllustratorDialogFragment extends DialogFragment {
 				}
 				authors = authors.replaceAll("[,]+$", "");
 				illustrators = illustrators.replaceAll("[,]+$", "");
-				if (authorIllustratorCallback != null)
-					authorIllustratorCallback.onDialogPositiveClick(comicId, authors, illustrators);
+				if (mAuthorIllustratorCallback != null)
+					mAuthorIllustratorCallback.onDialogPositiveClick(comicId, authors, illustrators);
 			}
 		})
-		
+
 		.setNegativeButton(getResources().getString(R.string.common_cancel), new DialogInterface.OnClickListener() {			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				AuthorIllustratorDialogFragment.this.getDialog().cancel();
 			}
 		});
-					
+
 		AlertDialog dialog = builder.create();		
 		return dialog;
 	}	

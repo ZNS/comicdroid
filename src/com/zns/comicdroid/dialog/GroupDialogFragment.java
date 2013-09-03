@@ -15,13 +15,13 @@ import com.zns.comicdroid.BaseFragmentActivity;
 import com.zns.comicdroid.R;
 
 public class GroupDialogFragment extends DialogFragment {
-    
+
 	public interface OnGroupAddDialogListener {
-        public void onDialogPositiveClick(DialogFragment dialog);
-    }
-    
-	OnGroupAddDialogListener groupAddCallback;
-	
+		public void onDialogPositiveClick(DialogFragment dialog);
+	}
+
+	private OnGroupAddDialogListener mGroupAddCallback;
+
 	public static GroupDialogFragment newInstance(int groupId, String name, int totalCount)
 	{
 		GroupDialogFragment dialog = new GroupDialogFragment();
@@ -32,22 +32,22 @@ public class GroupDialogFragment extends DialogFragment {
 		dialog.setArguments(args);
 		return dialog;
 	}
-	
+
 	@Override
 	public void onAttach(Activity activity) {
-	    super.onAttach(activity);	    
-	    if (activity instanceof OnGroupAddDialogListener) {
-	    	groupAddCallback = (OnGroupAddDialogListener)activity;
-	    }
+		super.onAttach(activity);	    
+		if (activity instanceof OnGroupAddDialogListener) {
+			mGroupAddCallback = (OnGroupAddDialogListener)activity;
+		}
 	}
-		
+
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {				
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 		View view = inflater.inflate(R.layout.dialog_groupadd, null);
 		final EditText etName = (EditText)view.findViewById(R.id.dialogAddGroup_etName);
 		final EditText etTotalCount = (EditText)view.findViewById(R.id.dialogAddGroup_etTotalCount);
-		
+
 		final Bundle bundle = getArguments();	
 		if (bundle != null)
 		{
@@ -55,7 +55,7 @@ public class GroupDialogFragment extends DialogFragment {
 			if (bundle.getInt("TotalCount") > 0)
 				etTotalCount.setText(Integer.toString(bundle.getInt("TotalCount")));
 		}
-		
+
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());	
 		builder
 		.setView(view)			
@@ -63,7 +63,7 @@ public class GroupDialogFragment extends DialogFragment {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {				
 				BaseFragmentActivity activity = (BaseFragmentActivity)getActivity();
-				
+
 				if (bundle != null)
 				{
 					//Update group
@@ -78,9 +78,9 @@ public class GroupDialogFragment extends DialogFragment {
 					//Insert group
 					activity.getDBHelper().addGroup(etName.getText().toString());
 				}
-				
-				if (groupAddCallback != null)
-					groupAddCallback.onDialogPositiveClick(GroupDialogFragment.this);
+
+				if (mGroupAddCallback != null)
+					mGroupAddCallback.onDialogPositiveClick(GroupDialogFragment.this);
 			}
 		})	
 		.setNegativeButton(getResources().getString(R.string.common_cancel), new DialogInterface.OnClickListener() {			
@@ -89,7 +89,7 @@ public class GroupDialogFragment extends DialogFragment {
 				GroupDialogFragment.this.getDialog().cancel();
 			}
 		});
-				
+
 		return builder.create();
 	}
 }

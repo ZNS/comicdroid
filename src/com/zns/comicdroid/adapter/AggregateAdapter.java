@@ -17,12 +17,13 @@ import com.zns.comicdroid.data.Aggregate;
 import com.zns.comicdroid.util.ImageWorker;
 
 public class AggregateAdapter extends SimpleCursorAdapter {
-	private final int _layout;
-	private final LayoutInflater _layoutInflater;
-	private final ImageWorker imageWorker = new ImageWorker();
-	private int colorDefault;
-	private int colorIsBorrowed;
-	
+	private final int mLayout;
+	private final LayoutInflater mLayoutInflater;
+	private final ImageWorker mImageWorker = new ImageWorker();
+	private final int mColorDefault;
+	private final int mColorIsBorrowed;
+	private final String mImagePath;
+
 	static class AggregateHolder
 	{
 		TextView tvTitle;
@@ -36,17 +37,18 @@ public class AggregateAdapter extends SimpleCursorAdapter {
 		RatingBar rbComic;
 		RelativeLayout rlRow;
 	}
-	
-	public AggregateAdapter(Context context)
+
+	public AggregateAdapter(Context context, String imagePath)
 	{
 		super(context, R.layout.list_comicrow, null, new String[] { "Title" }, null, 0);
-		_layout = R.layout.list_comicrow;
-		_layoutInflater = LayoutInflater.from(context);		
+		mLayout = R.layout.list_comicrow;
+		mLayoutInflater = LayoutInflater.from(context);		
 		Resources res = context.getResources();
-		colorDefault = res.getColor(R.color.contentBg);
-		colorIsBorrowed = res.getColor(R.color.listViewBorrowed);		
+		mColorDefault = res.getColor(R.color.contentBg);
+		mColorIsBorrowed = res.getColor(R.color.listViewBorrowed);	
+		mImagePath = imagePath;
 	}
-	
+
 	public Aggregate getAggregate(int position) {
 		Cursor cursor = getCursor();
 		if (cursor.moveToPosition(position)) {
@@ -54,35 +56,35 @@ public class AggregateAdapter extends SimpleCursorAdapter {
 		}
 		return null;
 	}
-	
+
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		Cursor cursor = getCursor();
-	    if (cursor.moveToPosition(position)) 
-	    {
-	    	AggregateHolder holder;
-	    	
-	    	if (convertView == null)
-	    	{
-	    		convertView = _layoutInflater.inflate(_layout, null);	    		
-	    		holder = new AggregateHolder();
-	    		holder.tvTitle = (TextView)convertView.findViewById(R.id.tvTitle);
-	    		holder.tvAuthor = (TextView)convertView.findViewById(R.id.tvAuthor);
-	    		holder.ivImage = (ImageView)convertView.findViewById(R.id.ivImage);
-	    		holder.tvCount = (TextView)convertView.findViewById(R.id.tvCount);
-	    		holder.ivGroupMark = (ImageView)convertView.findViewById(R.id.ivGroupMark);
-	    		holder.rlRow = (RelativeLayout)convertView.findViewById(R.id.rlRow);
-	    		holder.ivGroupCompleted = (ImageView)convertView.findViewById(R.id.ivGroupCompleted);
-	    		holder.ivGroupFinished = (ImageView)convertView.findViewById(R.id.ivGroupFinished);
-	    		holder.ivGroupWatched = (ImageView)convertView.findViewById(R.id.ivGroupWatched);
-	    		holder.rbComic = (RatingBar)convertView.findViewById(R.id.rbComicList);
-	    		convertView.setTag(holder);
-	    	}
-	    	else
-	    	{
-	    		holder = (AggregateHolder)convertView.getTag();
-	    	}
-	    	
+		if (cursor.moveToPosition(position)) 
+		{
+			AggregateHolder holder;
+
+			if (convertView == null)
+			{
+				convertView = mLayoutInflater.inflate(mLayout, null);	    		
+				holder = new AggregateHolder();
+				holder.tvTitle = (TextView)convertView.findViewById(R.id.tvTitle);
+				holder.tvAuthor = (TextView)convertView.findViewById(R.id.tvAuthor);
+				holder.ivImage = (ImageView)convertView.findViewById(R.id.ivImage);
+				holder.tvCount = (TextView)convertView.findViewById(R.id.tvCount);
+				holder.ivGroupMark = (ImageView)convertView.findViewById(R.id.ivGroupMark);
+				holder.rlRow = (RelativeLayout)convertView.findViewById(R.id.rlRow);
+				holder.ivGroupCompleted = (ImageView)convertView.findViewById(R.id.ivGroupCompleted);
+				holder.ivGroupFinished = (ImageView)convertView.findViewById(R.id.ivGroupFinished);
+				holder.ivGroupWatched = (ImageView)convertView.findViewById(R.id.ivGroupWatched);
+				holder.rbComic = (RatingBar)convertView.findViewById(R.id.rbComicList);
+				convertView.setTag(holder);
+			}
+			else
+			{
+				holder = (AggregateHolder)convertView.getTag();
+			}
+
 			String title = cursor.getString(1);
 			String subTitle = cursor.getString(2);
 			String author = cursor.getString(3);
@@ -96,7 +98,7 @@ public class AggregateAdapter extends SimpleCursorAdapter {
 			boolean isWatched = cursor.getInt(11) == 1;
 			boolean isRead = cursor.getInt(12) == 1;
 			int rating = cursor.getInt(13);
-			
+
 			holder.tvTitle.setText(title + (subTitle != null && !subTitle.equals("") ? " - " + subTitle : ""));
 			holder.tvAuthor.setText(author);
 			if (type == 2) {
@@ -117,24 +119,24 @@ public class AggregateAdapter extends SimpleCursorAdapter {
 				holder.rbComic.setVisibility(rating > 0 ? View.VISIBLE : View.GONE);
 				holder.rbComic.setRating(rating);
 			}
-			if (image != null)
+			if (image != null && !image.equals(""))
 			{
-				imageWorker.load(image, holder.ivImage);
+				mImageWorker.load(mImagePath.concat(image), holder.ivImage);
 				holder.ivImage.setVisibility(View.VISIBLE);
 			}
 			else
 			{
 				holder.ivImage.setVisibility(View.GONE);
 			}
-			
+
 			if (isBorrowed) {
-				holder.rlRow.setBackgroundColor(colorIsBorrowed);
+				holder.rlRow.setBackgroundColor(mColorIsBorrowed);
 			}
 			else {
-				holder.rlRow.setBackgroundColor(colorDefault);
+				holder.rlRow.setBackgroundColor(mColorDefault);
 			}			
-	    }
-	    
+		}
+
 		return convertView;	    
 	}		
 }

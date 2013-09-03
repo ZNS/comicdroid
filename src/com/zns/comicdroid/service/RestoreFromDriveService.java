@@ -1,7 +1,9 @@
 package com.zns.comicdroid.service;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.URL;
@@ -34,20 +36,21 @@ import com.zns.comicdroid.data.DBHelper;
 import com.zns.comicdroid.util.ImageHandler;
 
 public class RestoreFromDriveService extends IntentService {
-	
+
 	public RestoreFromDriveService() {
 		super("ComicDroid restore service");
 	}
-	
- 	@Override
+
+	@Override
 	protected void onHandleIntent(Intent intent) {
- 		
- 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
- 		String account = prefs.getString(Application.PREF_DRIVE_ACCOUNT, null);
+
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		String account = prefs.getString(Application.PREF_DRIVE_ACCOUNT, null);
+		String appId = prefs.getString(Application.PREF_APP_ID, "");
 
 		com.google.api.services.drive.model.File gFilePrefs = null;
 		com.google.api.services.drive.model.File gFileData = null;
- 		
+
 		//Get Service
 		Drive service = null;
 		try
@@ -56,11 +59,11 @@ public class RestoreFromDriveService extends IntentService {
 			credential.setSelectedAccountName(account);
 			credential.getToken();					
 			service = new Drive.Builder(AndroidHttp.newCompatibleTransport(), new JacksonFactory(), credential).build();
-			
+
 			ChildList list = service.children().list("appdata").execute();
 			for (ChildReference c : list.getItems()) {
 				com.google.api.services.drive.model.File f = service.files().get(c.getId()).execute();
-				if (f.getTitle().toLowerCase(Locale.ENGLISH).equals("prefs.dat")) {
+				if (f.getTitle().toLowerCase(Locale.ENGLISH).equals("prefs_" + appId + ".dat")) {
 					gFilePrefs = f;
 				}
 				else if (f.getTitle().toLowerCase(Locale.ENGLISH).equals("data.dat")) {
@@ -69,7 +72,7 @@ public class RestoreFromDriveService extends IntentService {
 			}			
 		}
 		catch (Exception e) {}
-				
+
 		//Restore preferences
 		if (gFilePrefs != null && gFilePrefs.getDownloadUrl() != null && gFilePrefs.getDownloadUrl().length() > 0)
 		{		
@@ -83,16 +86,16 @@ public class RestoreFromDriveService extends IntentService {
 				for (int i = 0; i < size; i++) {
 					String key = input.readUTF();
 					Object val = input.readObject();
-                if (val instanceof Boolean)
-                    editor.putBoolean(key, ((Boolean) val).booleanValue());
-                else if (val instanceof Float)
-                	editor.putFloat(key, ((Float) val).floatValue());
-                else if (val instanceof Integer)
-                	editor.putInt(key, ((Integer) val).intValue());
-                else if (val instanceof Long)
-                	editor.putLong(key, ((Long) val).longValue());
-                else if (val instanceof String)
-                	editor.putString(key, ((String) val));
+					if (val instanceof Boolean)
+						editor.putBoolean(key, ((Boolean) val).booleanValue());
+					else if (val instanceof Float)
+						editor.putFloat(key, ((Float) val).floatValue());
+					else if (val instanceof Integer)
+						editor.putInt(key, ((Integer) val).intValue());
+					else if (val instanceof Long)
+						editor.putLong(key, ((Long) val).longValue());
+					else if (val instanceof String)
+						editor.putString(key, ((String) val));
 				}
 			}
 			catch (IOException e) {
@@ -109,19 +112,19 @@ public class RestoreFromDriveService extends IntentService {
 			}
 			editor.commit();
 		}
-		
+
 		//-------------------------Restore Data------------------------------------
 		if (gFileData != null && gFileData.getDownloadUrl() != null && gFileData.getDownloadUrl().length() > 0)
 		{		
 			DBHelper db = DBHelper.getHelper(getApplicationContext());
-			String imageDirectory = getExternalFilesDir(null).toString();
-			
+			String imagePath = ((Application)getApplication()).getImagePath(true);
+
 			DataInputStream in = null;		
 			try
 			{
 				HttpResponse response = service.getRequestFactory().buildGetRequest(new GenericUrl(gFileData.getDownloadUrl())).execute();		
 				in = new DataInputStream(response.getContent());
-				 
+
 				//Comics
 				List<Integer> addedComics = new ArrayList<Integer>();
 				int rows = in.readInt();
@@ -138,12 +141,12 @@ public class RestoreFromDriveService extends IntentService {
 							//Failed to restore comic...
 						}
 					}
-					
+
 					//Restore local images, read image size
 					int imgSize = in.readInt();
 					if (imgSize > 0)
 					{
-						//Read image path
+						//Read image name
 						String fileName = in.readUTF();
 						//Read image data
 						byte[] imgData = new byte[imgSize];
@@ -152,9 +155,9 @@ public class RestoreFromDriveService extends IntentService {
 							Bitmap bmp = BitmapFactory.decodeByteArray(imgData, 0, imgSize);
 							if (bmp != null)
 							{
-								String filePath = ImageHandler.storeImage(bmp, imageDirectory, fileName, 100);
+								ImageHandler.storeImage(bmp, imagePath, fileName, 100);
 								ContentValues val = new ContentValues();
-								val.put("Image", filePath);
+								val.put("Image", fileName);
 								db.update("tblBooks", val, "_id=?", new String[] { Integer.toString(id) });
 							}							
 						}
@@ -163,7 +166,7 @@ public class RestoreFromDriveService extends IntentService {
 						}
 					}
 				}
-				
+
 				//Groups
 				rows = in.readInt();
 				for (int i = 0; i < rows; i++)
@@ -178,7 +181,7 @@ public class RestoreFromDriveService extends IntentService {
 						}
 					}
 				}
-				
+
 				//Fix images with urls
 				Cursor cb = null;				
 				try 
@@ -186,9 +189,9 @@ public class RestoreFromDriveService extends IntentService {
 					String ids = Joiner.on(',').join(addedComics);
 					cb = db.getCursor("SELECT _id, Image, ImageUrl FROM tblBooks WHERE _id IN (" + ids  + ") AND ImageUrl <> ''", null);
 					while (cb.moveToNext()) {
-						String filePath = cb.getString(1);
-						if (filePath.length() > 0) {
-							File file = new File(filePath);
+						String fileName = cb.getString(1);
+						if (fileName.length() > 0) {
+							File file = new File(imagePath.concat(cb.getString(1)));
 							if (file.exists())
 								continue;
 						}
@@ -196,9 +199,9 @@ public class RestoreFromDriveService extends IntentService {
 						if (url.length() > 0) {
 							try
 							{
-								filePath = ImageHandler.storeImage(new URL(url), imageDirectory);
+								fileName = ImageHandler.storeImage(new URL(url), imagePath);
 								ContentValues val = new ContentValues();
-								val.put("Image", filePath);
+								val.put("Image", fileName);
 								db.update("tblBooks", val, "_id=?", new String[] { Integer.toString(cb.getInt(0)) });
 							}
 							catch (Exception x)
@@ -213,10 +216,9 @@ public class RestoreFromDriveService extends IntentService {
 				{
 					cb.close();
 				}
-				
+
 				//Fix group images
 				db.execSQL("UPDATE tblGroups SET Image = (SELECT Image FROM tblBooks WHERE GroupId = tblGroups._id AND Issue = 1 LIMIT 1)");
-				
 			}
 			catch (Exception e) {				
 			}
@@ -229,7 +231,27 @@ public class RestoreFromDriveService extends IntentService {
 				}
 			}
 		}
- 	
+
+		//Write meta
+		int timeStamp = (int)(System.currentTimeMillis() / 1000L);
+		File metaFile = new File(getFilesDir(), GoogleDriveService.BACKUP_META_FILENAME);
+		DataOutputStream stream = null;
+		try
+		{
+			stream = new DataOutputStream(new FileOutputStream(metaFile));
+			stream.writeInt(timeStamp);
+		}
+		catch (Exception e) {}
+		finally {
+			try {
+				if (stream != null)
+					stream.close();
+			} 
+			catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
 		stopSelf();
- 	}
+	}
 }

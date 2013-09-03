@@ -13,56 +13,56 @@ import com.zns.comicdroid.BaseFragmentActivity;
 import com.zns.comicdroid.R;
 
 public class GroupAddDialogFragment extends DialogFragment {
-    
+
 	public interface OnGroupAddDialogListener {
-        public void onDialogPositiveClick(DialogFragment dialog);
-    }
-    
-	OnGroupAddDialogListener groupAddCallback;
-	
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-    
+		public void onDialogPositiveClick(DialogFragment dialog);
+	}
+
+	private OnGroupAddDialogListener mGoupAddCallback;
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+	}
+
 	@Override
 	public void onAttach(Activity activity) {
-	    super.onAttach(activity);	    
-	    if (activity instanceof OnGroupAddDialogListener) {
-	    	groupAddCallback = (OnGroupAddDialogListener)activity;
-	    }
+		super.onAttach(activity);	    
+		if (activity instanceof OnGroupAddDialogListener) {
+			mGoupAddCallback = (OnGroupAddDialogListener)activity;
+		}
 	}
-		
+
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		
+
 		LayoutInflater inflater = getActivity().getLayoutInflater();
-		
+
 		builder
 		.setView(inflater.inflate(R.layout.dialog_groupadd, null))
-		
+
 		.setPositiveButton(getResources().getString(R.string.dialog_group_create), new DialogInterface.OnClickListener() {			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				AlertDialog ad = (AlertDialog)dialog;
 				EditText etName = (EditText)ad.findViewById(R.id.dialogAddGroup_etName);
-				
+
 				BaseFragmentActivity activity = (BaseFragmentActivity)getActivity();
 				activity.getDBHelper().addGroup(etName.getText().toString());
 
-				if (groupAddCallback != null)
-					groupAddCallback.onDialogPositiveClick(GroupAddDialogFragment.this);
+				if (mGoupAddCallback != null)
+					mGoupAddCallback.onDialogPositiveClick(GroupAddDialogFragment.this);
 			}
 		})
-		
+
 		.setNegativeButton(getResources().getString(R.string.common_cancel), new DialogInterface.OnClickListener() {			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				GroupAddDialogFragment.this.getDialog().cancel();
 			}
 		});
-				
+
 		return builder.create();
 	}
 }

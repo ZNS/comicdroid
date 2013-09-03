@@ -15,33 +15,33 @@ import com.zns.comicdroid.adapter.GroupAdapter;
 import com.zns.comicdroid.data.Group;
 
 public class WatchedGroups extends BaseFragmentActivity
-	implements OnItemClickListener {
-	
-	private GroupAdapter adapter;
-	private ListView lvGroups;
-	
+implements OnItemClickListener {
+
+	private GroupAdapter mAdapter;
+	private ListView mLvGroups;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		setContentView(R.layout.activity_watched_groups);
 		super.onCreate(savedInstanceState);
-		
-		lvGroups = (ListView)findViewById(R.id.watched_lvGroups);
-		lvGroups.setOnItemClickListener(this);
-		
+
+		mLvGroups = (ListView)findViewById(R.id.watched_lvGroups);
+		mLvGroups.setOnItemClickListener(this);
+
 		List<Group> groups = getDBHelper().getGroupsWatched();
-		adapter = new GroupAdapter(this, groups);
-		lvGroups.setAdapter(adapter);
-		
+		mAdapter = new GroupAdapter(this, groups, getImagePath(true));
+		mLvGroups.setAdapter(mAdapter);
+
 		if (groups.size() == 0) {
 			findViewById(R.id.watched_tvEmpty).setVisibility(View.VISIBLE);
 		}
 	}
-	
+
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {		
-		if (parent == lvGroups)
+		if (parent == mLvGroups)
 		{
-			Group group = adapter.getGroup(pos);
+			Group group = mAdapter.getGroup(pos);
 			if (group != null) {
 				Intent intent = new Intent(this, Comics.class);
 				intent.putExtra(Comics.INTENT_COMICS_TYPE, Comics.VIEWTYPE_GROUP);

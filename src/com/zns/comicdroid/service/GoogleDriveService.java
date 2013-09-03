@@ -3,14 +3,17 @@ package com.zns.comicdroid.service;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -18,7 +21,6 @@ import java.util.Map;
 import android.app.IntentService;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.backup.BackupManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -34,12 +36,16 @@ import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.client.http.ByteArrayContent;
 import com.google.api.client.http.FileContent;
+import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.HttpResponse;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.model.ChildList;
-import com.google.api.services.drive.model.ChildReference;
+import com.google.api.services.drive.model.FileList;
 import com.google.api.services.drive.model.ParentReference;
+import com.google.api.services.drive.model.Revision;
+import com.google.api.services.drive.model.RevisionList;
 import com.zns.comicdroid.Application;
 import com.zns.comicdroid.R;
 import com.zns.comicdroid.activity.Settings;
@@ -47,9 +53,12 @@ import com.zns.comicdroid.data.Comic;
 import com.zns.comicdroid.data.DBHelper;
 
 public class GoogleDriveService extends IntentService {
+
+	public static final String BACKUP_META_FILENAME = "backup.meta";
+	private DBHelper mDb;
 	
 	private NotificationManager notificationManager;
-	
+
 	public GoogleDriveService() {
 		super("ComicDroid google drive service");
 	}
@@ -60,14 +69,14 @@ public class GoogleDriveService extends IntentService {
 		Editor editor = pref.edit();
 		editor.putBoolean(Application.PREF_DRIVE_PUBLISH, false);
 		editor.commit();
-		
+
 		Intent settingsIntent = new Intent(getApplicationContext(), Settings.class);
 		settingsIntent.putExtra(Settings.INTENT_STOP_UPLOAD, true);		
-		
+
 		TaskStackBuilder stack = TaskStackBuilder.create(getApplicationContext());
 		stack.addParentStack(Settings.class);
 		stack.addNextIntent(settingsIntent);
-		
+
 		PendingIntent pendingIntent = stack.getPendingIntent(0, PendingIntent.FLAG_CANCEL_CURRENT);
 		NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
 		.setContentTitle(getString(R.string.nUploaderrorheading))
@@ -75,22 +84,47 @@ public class GoogleDriveService extends IntentService {
 		.setContentText(getString(R.string.nUploaderrorsub))
 		.setAutoCancel(true)
 		.setContentIntent(pendingIntent);
-		
+
 		notificationManager.notify(1, builder.build());
 	}
-	
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		notificationManager = (NotificationManager)getApplicationContext().getSystemService(NOTIFICATION_SERVICE);
 	}
- 	
- 	@Override
+
+	@Override
 	protected void onHandleIntent(Intent intent) {
-		
-		//Notify backup manager
-		BackupManager m = new BackupManager(getApplicationContext());
-		m.dataChanged();
+
+		//Has data changed?
+		mDb = DBHelper.getHelper(getApplicationContext());
+		int lastModified = mDb.GetLastModifiedDate();
+		File metaFile = new File(getFilesDir(), BACKUP_META_FILENAME);
+		DataInputStream data = null;
+		try
+		{
+			data = new DataInputStream(new FileInputStream(metaFile));
+			int lastBackupRestore = data.readInt();
+			if (lastBackupRestore >= lastModified) {
+				//Data has not been changed since last backup/restore. Stop service and return.
+				stopSelf();
+				return;
+			}
+		}
+		catch (Exception e) {
+			//Unable to read meta data, continue with backup
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				if (data != null)
+					data.close();
+			} 
+			catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 		
 		//Google drive check		
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -98,33 +132,35 @@ public class GoogleDriveService extends IntentService {
 		boolean backupEnabled = prefs.getBoolean(Application.PREF_DRIVE_BACKUP, false);
 		String account = prefs.getString(Application.PREF_DRIVE_ACCOUNT, null);
 		String webFolderId = prefs.getString(Application.PREF_DRIVE_WEBFOLDERID, null);
+		String appId = prefs.getString(Application.PREF_APP_ID, "");
+
+		//Backup
+		if (backupEnabled) {
+			if (account != null) {
+				Backup(account, appId);
+			}
+			else {
+				//We do not seem to have access to appdata.... try to recover
+				NotifyAuthentication();
+			}			
+		}
 
 		//Publish  
 		if (publishEnabled) {
-			//Webfolder id does not exist anymore.... try to recover
 			if (account != null && webFolderId != null) {
 				PublishComics(account, webFolderId);
 			}
 			else {
+				//Webfolder id does not exist anymore.... try to recover				
 				NotifyAuthentication();
 			}
-		}
-		
-		//Backup
-		if (backupEnabled) {
-			if (account != null) {
-				//Backup(account);
-			}
-			else {
-				NotifyAuthentication();
-			}			
 		}
 		
 		stopSelf();
 	}
 
- 	private synchronized void Backup(String account)
- 	{
+	private synchronized void Backup(String account, String appId)
+	{
 		//Get Service
 		Drive service = null;
 		try
@@ -147,19 +183,43 @@ public class GoogleDriveService extends IntentService {
 			e.printStackTrace();
 			return;
 		} 			
+
+		//Make sure the current backup is made from the same device
+		try {		
+			FileList files = service.files().list().setQ("'appdata' in parents and title = '" + BACKUP_META_FILENAME + "'").execute();
+			if (files.getItems().size() > 0)
+			{
+				com.google.api.services.drive.model.File f = files.getItems().get(0);
+				HttpResponse response = service.getRequestFactory().buildGetRequest(new GenericUrl(f.getDownloadUrl())).execute();
+				BufferedReader reader = new BufferedReader(new InputStreamReader(response.getContent()));
+				String backupAppId = reader.readLine();					
+				reader.close();
+				response.disconnect();
+				
+				if (!backupAppId.equals(appId)) {
+					stopSelf();
+					return;
+				}
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 		//Get file path
 		String outPath = getApplicationContext().getExternalFilesDir(null).toString() + "/backup";
-		
+		//Get image path
+		String imagePath = ((Application)getApplication()).getImagePath(true);
+
 		//------------------Backup preferences---------------------------
 		boolean prefSuccess = true;
 		File filePrefs = new File(outPath);
 		filePrefs.mkdirs();
 		filePrefs = new File(outPath, "prefs.dat");
-		
+
 		//Get preferences
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-		
+
 		//Get a stream for writing
 		ObjectOutputStream out = null;		
 		try
@@ -184,38 +244,36 @@ public class GoogleDriveService extends IntentService {
 				catch (IOException e) {}
 			}
 		}
-		
+
 		//------------------Backup sql---------------------------
 		boolean sqlSuccess = true;
 		File fileSql = new File(outPath, "data.dat");
-		
-		//Get database
-		DBHelper db = DBHelper.getHelper(getApplicationContext());
-		
+
 		//Write data
 		DataOutputStream writer = null;		
 		try
 		{					
 			Cursor cb = null;			
 			writer = new DataOutputStream(new FileOutputStream(fileSql));
-			
+
 			try
 			{
-				cb = db.getCursor("SELECT _id, GroupId, Title, Subtitle, Publisher, Author, Image, ImageUrl, PublishDate, AddedDate, PageCount, IsBorrowed, Borrower, BorrowedDate, ISBN, Issue, Issues, IsRead, Rating" +
+				cb = mDb.getCursor("SELECT _id, GroupId, Title, Subtitle, Publisher, Author, Image, ImageUrl, PublishDate, AddedDate, PageCount, IsBorrowed, Borrower, BorrowedDate, ISBN, Issue, Issues, IsRead, Rating" +
 						" FROM tblBooks ORDER BY _id", null);
 				int count = cb.getCount();
 				writer.writeInt(count);					
 				while (cb.moveToNext())
 				{
 					writer.writeInt(cb.getInt(0));
-					writer.writeUTF(String.format("INSERT OR REPLACE INTO tblBooks(_id, GroupId, Title, Subtitle, Publisher, Author, ImageUrl, PublishDate, AddedDate, PageCount, IsBorrowed, Borrower, BorrowedDate, ISBN, Issue, Issues, IsRead, Rating)" +
-							" VALUES(%d ,%d, %s, %s, %s, %s, %s, %d, %d, %d, %d, %s, %d, %s, %d, %s, %d, %d);", 
+					writer.writeUTF(String.format("INSERT OR REPLACE INTO tblBooks(_id, GroupId, Title, Subtitle, Publisher, Author, Image, ImageUrl, PublishDate, AddedDate, PageCount, IsBorrowed, Borrower, BorrowedDate, ISBN, Issue, Issues, IsRead, Rating)" +
+							" VALUES(%d ,%d, %s, %s, %s, %s, %s, %s, %d, %d, %d, %d, %s, %d, %s, %d, %s, %d, %d);", 
 							cb.getInt(0),
 							cb.getInt(1),
 							dbString(cb.getString(2)),
 							dbString(cb.getString(3)),
 							dbString(cb.getString(4)),
 							dbString(cb.getString(5)),
+							dbString(cb.getString(6)),
 							dbString(cb.getString(7)),
 							cb.getInt(8),
 							cb.getInt(9),
@@ -229,21 +287,19 @@ public class GoogleDriveService extends IntentService {
 							cb.getInt(17),
 							cb.getInt(18)));
 					//Image
-					String imgPath = cb.getString(6);
+					String fileName = cb.getString(6);
 					String imgUrl = cb.getString(7);
-					if ((imgUrl == null || imgUrl.length() == 0) && (imgPath != null && imgPath.length() > 0))
+					if ((imgUrl == null || imgUrl.length() == 0) && (fileName != null && fileName.length() > 0))
 					{							
-						Bitmap bmp = BitmapFactory.decodeFile(imgPath);
+						Bitmap bmp = BitmapFactory.decodeFile(imagePath.concat(fileName));
 						if (bmp != null)
 						{
-						    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-						    bmp.compress(CompressFormat.JPEG, 100, stream);
-						    byte[] data = stream.toByteArray();
+							ByteArrayOutputStream stream = new ByteArrayOutputStream();
+							bmp.compress(CompressFormat.JPEG, 100, stream);
+							byte[] data = stream.toByteArray();
 							//Write image size
 							writer.writeInt(data.length);
 							//Write file name
-							String[] parts = imgPath.split("/");
-							String fileName = parts[parts.length - 1];							
 							writer.writeUTF(fileName);
 							//Write image data							
 							writer.write(data);
@@ -261,24 +317,23 @@ public class GoogleDriveService extends IntentService {
 			finally {
 				cb.close();
 			}
-			
+
 			try
 			{
-				cb = db.getCursor("SELECT _id, Name, ImageUrl, BookCount, TotalBookCount, IsWatched, IsFinished, IsComplete" +
+				cb = mDb.getCursor("SELECT _id, Name, BookCount, TotalBookCount, IsWatched, IsFinished, IsComplete" +
 						" FROM tblGroups ORDER BY _id", null);
 				writer.writeInt(cb.getCount());
 				while (cb.moveToNext())
 				{
-					writer.writeUTF(String.format("INSERT OR REPLACE INTO tblGroups(_id, Name, ImageUrl, BookCount, TotalBookCount, IsWatched, IsFinished, IsComplete)" +
-							" VALUES(%d, %s, %s, %d, %d, %d, %d, %d);", 
+					writer.writeUTF(String.format("INSERT OR REPLACE INTO tblGroups(_id, Name, BookCount, TotalBookCount, IsWatched, IsFinished, IsComplete)" +
+							" VALUES(%d, %s, %d, %d, %d, %d, %d);", 
 							cb.getInt(0),
 							dbString(cb.getString(1)),
-							dbString(cb.getString(2)),
+							cb.getInt(2),
 							cb.getInt(3),
 							cb.getInt(4),
 							cb.getInt(5),
-							cb.getInt(6),
-							cb.getInt(7)));
+							cb.getInt(6)));
 				}
 			}
 			finally {
@@ -297,51 +352,106 @@ public class GoogleDriveService extends IntentService {
 				catch (IOException e) {}
 			}
 		}
-		
+
 		//Upload to google drive
+		int timeStamp = (int)(System.currentTimeMillis() / 1000L);		
 		try 
 		{						
-			//Delete
-			ChildList list = service.children().list("appdata").execute();
-			for (ChildReference c : list.getItems()) {
-				com.google.api.services.drive.model.File f = service.files().get(c.getId()).execute();
-				if (prefSuccess && f.getTitle().toLowerCase(Locale.ENGLISH).equals("prefs.dat")) {
+			com.google.api.services.drive.model.File prefsDriveFile = null;
+			com.google.api.services.drive.model.File dataDriveFile = null;
+			
+			//Manage revisions
+			FileList list = service.files().list().setQ("'appdata' in parents").execute();
+			for (com.google.api.services.drive.model.File f : list.getItems()) {
+				if (f.getTitle().toLowerCase(Locale.ENGLISH).equals(BACKUP_META_FILENAME)) {
 					service.files().delete(f.getId()).execute();
 				}
+				else if (prefSuccess && f.getTitle().toLowerCase(Locale.ENGLISH).equals("prefs_" + appId + ".dat")) {
+					prefsDriveFile = f;
+					trimDriveFileRevisions(service, f.getId(), 1);
+				}
 				else if (sqlSuccess && f.getTitle().toLowerCase(Locale.ENGLISH).equals("data.dat")) {
-					service.files().delete(f.getId()).execute();
-				}				
+					dataDriveFile = f;
+					trimDriveFileRevisions(service, f.getId(), 1);
+				}
 			}
+
+			//Insert meta			
+			ByteArrayContent contentMeta = ByteArrayContent.fromString("text/plain", appId + "\n" + Integer.toString(timeStamp));
+			com.google.api.services.drive.model.File fMeta = new com.google.api.services.drive.model.File();			
+			fMeta.setTitle(BACKUP_META_FILENAME);
+			fMeta.setMimeType("text/plain");
+			fMeta.setParents(Arrays.asList(new ParentReference().setId("appdata")));
+			service.files().insert(fMeta, contentMeta).execute();
 			
 			if (prefSuccess)
 			{
-				//Insert prefs
+				//Insert/Update prefs
 				FileContent contentPrefs = new FileContent("application/octet-stream", filePrefs);			
 				com.google.api.services.drive.model.File fPrefs = new com.google.api.services.drive.model.File();			
-				fPrefs.setTitle("prefs.dat");
+				fPrefs.setTitle("prefs_" + appId + ".dat");
 				fPrefs.setMimeType("application/octet-stream");
-				fPrefs.setParents(Arrays.asList(new ParentReference().setId("appdata")));								
-				service.files().insert(fPrefs, contentPrefs).execute();			
+				fPrefs.setParents(Arrays.asList(new ParentReference().setId("appdata")));
+				if (prefsDriveFile == null) {
+					service.files().insert(fPrefs, contentPrefs).execute();
+				}
+				else {
+					service.files().update(prefsDriveFile.getId(), prefsDriveFile, contentPrefs);
+				}
 			}
-			
+
 			if (sqlSuccess)
 			{
-				//Insert data
+				//Insert/Update data
 				FileContent contentData = new FileContent("application/octet-stream", fileSql);			
 				com.google.api.services.drive.model.File fData = new com.google.api.services.drive.model.File();			
 				fData.setTitle("data.dat");
 				fData.setMimeType("application/octet-stream");
-				fData.setParents(Arrays.asList(new ParentReference().setId("appdata")));								
-				service.files().insert(fData, contentData).execute();
+				fData.setParents(Arrays.asList(new ParentReference().setId("appdata")));
+				if (dataDriveFile == null) {
+					service.files().insert(fData, contentData).execute();
+				}
+				else {
+					service.files().update(dataDriveFile.getId(), dataDriveFile, contentData);
+				}				
 			}
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-		}		
- 	}
- 	
- 	private synchronized void PublishComics(String account, String webFolderId)
- 	{
+		}
+		
+		//Write meta
+		File metaFile = new File(getFilesDir(), BACKUP_META_FILENAME);
+		DataOutputStream stream = null;
+		try
+		{
+			stream = new DataOutputStream(new FileOutputStream(metaFile));
+			stream.writeInt(timeStamp);
+		}
+		catch (Exception e) {}
+		finally {
+			try {
+				if (stream != null)
+					stream.close();
+			} 
+			catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		//Clean up
+		try
+		{
+			fileSql.delete();
+			filePrefs.delete();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private synchronized void PublishComics(String account, String webFolderId)
+	{
 		//Get Service
 		Drive service = null;
 		try
@@ -364,7 +474,7 @@ public class GoogleDriveService extends IntentService {
 			e.printStackTrace();
 			return;
 		} 			
-		
+
 		//Make sure webfolder still exists
 		try	{
 			com.google.api.services.drive.model.File webFolder = service.files().get(webFolderId).execute();
@@ -377,29 +487,28 @@ public class GoogleDriveService extends IntentService {
 			NotifyAuthentication();
 			return;
 		}
-		
+
 		//Get some more stuff from context
-		DBHelper db = DBHelper.getHelper(getApplicationContext());
 		String outPath = getApplicationContext().getExternalFilesDir(null).toString() + "/html";
-		
+
 		//Let's get started
 		File fileOut = new File(outPath);
 		fileOut.mkdirs();
 		fileOut = new File(outPath, "index.html");		
-		
+
 		BufferedReader reader = null;
 		BufferedWriter writer = null;
-		Cursor cursor = db.getCursor("SELECT _id, Title, Subtitle, Author, ImageUrl, 1 AS ItemType, 0 AS BookCount, IsBorrowed, PublishDate " +
+		Cursor cursor = mDb.getCursor("SELECT _id, Title, Subtitle, Author, ImageUrl, 1 AS ItemType, 0 AS BookCount, IsBorrowed, PublishDate " +
 				"FROM tblBooks WHERE GroupId = 0 OR ifnull(GroupId, '') = '' " +
 				"UNION " +
 				"SELECT _id, Name AS Title, '' AS Subtitle, '' AS Author, ImageUrl, 2 AS ItemType, BookCount, 0 AS IsBorrowed, 0 AS PublishDate " +
 				"FROM tblGroups " +
 				"ORDER BY Title", null);
-		
+
 		try 
 		{			
 			String line;
-			
+
 			//Read template
 			StringBuilder sbTemplate = new StringBuilder();
 			reader = new BufferedReader(new InputStreamReader(getResources().openRawResource(R.raw.listtemplate)));
@@ -408,7 +517,7 @@ public class GoogleDriveService extends IntentService {
 				sbTemplate.append(line);
 			}
 			reader.close();
-			
+
 			//Write HTML
 			writer = new BufferedWriter(new FileWriter(fileOut));
 			reader = new BufferedReader(new InputStreamReader(getResources().openRawResource(R.raw.framework)));			
@@ -424,7 +533,7 @@ public class GoogleDriveService extends IntentService {
 						int type = cursor.getInt(5);
 						int date = cursor.getInt(8);
 						StringBuilder sbChildren = new StringBuilder();
-						
+
 						String comicLine = sbTemplate.toString();
 						comicLine = comicLine.replace("#TITLE#", title + (type == 1 && !subTitle.equals("") ? " - " + subTitle : ""));
 						comicLine = comicLine.replace("#AUTHOR#", author);
@@ -433,10 +542,10 @@ public class GoogleDriveService extends IntentService {
 						comicLine = comicLine.replace("#ISAGGREGATE#", type == 2 ? " Aggregate" : "");
 						comicLine = comicLine.replace("#MARK#", type == 2 ? "<div class=\"Mark\"></div>" : "");
 						comicLine = comicLine.replace("#DATE#", type == 1 ? Integer.toString(date) : "");
-						
+
 						if (type == 2) {
 							//Render group children
-							List<Comic> comics = db.getComics(id);
+							List<Comic> comics = mDb.getComics(id);
 							for(Comic comic : comics) {
 								String childComic = sbTemplate.toString();
 								childComic = childComic.replace("#TITLE#", nullToEmpty(comic.getTitle()) + (!nullToEmpty(comic.getSubTitle()).equals("") ? " - " + comic.getSubTitle() : ""));
@@ -454,7 +563,7 @@ public class GoogleDriveService extends IntentService {
 						else {
 							comicLine = comicLine.replace("#CHILDREN#", "");
 						}
-						
+
 						writer.write(comicLine);
 					}
 				}
@@ -477,24 +586,22 @@ public class GoogleDriveService extends IntentService {
 			}
 			catch (IOException e) {}
 		}
-		
+
 		//Upload to google drive
 		try 
 		{						
 			//Get current index file
 			com.google.api.services.drive.model.File fileIndex = null;
-			ChildList list = service.children().list(webFolderId).execute();
-			for (ChildReference c : list.getItems()) {
-				com.google.api.services.drive.model.File f = service.files().get(c.getId()).execute();
-				if (f.getTitle().toLowerCase(Locale.ENGLISH).equals("index.html")) {
-					fileIndex = f;
-					break;
-				}
+			FileList list = service.files().list().setQ("'" + webFolderId + "' in parents and title = 'index.html'").execute();
+			if (list.getItems().size() > 0)
+			{
+				fileIndex = list.getItems().get(0);
+				trimDriveFileRevisions(service, fileIndex.getId(), 1);
 			}
 			
 			//Set content of file
 			FileContent content = new FileContent("text/html", fileOut);
-								
+
 			//Insert / Update
 			if (fileIndex == null) {
 				com.google.api.services.drive.model.File driveFile = new com.google.api.services.drive.model.File();			
@@ -510,20 +617,32 @@ public class GoogleDriveService extends IntentService {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
- 	}
- 	
+	}
+
 	private String nullToEmpty(String val)
 	{
 		if (val == null)
 			return "";
 		return val;
 	}
-	
+
 	private String dbString(String val) {
 		if (val != null) {
 			val = val.replaceAll("'", "''");
 			return "'" + val + "'";
 		}
 		return "null";
-	}	
+	}
+	
+	private void trimDriveFileRevisions(Drive service, String fileId, int revisionCount) throws IOException {
+		RevisionList revisions = service.revisions().list(fileId).execute();
+		if (revisions.getItems().size() > revisionCount)
+		{
+			List<Revision> items = revisions.getItems();
+			Collections.sort(items, new RevisionsByDateComparer());
+			for (Revision rev : items.subList(revisionCount, items.size())) {
+				service.revisions().delete(fileId, rev.getId()).execute();
+			}
+		}
+	}
 }

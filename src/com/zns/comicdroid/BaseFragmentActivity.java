@@ -1,10 +1,7 @@
 package com.zns.comicdroid;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.view.View;
@@ -24,24 +21,32 @@ import com.zns.comicdroid.adapter.DrawerMenuAdapter;
 import com.zns.comicdroid.data.DBHelper;
 
 public class BaseFragmentActivity 
-	extends com.actionbarsherlock.app.SherlockFragmentActivity
-	implements ListView.OnItemClickListener {
-          
-	private DrawerLayout drawer;
-	private ListView drawerList;
-	private ActionBarDrawerToggle drawerToggle;
-	
-    public DBHelper getDBHelper() {
-    	return DBHelper.getHelper(this);
-    }
+extends com.actionbarsherlock.app.SherlockFragmentActivity
+implements ListView.OnItemClickListener {
+
+	private DrawerLayout mDrawer;
+	private ListView mDrawerList;
+	private ActionBarDrawerToggle mDrawerToggle;
+
+	public DBHelper getDBHelper() {
+		return DBHelper.getHelper(this);
+	}
+
+	public String getImagePath(boolean appendSlash) {
+		return ((Application)getApplication()).getImagePath(appendSlash);
+	}
+
+	public String getImagePath(String imageName) {
+		return ((Application)getApplication()).getImagePath(imageName);
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {   
 		super.onCreate(savedInstanceState);	
 		getSupportActionBar().setHomeButtonEnabled(true);
-	    getSupportActionBar().setDisplayHomeAsUpEnabled(true);		
-		drawer = (DrawerLayout)findViewById(R.id.drawer_layout);
-		drawerList = (ListView)findViewById(R.id.drawer_left);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);		
+		mDrawer = (DrawerLayout)findViewById(R.id.drawer_layout);
+		mDrawerList = (ListView)findViewById(R.id.drawer_left);
 		String[] titles = new String[] { 
 				getString(R.string.menu_start), 
 				getString(R.string.menu_borrowed),
@@ -58,87 +63,82 @@ public class BaseFragmentActivity
 				getString(R.string.menu_add_sub), 
 				getString(R.string.menu_borrow_sub), 
 				getString(R.string.menu_settings_sub) };
-		drawerList.setAdapter(new DrawerMenuAdapter(this, titles, subTitles));
-		drawerList.setOnItemClickListener(this);		
-		drawerToggle = new ActionBarDrawerToggle(this, drawer, R.drawable.ic_launcher, R.string.drawer_open, R.string.drawer_close) {
-	        @Override
-	        public void onDrawerOpened(View drawerView) {
-	            // TODO Auto-generated method stub
-	            super.onDrawerOpened(drawerView);
-	        }
-	    };
-	    drawer.setDrawerListener(drawerToggle);
-	    
+		mDrawerList.setAdapter(new DrawerMenuAdapter(this, titles, subTitles));
+		mDrawerList.setOnItemClickListener(this);		
+		mDrawerToggle = new ActionBarDrawerToggle(this, mDrawer, R.drawable.ic_launcher, R.string.drawer_open, R.string.drawer_close) {
+			@Override
+			public void onDrawerOpened(View drawerView) {
+				// TODO Auto-generated method stub
+				super.onDrawerOpened(drawerView);
+			}
+		};
+		mDrawer.setDrawerListener(mDrawerToggle);
+
 		//First use check
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-		boolean isFirstTime = prefs.getBoolean(Application.PREF_FIRST_TIME_USE, true);
-		if (isFirstTime) {			
-			drawer.openDrawer(drawerList);
-			Editor prefsEdit = prefs.edit();
-			prefsEdit.putBoolean(Application.PREF_FIRST_TIME_USE, false);
-			prefsEdit.commit();
-		}	    
+		if (((Application)getApplication()).isFirstUse) {			
+			mDrawer.openDrawer(mDrawerList);
+		}
 	}
-	
+
 	@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        //getSupportMenuInflater().inflate(R.menu.actionbar_main, menu);
-        return true;
-    }
-	
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		//getSupportMenuInflater().inflate(R.menu.actionbar_main, menu);
+		return true;
+	}
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-	    switch (item.getItemId()) {
-	    	case android.R.id.home:        		 
-	            if (drawer.isDrawerOpen(drawerList)) {
-	                drawer.closeDrawer(drawerList);
-	            } 
-	            else {
-	                drawer.openDrawer(drawerList);
-	            }
-	            return true;	    
-	        default:
-	            return super.onOptionsItemSelected(item);
-	    }
+		switch (item.getItemId()) {
+		case android.R.id.home:        		 
+			if (mDrawer.isDrawerOpen(mDrawerList)) {
+				mDrawer.closeDrawer(mDrawerList);
+			} 
+			else {
+				mDrawer.openDrawer(mDrawerList);
+			}
+			return true;	    
+		default:
+			return super.onOptionsItemSelected(item);
+		}
 	}
 
 	@Override
 	public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
 		Intent intent;
 		switch (position) {
-	        case 0:
-	        	intent = new Intent(this, Start.class);
-	        	startActivity(intent);
-	        	break;
-	        case 1:
-	        	intent = new Intent(this, Borrowed.class);
-	        	startActivity(intent);
-	        	break;
-	        case 2:
-	        	intent = new Intent(this, WatchedGroups.class);
-	        	startActivity(intent);
-	        	break;
-	        case 3:
-				intent = new Intent(this, Comics.class);
-				intent.putExtra(Comics.INTENT_COMICS_TYPE, Comics.VIEWTYPE_READ);
-				intent.putExtra(Comics.INTENT_COMICS_VALUE, "0");
-				intent.putExtra(Comics.INTENT_COMICS_HEADING, getString(R.string.comics_heading_read));
-				startActivity(intent);	        	
-	        	break;
-	        case 4:
-	        	intent = new Intent(this, Add.class);
-	        	startActivity(intent);
-	        	break;
-	        case 5:
-	        	intent = new Intent(this, Borrow.class);
-	        	startActivity(intent);
-	        	break;
-	        case 6:
-	        	intent = new Intent(this, Settings.class);
-	        	startActivity(intent);
-	        	break;
+		case 0:
+			intent = new Intent(this, Start.class);
+			startActivity(intent);
+			break;
+		case 1:
+			intent = new Intent(this, Borrowed.class);
+			startActivity(intent);
+			break;
+		case 2:
+			intent = new Intent(this, WatchedGroups.class);
+			startActivity(intent);
+			break;
+		case 3:
+			intent = new Intent(this, Comics.class);
+			intent.putExtra(Comics.INTENT_COMICS_TYPE, Comics.VIEWTYPE_READ);
+			intent.putExtra(Comics.INTENT_COMICS_VALUE, "0");
+			intent.putExtra(Comics.INTENT_COMICS_HEADING, getString(R.string.comics_heading_read));
+			startActivity(intent);	        	
+			break;
+		case 4:
+			intent = new Intent(this, Add.class);
+			startActivity(intent);
+			break;
+		case 5:
+			intent = new Intent(this, Borrow.class);
+			startActivity(intent);
+			break;
+		case 6:
+			intent = new Intent(this, Settings.class);
+			startActivity(intent);
+			break;
 		}
-		drawer.closeDrawer(drawerList);
+		mDrawer.closeDrawer(mDrawerList);
 	}	
 }

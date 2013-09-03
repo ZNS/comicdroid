@@ -20,63 +20,63 @@ import com.zns.comicdroid.adapter.ComicArrayAdapter;
 import com.zns.comicdroid.data.Comic;
 
 public class Borrow extends BaseFragmentActivity {
-	
+
 	private final static String STATE_COMICS = "COMICS";
-	private ComicArrayAdapter adapter;
-	private Button btnScan;
-	private EditText etBorrower;
-	private ListView lvComics;
-	
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        setContentView(R.layout.activity_borrow);
-    	super.onCreate(savedInstanceState);               
-                
-        etBorrower = (EditText)findViewById(R.id.borrow_etBorrower);
-        btnScan = (Button)findViewById(R.id.borrow_btnScan);
-        lvComics = (ListView)findViewById(R.id.borrow_lvComics);
-        
-        btnScan.setEnabled(false);
-        etBorrower.addTextChangedListener(new TextWatcher() {
+	private ComicArrayAdapter mAdapter;
+	private Button mBtnScan;
+	private EditText mEtBorrower;
+	private ListView mLvComics;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		setContentView(R.layout.activity_borrow);
+		super.onCreate(savedInstanceState);               
+
+		mEtBorrower = (EditText)findViewById(R.id.borrow_etBorrower);
+		mBtnScan = (Button)findViewById(R.id.borrow_btnScan);
+		mLvComics = (ListView)findViewById(R.id.borrow_lvComics);
+
+		mBtnScan.setEnabled(false);
+		mEtBorrower.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void afterTextChanged(Editable s) {
-				btnScan.setEnabled(s.length() > 0);
+				mBtnScan.setEnabled(s.length() > 0);
 			}
 			@Override
 			public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {}
 			@Override
 			public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {}        	
-        });
-        
-	    ArrayList<Comic> comics = new ArrayList<Comic>();
-	    if (savedInstanceState != null && savedInstanceState.containsKey(STATE_COMICS)) {
-	    	comics = savedInstanceState.getParcelableArrayList(STATE_COMICS);
-	    }
-        adapter = new ComicArrayAdapter(this, comics);
-        lvComics.setAdapter(adapter);        
-    }
-    
-    @Override
+		});
+
+		ArrayList<Comic> comics = new ArrayList<Comic>();
+		if (savedInstanceState != null && savedInstanceState.containsKey(STATE_COMICS)) {
+			comics = savedInstanceState.getParcelableArrayList(STATE_COMICS);
+		}
+		mAdapter = new ComicArrayAdapter(this, comics, getImagePath(true));
+		mLvComics.setAdapter(mAdapter);        
+	}
+
+	@Override
 	protected void onSaveInstanceState(Bundle state) {
 		super.onSaveInstanceState(state);		
-		state.putParcelableArrayList(STATE_COMICS, new ArrayList<Comic>(adapter.getAll()));
+		state.putParcelableArrayList(STATE_COMICS, new ArrayList<Comic>(mAdapter.getAll()));
 	}    
-    
-    public void clear_click(View view) {
-    	adapter.clear();
-    	etBorrower.setText("");
+
+	public void clear_click(View view) {
+		mAdapter.clear();
+		mEtBorrower.setText("");
 	}
-    
-    public void scanISBN_click(View view)
-    {
-    	IntentIntegrator integrator = new IntentIntegrator(this);
-    	integrator.initiateScan();
-    }
-    
-    public void onActivityResult(int requestCode, int resultCode, Intent intent) 
-    {
-    	if (requestCode == IntentIntegrator.REQUEST_CODE)
-    	{
+
+	public void scanISBN_click(View view)
+	{
+		IntentIntegrator integrator = new IntentIntegrator(this);
+		integrator.initiateScan();
+	}
+
+	public void onActivityResult(int requestCode, int resultCode, Intent intent) 
+	{
+		if (requestCode == IntentIntegrator.REQUEST_CODE)
+		{
 			IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
 			if (scanResult != null) 
 			{
@@ -84,15 +84,15 @@ public class Borrow extends BaseFragmentActivity {
 				Comic comic = getDBHelper().getComic(isbn);
 				if (comic != null) {
 					//Mark as borrowed and notify
-					getDBHelper().setComicBorrowed(comic.getId(), etBorrower.getText().toString());
+					getDBHelper().setComicBorrowed(comic.getId(), mEtBorrower.getText().toString());
 					Toast.makeText(this, getResources().getString(R.string.borrow_added), Toast.LENGTH_SHORT).show();
 					//Update adapter
-					adapter.insert(comic, 0);
-					adapter.notifyDataSetChanged();
+					mAdapter.insert(comic, 0);
+					mAdapter.notifyDataSetChanged();
 					return;
 				}
 			}
 			Toast.makeText(this, getResources().getString(R.string.borrow_notadded), Toast.LENGTH_LONG).show();
-    	}    	
+		}    	
 	}    
 }

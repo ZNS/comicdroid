@@ -1,0 +1,25 @@
+package com.zns.comicdroid.service;
+
+import java.util.Comparator;
+
+import com.google.api.services.drive.model.Revision;
+
+public class RevisionsByDateComparer implements Comparator<Revision> {
+	  @Override
+	  public int compare(Revision x, Revision y) {
+		  if (x != null && y == null)
+			  return 1;
+		  else if (x == null && y != null)
+			  return -1;
+		  else if (x == null && y == null)
+			  return 0;
+		  
+		  long xVal = x.getModifiedDate().getValue();
+		  long yVal = y.getModifiedDate().getValue(); 
+		  if (xVal > yVal)
+			  return 1;
+		  else if (xVal < yVal)
+			  return -1;
+		  return 0;
+	  }
+}

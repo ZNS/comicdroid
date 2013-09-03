@@ -6,10 +6,10 @@ import android.widget.Checkable;
 import android.widget.RelativeLayout;
 
 public class CheckableRelativeLayout extends RelativeLayout
-	implements Checkable {
+implements Checkable {
 
 	private boolean mChecked;
-	
+
 	public CheckableRelativeLayout(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		mChecked = false;

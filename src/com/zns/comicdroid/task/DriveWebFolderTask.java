@@ -17,17 +17,17 @@ public class DriveWebFolderTask extends AsyncTask<com.zns.comicdroid.task.DriveW
 		public GoogleAccountCredential credentials;
 		public String webFolderId;
 	}
-	
+
 	public static class DriveWebFolderTaskResult {
 		public String fileId;
 		public boolean success;
 		public Intent intent;
 	}
-	
+
 	public DriveWebFolderTask()
 	{
 	}
-	
+
 	@Override
 	protected com.zns.comicdroid.task.DriveWebFolderTask.DriveWebFolderTaskResult doInBackground(com.zns.comicdroid.task.DriveWebFolderTask.DriveWebFolderTaskArg... args) {
 		DriveWebFolderTaskResult result = new DriveWebFolderTaskResult();
@@ -35,7 +35,7 @@ public class DriveWebFolderTask extends AsyncTask<com.zns.comicdroid.task.DriveW
 			//Try to get token
 			args[0].credentials.getToken();
 			Drive service = new Drive.Builder(AndroidHttp.newCompatibleTransport(), new JacksonFactory(), args[0].credentials).build();
-			
+
 			//Check if folder exists
 			File webFolder = null;
 			try
@@ -44,7 +44,7 @@ public class DriveWebFolderTask extends AsyncTask<com.zns.comicdroid.task.DriveW
 					webFolder = service.files().get(args[0].webFolderId).execute();
 			}
 			catch (Exception e1) {}
-			
+
 			if (webFolder == null || webFolder.getExplicitlyTrashed() == Boolean.TRUE)
 			{
 				File body = new File();

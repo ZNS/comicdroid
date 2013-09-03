@@ -1,89 +1,89 @@
 package com.zns.comicdroid.data;
 
 public class Group {
-	private int id;
-	private String name;
-	private String image;
-	private int bookCount;
-	private int totalBookCount;
-	private int isWatched;
-	private int isFinished;
-	private int isComplete;
-	
+	private int mId;
+	private String mName;
+	private String mImage;
+	private int mBookCount;
+	private int mTotalBookCount;
+	private int mIsWatched;
+	private int mIsFinished;
+	private int mIsComplete;
+
 	public Group(int id) {
-		this.id = id;
+		this.mId = id;
 	}
-	
+
 	public Group(int id, String name, String image, int bookCount, int totalBookCount, int isWatched, int isFinished, int isComplete)
 	{
-		this.id = id;
-		this.name = name;
-		this.image = image;
-		this.bookCount = bookCount;
-		this.totalBookCount = totalBookCount;
-		this.isWatched = isWatched;
-		this.isFinished = isFinished;
-		this.isComplete = isComplete;
+		this.mId = id;
+		this.mName = name;
+		this.mImage = image;
+		this.mBookCount = bookCount;
+		this.mTotalBookCount = totalBookCount;
+		this.mIsWatched = isWatched;
+		this.mIsFinished = isFinished;
+		this.mIsComplete = isComplete;
 	}
-	
+
 	public int getId() {
-		return id;
+		return mId;
 	}
 	public void setId(int id) {
-		this.id = id;
+		this.mId = id;
 	}
-	
+
 	public String getName() {
-		return name;
+		return mName;
 	}
 	public void setName(String name) {
-		this.name = name;
+		this.mName = name;
 	}
-	
+
 	public String getImage() {
-		return image;
+		return mImage;
 	}
 	public void setImage(String image) {
-		this.image = image;
+		this.mImage = image;
 	}
-	
+
 	public int getBookCount() {
-		return this.bookCount;
+		return this.mBookCount;
 	}
 
 	public int getTotalBookCount() {
-		return this.totalBookCount;
+		return this.mTotalBookCount;
 	}
 	public void setTotalBookCount(int count) {
-		this.totalBookCount = count;
+		this.mTotalBookCount = count;
 	}
-	
+
 	public boolean getIsWatched() {
-		return this.isWatched == 1;
+		return this.mIsWatched == 1;
 	}
 	public void setIsWatched(boolean watched) {
-		this.isWatched = watched ? 1 : 0;
+		this.mIsWatched = watched ? 1 : 0;
 	}
-	
+
 	public boolean getIsFinished() {
-		return this.isFinished == 1;
+		return this.mIsFinished == 1;
 	}
 	public void setIsFinished(boolean finished) {
-		this.isFinished = finished ? 1 : 0;
+		this.mIsFinished = finished ? 1 : 0;
 	}
-	
+
 	public boolean getIsComplete() {
-		return this.isComplete == 1;
+		return this.mIsComplete == 1;
 	}
 	public void setIsComplete(boolean complete) {
-		this.isComplete = complete ? 1 : 0;
+		this.mIsComplete = complete ? 1 : 0;
 	}
-	
+
 	@Override
 	public String toString() {
 		return getName();
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) 
@@ -93,7 +93,7 @@ public class Group {
 		Group g = (Group)obj;
 		return g.getId() == this.getId();
 	}
-	
+
 	@Override
 	public int hashCode() {
 		int hash = 5;

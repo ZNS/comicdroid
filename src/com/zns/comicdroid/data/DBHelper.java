@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -17,32 +18,32 @@ import com.google.common.base.Joiner;
 import com.google.common.primitives.Ints;
 
 public class DBHelper extends SQLiteOpenHelper {
-	
-	private static final int DB_VERSION = 	13;
-	private static final String DB_NAME = 	"ComicDroid.db";
-	
-	private static DBHelper instance;
-    private SQLiteDatabase db;
-    
-    private DBHelper(Context context) {
-    	super(context, DB_NAME, null, DB_VERSION);
-        if (db == null)
-        	db = getWritableDatabase();    	
-    }
 
-    public static synchronized DBHelper getHelper(Context context) {
-    	if (instance == null)
-    		instance = new DBHelper(context.getApplicationContext());
-    	return instance;
-    }
-    
-    public void finalize() throws Throwable {
-    	if (db != null)
-    		db.close();
-    	db = null;
-        super.finalize();
-    }
-    
+	private static final int DB_VERSION = 	14;
+	private static final String DB_NAME = 	"ComicDroid.db";
+
+	private static DBHelper mInstance;
+	private SQLiteDatabase mDb;
+
+	private DBHelper(Context context) {
+		super(context, DB_NAME, null, DB_VERSION);
+		if (mDb == null)
+			mDb = getWritableDatabase();    	
+	}
+
+	public static synchronized DBHelper getHelper(Context context) {
+		if (mInstance == null)
+			mInstance = new DBHelper(context.getApplicationContext());
+		return mInstance;
+	}
+
+	public void finalize() throws Throwable {
+		if (mDb != null)
+			mDb.close();
+		mDb = null;
+		super.finalize();
+	}
+
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		String tblBooks = "CREATE TABLE tblBooks (" +
@@ -67,7 +68,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				"Issues TEXT," +
 				"Rating INTEGER DEFAULT 0" +
 				")";
-		
+
 		String tblGroups = "CREATE TABLE tblGroups (" +
 				"_id INTEGER PRIMARY KEY AUTOINCREMENT," +
 				"Name TEXT," +
@@ -79,12 +80,12 @@ public class DBHelper extends SQLiteOpenHelper {
 				"IsFinished INTEGER DEFAULT 0, " +
 				"IsComplete INTEGER DEFAULT 0" +
 				")";
-		
+
 		String tblMeta = "CREATE TABLE tblMeta (" +
 				"_id INTEGER PRIMARY KEY," +
 				"LastModified INTEGER DEFAULT 0" +
 				")";
-				
+
 		db.execSQL(tblBooks);
 		db.execSQL(tblGroups);
 		db.execSQL(tblMeta);
@@ -96,13 +97,13 @@ public class DBHelper extends SQLiteOpenHelper {
 				"BEGIN " +
 				"UPDATE tblGroups SET Image = new.Image, ImageUrl = new.ImageUrl WHERE new.GroupId <> 0 AND _id = new.GroupId; " +
 				"END;";
-		
+
 		String triggerGroupId4 = "CREATE TRIGGER insert_boook_groupid_image AFTER INSERT ON tblBooks " +
 				"WHEN new.Issue = 1 " +
 				"BEGIN " +
 				"UPDATE tblGroups SET Image = new.Image, ImageUrl = new.ImageUrl WHERE new.GroupId <> 0 AND _id = new.GroupId; " +
 				"END;";
-		
+
 		//Track count of books for groups
 		String triggerGroupId2 = "CREATE TRIGGER update_book_groupid_count AFTER UPDATE OF GroupId ON tblBooks " +
 				"WHEN new.GroupId <> old.GroupId " +
@@ -110,13 +111,13 @@ public class DBHelper extends SQLiteOpenHelper {
 				"UPDATE tblGroups SET BookCount=BookCount+1 WHERE new.GroupId <> 0 AND _id = new.GroupId; " +
 				"UPDATE tblGroups SET BookCount=BookCount-1 WHERE old.GroupId <> 0 AND _id = old.GroupId; " +
 				"END;";
-		
+
 		String triggerGroupId3 = "CREATE TRIGGER insert_book_groupid_count AFTER INSERT ON tblBooks " +
 				"WHEN new.GroupId > 0 " +
 				"BEGIN " +
 				"UPDATE tblGroups SET BookCount=BookCount+1 WHERE _id = new.GroupId; " +
 				"END;";
-		
+
 		//Track updates
 		String triggerModUpd  = "CREATE TRIGGER update_book AFTER UPDATE ON tblBooks " +
 				"BEGIN " +
@@ -131,7 +132,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				"UPDATE tblGroups SET BookCount=BookCount-1 WHERE BookCount > 0 AND _id = old.GroupId; " +
 				"UPDATE tblMeta SET LastModified = strftime('%s','now'); " +
 				"END;";
-		
+
 		db.execSQL(triggerGroupId);
 		db.execSQL(triggerGroupId2);
 		db.execSQL(triggerGroupId3);
@@ -146,16 +147,16 @@ public class DBHelper extends SQLiteOpenHelper {
 		//Just to make sure
 		if (oldVersion >= newVersion)
 			return;
-		
+
 		if (oldVersion < 10) {
 			db.execSQL("ALTER TABLE tblGroups ADD COLUMN IsWatched INTEGER DEFAULT 0");
 			db.execSQL("ALTER TABLE tblGroups ADD COLUMN IsComplete INTEGER DEFAULT 0");			
 			db.execSQL("DROP TRIGGER IF EXISTS delete_book; " +
-			"CREATE TRIGGER delete_book AFTER DELETE ON tblBooks " +
-			"BEGIN " +
-			"UPDATE tblGroups SET BookCount=BookCount-1 WHERE BookCount > 0 AND _id = old.GroupId; " +
-			"UPDATE tblMeta SET LastModified = strftime('%s','now'); " +
-			"END;");
+					"CREATE TRIGGER delete_book AFTER DELETE ON tblBooks " +
+					"BEGIN " +
+					"UPDATE tblGroups SET BookCount=BookCount-1 WHERE BookCount > 0 AND _id = old.GroupId; " +
+					"UPDATE tblMeta SET LastModified = strftime('%s','now'); " +
+					"END;");
 		}
 		if (oldVersion < 11) {
 			db.execSQL("ALTER TABLE tblGroups ADD COLUMN IsFinished INTEGER DEFAULT 0");
@@ -168,83 +169,91 @@ public class DBHelper extends SQLiteOpenHelper {
 			db.execSQL("ALTER TABLE tblBooks ADD COLUMN Rating INTEGER DEFAULT 0");
 			db.execSQL("ALTER TABLE tblBooks ADD COLUMN Issues TEXT");
 		}
-	}
-	
-	/*private void generateData() {
-		for (int i = 0; i < 20; i++) {
-			db.execSQL("INSERT INTO tblGroups(Name) VALUES('Group " + i + "')");
-		}
-		Map<Integer, Integer> map = new HashMap<Integer, Integer>();
-		for (int i = 0; i < 100; i++) {
-			//Get group
-			int group = (int)(Math.random() * 20);
-			int issue = 1;
-			if (group > 0) {
-				issue = map.containsKey(group) ? map.get(group) : 0;
-				map.put(group, issue + 1);
+		if (oldVersion < 14) {
+			//Remove path from image field
+			Cursor cursor = null;
+			try
+			{
+				cursor = db.rawQuery("SELECT _id, Image FROM tblBooks", null);
+				while (cursor.moveToNext()) {
+					String imgPath = cursor.getString(1);
+					if (imgPath != null && !imgPath.equals("")) {
+						int id = cursor.getInt(0);
+						File img = new File(imgPath);
+						String fileName = img.getName();						
+						ContentValues values = new ContentValues();
+						values.put("Image", fileName);
+						db.update("tblBooks", values, "_id=?", new String[] { Integer.toString(id) });
+					}
+				}
 			}
-			db.execSQL(String.format("INSERT INTO tblBooks(GroupId, Title, Author, Issue) VALUES(%d, '%s', '%s', %d)", group, "Comic " + i, "Author " + i, issue + 1));
-		}
-	}*/
-	
-    @Override
-    public synchronized void close() {
-    	if (db != null)
-    		db.close();
-    	db = null;
-    	super.close();
-    }
-	
-    @Override
-    public synchronized SQLiteDatabase getWritableDatabase () {
-    	if (db == null)
-    		db = super.getWritableDatabase();
-    	return db;
-    }
-    
-    @Override
-    public SQLiteDatabase getReadableDatabase () {
-    	return getWritableDatabase();
-    }
-    
-    public Cursor getCursor(String sql, String[] selectionArgs) {
-    	return db.rawQuery(sql, selectionArgs);
-    }
-    
-    public int update(String table, ContentValues values, String whereClause, String[] whereArgs) {
-    	return db.update(table, values, whereClause, whereArgs);
-    }
-    
-    public long insert(String table, ContentValues values) {
-    	return db.insert(table, null, values);
-    }
-    
-    public void execSQL(String sql)
-    {
-    	db.execSQL(sql);
-    }
-    
+			finally {
+				if (cursor != null)
+					cursor.close();
+			}
+			//Update tblGroups
+			db.execSQL("UPDATE tblGroups SET Image = (SELECT Image FROM tblBooks WHERE GroupId = tblGroups._id AND Issue = 1 LIMIT 1)");
+		}		
+	}
+
+	@Override
+	public synchronized void close() {
+		if (mDb != null)
+			mDb.close();
+		mDb = null;
+		super.close();
+	}
+
+	@Override
+	public synchronized SQLiteDatabase getWritableDatabase () {
+		if (mDb == null)
+			mDb = super.getWritableDatabase();
+		return mDb;
+	}
+
+	@Override
+	public SQLiteDatabase getReadableDatabase () {
+		return getWritableDatabase();
+	}
+
+	public Cursor getCursor(String sql, String[] selectionArgs) {
+		return mDb.rawQuery(sql, selectionArgs);
+	}
+
+	public int update(String table, ContentValues values, String whereClause, String[] whereArgs) {
+		return mDb.update(table, values, whereClause, whereArgs);
+	}
+
+	public long insert(String table, ContentValues values) {
+		return mDb.insert(table, null, values);
+	}
+
+	public void execSQL(String sql)
+	{
+		mDb.execSQL(sql);
+	}
+
 	public int GetDateStamp(String strDate) 
-			throws ParseException
+	throws ParseException
 	{
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		Date date = dateFormat.parse(strDate);
 		return (int)(date.getTime() / 1000L);
 	}
-	
+
 	public int GetCurrentTimeStamp() {
 		return (int)(System.currentTimeMillis() / 1000L);
 	}
-	
+
 	public int storeComic(Comic comic)
 	{
 		ContentValues values = new ContentValues();
-		
+
 		String title = comic.getTitle().trim();
 		if (title.toLowerCase(Locale.ENGLISH).startsWith("the ")) {
 			title = title.substring(4) + ", The";
 		}
-		
+
 		values.put("GroupId", comic.getGroupId());
 		values.put("Title", title);
 		values.put("Subtitle", comic.getSubTitle());
@@ -263,13 +272,13 @@ public class DBHelper extends SQLiteOpenHelper {
 		values.put("Rating", comic.getRating());
 		values.put("IsRead", comic.getIsRead() ? 1 : 0);
 		values.put("Issues", comic.getIssues());
-		
-		return (int)db.insert("tblBooks", null, values);
+
+		return (int)mDb.insert("tblBooks", null, values);
 	}
-	
+
 	private List<Comic> getComicsBySql(String sql, String[] args) {
 		List<Comic> result = new ArrayList<Comic>();
-		Cursor cursor = db.rawQuery(sql, args);
+		Cursor cursor = mDb.rawQuery(sql, args);
 		while (cursor.moveToNext())
 		{
 			Comic comic = new Comic(cursor.getInt(0),
@@ -297,7 +306,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		cursor.close();		
 		return result;		
 	}
-	
+
 	public List<Comic> getComics(String order)
 	{
 		String orderBy = "Title";
@@ -308,7 +317,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		return getComicsBySql("SELECT _id, Title, Subtitle, Author, Illustrator, Publisher, PublishDate, " +
 				"AddedDate, PageCount, IsBorrowed, Borrower, Image, ISBN, Issue, GroupId, ImageUrl, BorrowedDate, IsRead, Rating, Issues FROM tblBooks ORDER BY " + orderBy, null);
 	}
-	
+
 	public List<Comic> getComics(int[] ids)
 	{
 		return getComicsBySql("SELECT _id, Title, Subtitle, Author, Illustrator, Publisher, PublishDate, " +
@@ -316,7 +325,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				Joiner.on(",").join(Ints.asList(ids)) +
 				")", null);
 	}
-	
+
 	public List<Comic> getComics(int groupId)
 	{		
 		return getComicsBySql("SELECT _id, Title, Subtitle, Author, Illustrator, Publisher, PublishDate, " +
@@ -324,7 +333,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				"WHERE GroupId = ? " +
 				"ORDER BY Issue", new String[] { Integer.toString(groupId) });
 	}
-	
+
 	public List<Comic> getBorrowed()
 	{
 		return getComicsBySql("SELECT _id, Title, Subtitle, Author, Illustrator, Publisher, PublishDate, " +
@@ -332,7 +341,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				"WHERE IsBorrowed = 1 " +
 				"ORDER BY Borrower, BorrowedDate", null);
 	}
-	
+
 	public Comic getComic(int id)
 	{
 		List<Comic> comics = getComicsBySql("SELECT _id, Title, Subtitle, Author, Illustrator, Publisher, PublishDate, " +
@@ -342,7 +351,7 @@ public class DBHelper extends SQLiteOpenHelper {
 			return comics.get(0);
 		return null;
 	}
-	
+
 	public Comic getComic(String isbn)
 	{
 		List<Comic> comics = getComicsBySql("SELECT _id, Title, Subtitle, Author, Illustrator, Publisher, PublishDate, " +
@@ -352,7 +361,7 @@ public class DBHelper extends SQLiteOpenHelper {
 			return comics.get(0);
 		return null;		
 	}
-	
+
 	public void deleteComic(int id)
 	{
 		Comic comic = getComic(id);
@@ -368,20 +377,20 @@ public class DBHelper extends SQLiteOpenHelper {
 		catch (Exception e) {
 			//Doesn't matter too much if image can't be deleted. It will be delete when app is uninstalled.
 		}
-		db.delete("tblBooks", "_id=?", new String[] { Integer.toString(id) });
+		mDb.delete("tblBooks", "_id=?", new String[] { Integer.toString(id) });
 	}
-	
+
 	public void setAllComicsRead()
 	{
-		db.execSQL("UPDATE tblBooks SET IsRead=1");
+		mDb.execSQL("UPDATE tblBooks SET IsRead=1");
 	}
-	
+
 	public void setComicRead(int comicId, boolean isRead) {
 		ContentValues values = new ContentValues();
 		values.put("IsRead", isRead ? 1 : 0);
-		db.update("tblBooks", values, "_id=?", new String[] { Integer.toString(comicId) });		
+		mDb.update("tblBooks", values, "_id=?", new String[] { Integer.toString(comicId) });		
 	}
-	
+
 	public void setComicRating(int comicId, int rating) {
 		if (rating > 5)
 			rating = 5;
@@ -389,13 +398,13 @@ public class DBHelper extends SQLiteOpenHelper {
 			rating = 0;
 		ContentValues values = new ContentValues();
 		values.put("Rating", rating);
-		db.update("tblBooks", values, "_id=?", new String[] { Integer.toString(comicId) });
+		mDb.update("tblBooks", values, "_id=?", new String[] { Integer.toString(comicId) });
 	}
-	
+
 	public void setComicBorrowed(int comicId, String borrower) {
 		setComicBorrowed(new int[] { comicId }, borrower);
 	}
-	
+
 	public void setComicBorrowed(int[] comicId, String borrower) {
 		ContentValues values = new ContentValues();
 		values.put("Borrower", borrower);
@@ -407,7 +416,7 @@ public class DBHelper extends SQLiteOpenHelper {
 			values.put("IsBorrowed", true);
 			values.put("BorrowedDate", (int)(System.currentTimeMillis() / 1000L));			
 		}
-		
+
 		StringBuilder sbWhere = new StringBuilder("_id IN (");
 		String[] ids = new String[comicId.length];
 		int i = 0;
@@ -418,8 +427,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		}
 		sbWhere.setLength(sbWhere.length() - 1);
 		sbWhere.append(")");
-		
-		db.update("tblBooks", values, sbWhere.toString(), ids);
+
+		mDb.update("tblBooks", values, sbWhere.toString(), ids);
 	}
 
 	public void setComicReturned(int[] comicId) {
@@ -427,7 +436,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		values.put("Borrower", "");
 		values.put("IsBorrowed", false);
 		values.putNull("Borrower");
-		
+
 		StringBuilder sbWhere = new StringBuilder("_id IN (");
 		String[] ids = new String[comicId.length];
 		int i = 0;
@@ -438,38 +447,38 @@ public class DBHelper extends SQLiteOpenHelper {
 		}
 		sbWhere.setLength(sbWhere.length() - 1);
 		sbWhere.append(")");
-		
-		db.update("tblBooks", values, sbWhere.toString(), ids);
+
+		mDb.update("tblBooks", values, sbWhere.toString(), ids);
 	}
-	
+
 	public void renameAuthor(String oldName, String newName) {
 		ContentValues values = new ContentValues();
 		values.put("Author", newName);
 		update("tblBooks", values, "Author=?", new String[] { oldName });
 	}
-	
+
 	public void renameIllustrator(String oldName, String newName) {
 		ContentValues values = new ContentValues();
 		values.put("Illustrator", newName);
 		update("tblBooks", values, "Illustrator=?", new String[] { oldName });
 	}
-	
+
 	public void renamePublisher(String oldName, String newName) {
 		ContentValues values = new ContentValues();
 		values.put("Publisher", newName);
 		update("tblBooks", values, "Publisher=?", new String[] { oldName });
 	}
-	
+
 	public void renameGroup(int id, String newName) {
 		ContentValues values = new ContentValues();
 		values.put("Name", newName);
 		update("tblGroups", values, "_id=?", new String[] { Integer.toString(id) });
 	}
-	
+
 	public Group getGroup(int id)
 	{
 		Group group = null;
-		Cursor cursor = db.rawQuery("SELECT _id,  Name, Image, BookCount, TotalBookCount, IsWatched, IsFinished, IsComplete FROM tblGroups WHERE _id=? ORDER BY Name", new String[] { Integer.toString(id) });
+		Cursor cursor = mDb.rawQuery("SELECT _id,  Name, Image, BookCount, TotalBookCount, IsWatched, IsFinished, IsComplete FROM tblGroups WHERE _id=? ORDER BY Name", new String[] { Integer.toString(id) });
 		if (cursor.moveToNext()) {			
 			group = new Group(cursor.getInt(0),
 					cursor.getString(1),
@@ -483,11 +492,11 @@ public class DBHelper extends SQLiteOpenHelper {
 		cursor.close();
 		return group;		
 	}
-	
+
 	private List<Group> getGroupsBySql(String sql, String[] selectionArgs)
 	{
 		List<Group> groups = new ArrayList<Group>();
-		Cursor cursor = db.rawQuery(sql, selectionArgs);
+		Cursor cursor = mDb.rawQuery(sql, selectionArgs);
 		while (cursor.moveToNext()) {			
 			groups.add(new Group(cursor.getInt(0),
 					cursor.getString(1),
@@ -501,40 +510,40 @@ public class DBHelper extends SQLiteOpenHelper {
 		cursor.close();
 		return groups;		
 	}
-	
+
 	public List<Group> getGroups()
 	{
 		return getGroupsBySql("SELECT _id,  Name, Image, BookCount, TotalBookCount, IsWatched, IsFinished, IsComplete FROM tblGroups ORDER BY Name", null);
 	}
-	
+
 	public List<Group> getGroupsWatched()
 	{
 		return getGroupsBySql("SELECT _id,  Name, Image, BookCount, TotalBookCount, IsWatched, IsFinished, IsComplete FROM tblGroups WHERE IsWatched=? ORDER BY Name", new String[] { "1" });
 	}
-	
+
 	public boolean addGroup(String name) {
 		boolean isValid = true;
 		ContentValues values = new ContentValues();
 		values.put("Name", name);
 
 		//Dupecheck
-		Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM tblGroups WHERE Name = ? COLLATE NOCASE", new String[] { name });
+		Cursor cursor = mDb.rawQuery("SELECT COUNT(*) FROM tblGroups WHERE Name = ? COLLATE NOCASE", new String[] { name });
 		if (cursor.moveToFirst() && cursor.getInt(0) > 0)
 			isValid = false;
 		cursor.close();
-		
+
 		if (isValid) {
-			db.insert("tblGroups", null, values);
+			mDb.insert("tblGroups", null, values);
 		}
-		
+
 		return isValid;
 	}
-	
+
 	public void deleteGroup(int id, boolean deleteBooks)
 	{
 		if (deleteBooks)
 		{
-			Cursor cursor = db.rawQuery("SELECT _id FROM tblBooks WHERE GroupId=?", new String[] { Integer.toString(id) });
+			Cursor cursor = mDb.rawQuery("SELECT _id FROM tblBooks WHERE GroupId=?", new String[] { Integer.toString(id) });
 			while (cursor.moveToNext()) {
 				int bookId = cursor.getInt(0);
 				deleteComic(bookId);
@@ -546,38 +555,38 @@ public class DBHelper extends SQLiteOpenHelper {
 			values.put("GroupId", 0);
 			update("tblBooks", values, "GroupId=?", new String[] { Integer.toString(id) });
 		}
-		db.delete("tblGroups", "_id=?", new String[] { Integer.toString(id) });
+		mDb.delete("tblGroups", "_id=?", new String[] { Integer.toString(id) });
 	}
-	
+
 	public void setGroupIsWatched(int groupId, boolean watched)
 	{
 		ContentValues values = new ContentValues();
 		values.put("IsWatched", watched ? 1 : 0);
-		db.update("tblGroups", values, "_id=?", new String[] { Integer.toString(groupId) });
+		mDb.update("tblGroups", values, "_id=?", new String[] { Integer.toString(groupId) });
 	}
-	
+
 	public void setGroupIsFinished(int groupId, boolean finished)
 	{
 		ContentValues values = new ContentValues();
 		values.put("IsFinished", finished ? 1 : 0);
-		db.update("tblGroups", values, "_id=?", new String[] { Integer.toString(groupId) });
+		mDb.update("tblGroups", values, "_id=?", new String[] { Integer.toString(groupId) });
 	}
-	
+
 	public void setGroupIsComplete(int groupId, boolean complete)
 	{
 		ContentValues values = new ContentValues();
 		values.put("IsComplete", complete ? 1 : 0);
-		db.update("tblGroups", values, "_id=?", new String[] { Integer.toString(groupId) });
+		mDb.update("tblGroups", values, "_id=?", new String[] { Integer.toString(groupId) });
 	}
-	
+
 	public void updateGroupBookCount()
 	{
-		db.execSQL("UPDATE tblGroups SET BookCount = (SELECT Count(*) FROM tblBooks WHERE GroupId = tblGroups._id)");
+		mDb.execSQL("UPDATE tblGroups SET BookCount = (SELECT Count(*) FROM tblBooks WHERE GroupId = tblGroups._id)");
 	}
-	
+
 	public boolean isDuplicateComic(String isbn) {
 		boolean duplicate = false;
-		Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM tblBooks WHERE ISBN = ?", new String[] { isbn });
+		Cursor cursor = mDb.rawQuery("SELECT COUNT(*) FROM tblBooks WHERE ISBN = ?", new String[] { isbn });
 		if (cursor.moveToFirst())
 		{
 			int count = cursor.getInt(0);
@@ -586,13 +595,13 @@ public class DBHelper extends SQLiteOpenHelper {
 		cursor.close();
 		return duplicate;
 	}
-	
+
 	public List<String> getAuthors(String[] names)
 	{
 		List<String> foundNames = new ArrayList<String>();
 		for (int i = 0; i < names.length; i++)
 			names[i] = dbString(names[i]);
-		Cursor cursor = db.rawQuery("SELECT Author FROM tblBooks WHERE Author IN('" + Joiner.on("','").join(names) + "')", null);
+		Cursor cursor = mDb.rawQuery("SELECT Author FROM tblBooks WHERE Author IN('" + Joiner.on("','").join(names) + "')", null);
 		while (cursor.moveToNext()) 
 		{
 			foundNames.add(cursor.getString(0));
@@ -605,24 +614,24 @@ public class DBHelper extends SQLiteOpenHelper {
 		List<String> foundNames = new ArrayList<String>();
 		for (int i = 0; i < names.length; i++)
 			names[i] = dbString(names[i]);
-		Cursor cursor = db.rawQuery("SELECT Illustrator FROM tblBooks WHERE Illustrator IN('" + Joiner.on("','").join(names) + "')", null);
+		Cursor cursor = mDb.rawQuery("SELECT Illustrator FROM tblBooks WHERE Illustrator IN('" + Joiner.on("','").join(names) + "')", null);
 		while (cursor.moveToNext()) 
 		{
 			foundNames.add(cursor.getString(0));
 		}
 		return foundNames;
 	}
-	
+
 	public int GetLastModifiedDate()
 	{
 		int stamp = 0;
-		Cursor cursor = db.rawQuery("SELECT LastModified FROM tblMeta", null);
+		Cursor cursor = mDb.rawQuery("SELECT LastModified FROM tblMeta", null);
 		if (cursor.moveToFirst())
 			stamp = cursor.getInt(0);
 		cursor.close();
 		return stamp;
 	}
-	
+
 	private String dbString(String val) {
 		if (val == null)
 			return "null";

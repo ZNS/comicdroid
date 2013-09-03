@@ -19,16 +19,16 @@ public class ListTitlesFragment extends BaseListFragment {
 		Bundle b = new Bundle();
 		b.putInt("index", index);
 		fragment.setArguments(b);
-		fragment.orderBy = "Title, Issue";
+		fragment.mOrderBy = "Title, Issue";
 		return fragment;
 	}
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = super.onCreateView(inflater, container, savedInstanceState);
-		
-		adapter = new ComicAdapter(getActivity());
-		listView.setOnItemClickListener(new android.widget.AdapterView.OnItemClickListener() {
+
+		mAdapter = new ComicAdapter(getActivity(), getImagePath(true));
+		mListView.setOnItemClickListener(new android.widget.AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) 
 			{
 				int comicId = getAdapter().getComicId(position);
@@ -37,32 +37,32 @@ public class ListTitlesFragment extends BaseListFragment {
 				startActivity(intent);
 			}
 		});		
-		registerForContextMenu(listView);
-		
+		registerForContextMenu(mListView);
+
 		return view;
 	}
 
 	private ComicAdapter getAdapter()
 	{
-		return (ComicAdapter)adapter;
+		return (ComicAdapter)mAdapter;
 	}
-	
+
 	@Override
 	public String getSQLDefault() {
 		return "SELECT _id, Title, Subtitle, Author, Image, Issue, IsBorrowed, IsRead, Rating FROM tblBooks";
 	}
-	
+
 	@Override
 	public String getSQLFilter() {
 		return "SELECT _id, Title, Subtitle, Author, Image, Issue, IsBorrowed, IsRead, Rating FROM tblBooks WHERE Title LIKE ?";
 	}
-	
+
 	@Override
 	public int[] getItemIds() {
 		int[] ids = null;
-		if (adapter.getCursor() != null)
+		if (mAdapter.getCursor() != null)
 		{
-			Cursor cursor = adapter.getCursor();
+			Cursor cursor = mAdapter.getCursor();
 			ids = new int[cursor.getCount()];
 			int i = 0;
 			cursor.moveToPosition(-1);

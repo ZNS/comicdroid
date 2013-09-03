@@ -14,16 +14,16 @@ public class DriveBackupInitTask  extends AsyncTask<com.zns.comicdroid.task.Driv
 	public static class DriveBackupInitTaskArg {
 		public GoogleAccountCredential credentials;
 	}
-	
+
 	public static class DriveBackupInitTaskResult {
 		public boolean success;
 		public Intent intent;
 	}
-	
+
 	public DriveBackupInitTask()
 	{
 	}
-	
+
 	@Override
 	protected com.zns.comicdroid.task.DriveBackupInitTask.DriveBackupInitTaskResult doInBackground(com.zns.comicdroid.task.DriveBackupInitTask.DriveBackupInitTaskArg... args) {
 		DriveBackupInitTaskResult result = new DriveBackupInitTaskResult();

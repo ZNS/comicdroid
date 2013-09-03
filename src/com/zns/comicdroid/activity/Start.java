@@ -33,78 +33,78 @@ import com.zns.comicdroid.activity.fragment.ListPublishersFragment;
 import com.zns.comicdroid.activity.fragment.ListTitlesFragment;
 
 public class Start extends BaseFragmentActivity
-	implements	BaseListFragment.OnListLoadedListener, 
-				ActionBar.TabListener {
-	
+implements	BaseListFragment.OnListLoadedListener, 
+ActionBar.TabListener {
+
 	private static final int TAB_COUNT = 5;
 	private static final String TAB_AGGREGATES = "AGGREGATES";
 	private static final String TAB_TITLES= "TITLES";
 	private static final String TAB_AUTHORS = "AUTHORS";
 	private static final String TAB_PUBLISHERS = "PUBLISHERS";
 	private static final String TAB_ILLUSTRATORS = "ILLUSTRATORS";
-	
-	private String currentTab = TAB_AGGREGATES;
-	private MenuItem menuEdit;
-	private MenuItem menuSearch;
-	private MenuItem menuSort;
-	private SearchView searchView;
-	private ViewPager viewPager;
-	private TabFragmentAdapter fragmentAdapter;
-	private TextView tvEmpty;
-	    
+
+	private String mCurrentTab = TAB_AGGREGATES;
+	private MenuItem mMenuEdit;
+	private MenuItem mMenuSearch;
+	private MenuItem mMenuSort;
+	private SearchView mSearchView;
+	private ViewPager mViewPager;
+	private TabFragmentAdapter mFragmentAdapter;
+	private TextView mTvEmpty;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		setContentView(R.layout.activity_start);
 		super.onCreate(savedInstanceState);
-				
+
 		Resources res = getResources();
-	             
+
 		//Tabs
 		getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-		
+
 		ActionBar.Tab tab0 = getSupportActionBar().newTab();
 		tab0.setText(res.getString(R.string.start_tab_aggregates));
 		tab0.setTag(TAB_AGGREGATES);
 		tab0.setTabListener(this);
 		getSupportActionBar().addTab(tab0);
-		
+
 		ActionBar.Tab tab1 = getSupportActionBar().newTab();
 		tab1.setText(res.getString(R.string.start_tab_comics));
 		tab1.setTag(TAB_TITLES);
 		tab1.setTabListener(this);
 		getSupportActionBar().addTab(tab1);
-		
+
 		ActionBar.Tab tab2 = getSupportActionBar().newTab();
 		tab2.setText(res.getString(R.string.start_tab_authors));
 		tab2.setTag(TAB_AUTHORS);
 		tab2.setTabListener(this);
 		getSupportActionBar().addTab(tab2);		
-				
+
 		ActionBar.Tab tab3 = getSupportActionBar().newTab();
 		tab3.setText(res.getString(R.string.start_tab_illustrators));
 		tab3.setTag(TAB_ILLUSTRATORS);
 		tab3.setTabListener(this);
 		getSupportActionBar().addTab(tab3);		
-		
+
 		ActionBar.Tab tab4 = getSupportActionBar().newTab();
 		tab4.setText(res.getString(R.string.start_tab_publishers));
 		tab4.setTag(TAB_PUBLISHERS);
 		tab4.setTabListener(this);
 		getSupportActionBar().addTab(tab4);
-		
+
 		//Layout elements
-		tvEmpty = (TextView)findViewById(R.id.start_tvEmpty);
-		
+		mTvEmpty = (TextView)findViewById(R.id.start_tvEmpty);
+
 		//View pager
-		fragmentAdapter = new TabFragmentAdapter(getSupportFragmentManager());
-		viewPager = (ViewPager)findViewById(R.id.start_viewPager);		
-		viewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+		mFragmentAdapter = new TabFragmentAdapter(getSupportFragmentManager());
+		mViewPager = (ViewPager)findViewById(R.id.start_viewPager);		
+		mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 			@Override
 			public void onPageSelected(int position) {
 				getSupportActionBar().setSelectedNavigationItem(position);
 			}
 		});	
-		viewPager.setAdapter(fragmentAdapter);
+		mViewPager.setAdapter(mFragmentAdapter);
 	}	
 
 	@Override
@@ -116,43 +116,43 @@ public class Start extends BaseFragmentActivity
 			fragment.update();
 		}
 	}
-	
+
 	@Override
 	protected void onNewIntent(Intent intent) {
 		handleIntent(intent);
 	}
-    
+
 	//SearchView Implementation
-    private void handleIntent(Intent intent) {
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            //if (menuSearch != null)
-            //	menuSearch.collapseActionView();
-            BaseListFragment fragment = getCurrentFragment();
-            if (fragment != null) {
-            	fragment.setFilter(query);
-            }
-        }
-    }
-    
+	private void handleIntent(Intent intent) {
+		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+			String query = intent.getStringExtra(SearchManager.QUERY);
+			//if (menuSearch != null)
+			//	menuSearch.collapseActionView();
+			BaseListFragment fragment = getCurrentFragment();
+			if (fragment != null) {
+				fragment.setFilter(query);
+			}
+		}
+	}
+
 	//Menu Implementation
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		com.actionbarsherlock.view.MenuInflater inflater = getSupportMenuInflater();
 		inflater.inflate(R.menu.actionbar_start, (com.actionbarsherlock.view.Menu) menu);
-		
-	    SearchManager searchManager = (SearchManager)getSystemService(Context.SEARCH_SERVICE);
-	    searchView = (SearchView)menu.findItem(R.id.menu_search).getActionView();
-	    searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-	    searchView.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
-	    searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
+
+		SearchManager searchManager = (SearchManager)getSystemService(Context.SEARCH_SERVICE);
+		mSearchView = (SearchView)menu.findItem(R.id.menu_search).getActionView();
+		mSearchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+		mSearchView.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+		mSearchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
 			@Override
 			public void onFocusChange(View v, boolean hasFocus) {
 				if (!hasFocus) {
-					String query = searchView.getQuery().toString();
+					String query = mSearchView.getQuery().toString();
 					if (query.trim().length() == 0) {
-						menuSearch.collapseActionView();
+						mMenuSearch.collapseActionView();
 						BaseListFragment fragment = getCurrentFragment();
 						if (fragment != null) {
 							fragment.clearFilter();
@@ -160,129 +160,129 @@ public class Start extends BaseFragmentActivity
 					}
 				}
 			}
-	    });
-		    
+		});
+
 		return true;
 	}		
-	
+
 	@Override 
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		menuEdit = menu.findItem(R.id.menu_edit);
-		menuSearch = menu.findItem(R.id.menu_search);
-		menuSort = menu.findItem(R.id.menu_sort);
+		mMenuEdit = menu.findItem(R.id.menu_edit);
+		mMenuSearch = menu.findItem(R.id.menu_search);
+		mMenuSort = menu.findItem(R.id.menu_sort);
 		return true;
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-	    // Handle item selection
+		// Handle item selection
 		BaseListFragment fragment = getCurrentFragment();		
 		if (fragment != null)
 		{
-		    switch (item.getItemId()) {
-	        	case R.id.menu_edit:
-		        	Intent intent = new Intent(this, Edit.class);
-		        	int[] ids = fragment.getItemIds();
-					intent.putExtra(Edit.INTENT_COMIC_IDS, ids);
-		        	startActivity(intent);
-		            return true;
-	        	case R.id.sort_title:
-	        		fragment.setOrderBy("Title, Issue");
-	        		return true;
-	        	case R.id.sort_added:
-	        		fragment.setOrderBy("AddedDate DESC, Title, Issue");
-	        		return true;
-	        	case R.id.sort_rating:
-	        		fragment.setOrderBy("Rating DESC, Title, Issue");
-	        		return true;        		
-		    }
+			switch (item.getItemId()) {
+			case R.id.menu_edit:
+				Intent intent = new Intent(this, Edit.class);
+				int[] ids = fragment.getItemIds();
+				intent.putExtra(Edit.INTENT_COMIC_IDS, ids);
+				startActivity(intent);
+				return true;
+			case R.id.sort_title:
+				fragment.setOrderBy("Title, Issue");
+				return true;
+			case R.id.sort_added:
+				fragment.setOrderBy("AddedDate DESC, Title, Issue");
+				return true;
+			case R.id.sort_rating:
+				fragment.setOrderBy("Rating DESC, Title, Issue");
+				return true;        		
+			}
 		}
-	    return super.onOptionsItemSelected(item);
+		return super.onOptionsItemSelected(item);
 	}
-	
+
 	@Override
 	public void onListLoaded() {
 		BaseListFragment fragment = getCurrentFragment();
-		if (fragment != null && menuEdit != null)
+		if (fragment != null && mMenuEdit != null)
 		{
-			if (currentTab == TAB_TITLES && fragment.getFilter() != null && !fragment.getFilter().equals("") && fragment.adapter.getCount() > 0) {
-				menuEdit.setVisible(true);
+			if (mCurrentTab == TAB_TITLES && fragment.getFilter() != null && !fragment.getFilter().equals("") && fragment.mAdapter.getCount() > 0) {
+				mMenuEdit.setVisible(true);
 			}
 			else {
-				menuEdit.setVisible(false);
+				mMenuEdit.setVisible(false);
 			}
 		}
-		
-		tvEmpty.setVisibility(View.GONE);
-		if (viewPager != null && viewPager.getCurrentItem() == 0) {
+
+		mTvEmpty.setVisibility(View.GONE);
+		if (mViewPager != null && mViewPager.getCurrentItem() == 0) {
 			if (!getCurrentFragment().hasItems())
 			{
-				tvEmpty.setVisibility(View.VISIBLE);
+				mTvEmpty.setVisibility(View.VISIBLE);
 			}
 		}
 	}
-	
+
 	//Tab Implementation
 	@Override
 	public void onTabSelected(Tab tab, FragmentTransaction ft) {
 		//Sorting
 		String tag = (String)tab.getTag();
-		if (menuSort != null) {
+		if (mMenuSort != null) {
 			if (tag.equals(TAB_TITLES))
-				menuSort.setVisible(true);
+				mMenuSort.setVisible(true);
 			else
-				menuSort.setVisible(false);
+				mMenuSort.setVisible(false);
 		}
-		
+
 		//Searchview
 		BaseListFragment fragment = getCurrentFragment();
 		if (fragment != null)
 		{
 			if (fragment.getFilter() != null) {
-				menuSearch.expandActionView();
-				searchView.setQuery(fragment.getFilter(), false);
-				searchView.clearFocus();
+				mMenuSearch.expandActionView();
+				mSearchView.setQuery(fragment.getFilter(), false);
+				mSearchView.clearFocus();
 			}
 			else {
-				menuSearch.collapseActionView();
-				searchView.setQuery(null, false);				
+				mMenuSearch.collapseActionView();
+				mSearchView.setQuery(null, false);				
 			}
 		}
-		
-		if (tag.equals(currentTab))
+
+		if (tag.equals(mCurrentTab))
 			return;
-		viewPager.setCurrentItem(tab.getPosition());
-		currentTab = tag;
+		mViewPager.setCurrentItem(tab.getPosition());
+		mCurrentTab = tag;
 	}
 
 	@Override
 	public void onTabUnselected(Tab tab, FragmentTransaction ft) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void onTabReselected(Tab tab, FragmentTransaction ft) {
 		// TODO Auto-generated method stub
-		
+
 	}		
-	
+
 	private BaseListFragment getCurrentFragment() 
 	{
-		if (viewPager != null)
+		if (mViewPager != null)
 		{
-			int index = viewPager.getCurrentItem();
+			int index = mViewPager.getCurrentItem();
 			if (index > -1) {			
-				return fragmentAdapter.getFragment(index);			
+				return mFragmentAdapter.getFragment(index);			
 			}
 		}
 		return null;
 	}
-	
+
 	class TabFragmentAdapter extends FragmentStatePagerAdapter {
 		@SuppressWarnings("unchecked")
 		final WeakReference<BaseListFragment>[] m_fragments = new WeakReference[TAB_COUNT];
-		
+
 		public TabFragmentAdapter(FragmentManager fm) {
 			super(fm);
 		}
@@ -291,7 +291,7 @@ public class Start extends BaseFragmentActivity
 		public Fragment getItem(int pos) {
 			String tag = (String)getSupportActionBar().getTabAt(pos).getTag();
 			BaseListFragment fragment = null;
-							
+
 			if (tag.equals(TAB_TITLES))
 				fragment = ListTitlesFragment.newInstance(pos);
 			else if (tag.equals(TAB_AUTHORS))
@@ -302,9 +302,9 @@ public class Start extends BaseFragmentActivity
 				fragment = ListPublishersFragment.newInstance(pos);
 			else
 				fragment = ListAggregatesFragment.newInstance(pos);
-						
+
 			m_fragments[pos] = new WeakReference<BaseListFragment>(fragment);
-				
+
 			return fragment;
 		}
 
@@ -314,15 +314,15 @@ public class Start extends BaseFragmentActivity
 			if (m_fragments[position] != null)
 				m_fragments[position].clear();
 		}
-		
+
 		@Override
 		public int getCount() {
 			return TAB_COUNT;
 		}
-		
+
 		//We need to keep track of when fragments are restored via state. This is ripped from android source code...
 		@Override
-	    public void restoreState(Parcelable state, ClassLoader loader) {
+		public void restoreState(Parcelable state, ClassLoader loader) {
 			super.restoreState(state, loader);
 			if (state != null)
 			{
@@ -330,25 +330,25 @@ public class Start extends BaseFragmentActivity
 					if (m_fragments[i] != null)
 						m_fragments[i].clear();
 				}
-				
+
 				Bundle bundle = (Bundle)state;
 				bundle.setClassLoader(loader);
 				Iterable<String> keys = bundle.keySet();
-	            for (String key: keys) {
-	                if (key.startsWith("f")) {
-	                    int index = Integer.parseInt(key.substring(1));
-	                    Fragment f = getSupportFragmentManager().getFragment(bundle, key);
-	                    if (f != null && f instanceof BaseListFragment) {
-	                    	m_fragments[index] = new WeakReference<BaseListFragment>((BaseListFragment)f);
-	                    }
-	                }
-	            }
+				for (String key: keys) {
+					if (key.startsWith("f")) {
+						int index = Integer.parseInt(key.substring(1));
+						Fragment f = getSupportFragmentManager().getFragment(bundle, key);
+						if (f != null && f instanceof BaseListFragment) {
+							m_fragments[index] = new WeakReference<BaseListFragment>((BaseListFragment)f);
+						}
+					}
+				}
 			}
 		}
-		
-	    public BaseListFragment getFragment(final int position) {
-	        return m_fragments[position] == null ? null :
-	            m_fragments[position].get();
-	    }		
+
+		public BaseListFragment getFragment(final int position) {
+			return m_fragments[position] == null ? null :
+				m_fragments[position].get();
+		}		
 	}
 }

@@ -1,34 +1,34 @@
 package com.zns.comicdroid.data;
 
 public class Aggregate {
-	private int id;
-	private String title;
-	private int type;
+	private int mId;
+	private String mTitle;
+	private int mType;
 
 	public Aggregate(int id, String title, int type) {
-		this.id = id;
-		this.title = title;
-		this.type = type;
+		this.mId = id;
+		this.mTitle = title;
+		this.mType = type;
 	}
-	
+
 	public int getId() {
-		return id;
+		return mId;
 	}
 	public void setId(int id) {
-		this.id = id;
+		this.mId = id;
 	}
-	
+
 	public String getTitle() {
-		return title;
+		return mTitle;
 	}
 	public void setTitle(String title) {
-		this.title = title;
+		this.mTitle = title;
 	}
-	
+
 	public int getType() {
-		return type;
+		return mType;
 	}
 	public void setType(int type) {
-		this.type = type;
+		this.mType = type;
 	}
 }

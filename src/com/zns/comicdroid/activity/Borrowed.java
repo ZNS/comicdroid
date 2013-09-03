@@ -21,25 +21,25 @@ import com.zns.comicdroid.adapter.BorrowedAdapter;
 import com.zns.comicdroid.data.Comic;
 
 public class Borrowed extends BaseFragmentActivity
-	implements OnItemClickListener {
-	
-	private BorrowedAdapter adapter;
-	private ListView lvComics;
+implements OnItemClickListener {
+
+	private BorrowedAdapter mAdapter;
+	private ListView mLvComics;
 	private ActionMode mMode;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		setContentView(R.layout.activity_borrowed);
 		super.onCreate(savedInstanceState);
-		
-		lvComics = (ListView)findViewById(R.id.borrowed_lvComics);
-		lvComics.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-		lvComics.setOnItemClickListener(this);
-		
+
+		mLvComics = (ListView)findViewById(R.id.borrowed_lvComics);
+		mLvComics.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+		mLvComics.setOnItemClickListener(this);
+
 		List<Comic> comics = getDBHelper().getBorrowed();
-		adapter = new BorrowedAdapter(this, comics);
-		lvComics.setAdapter(adapter);
-		
+		mAdapter = new BorrowedAdapter(this, comics, getImagePath(true));
+		mLvComics.setAdapter(mAdapter);
+
 		if (comics.size() == 0) {
 			findViewById(R.id.borrowed_tvEmpty).setVisibility(View.VISIBLE);
 		}
@@ -47,7 +47,7 @@ public class Borrowed extends BaseFragmentActivity
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {		
-		if (parent == lvComics)
+		if (parent == mLvComics)
 		{
 			if (((Checkable)view).isChecked()) {
 				view.setBackgroundDrawable(getResources().getDrawable(R.drawable.listitem_selected));
@@ -55,86 +55,86 @@ public class Borrowed extends BaseFragmentActivity
 			else {
 				view.setBackgroundColor(getResources().getColor(R.color.contentBg));
 			}
-		    final float scale = getResources().getDisplayMetrics().density;
-		    int padding_in_px = (int) (5 * scale + 0.5f);
+			final float scale = getResources().getDisplayMetrics().density;
+			int padding_in_px = (int) (5 * scale + 0.5f);
 			view.setPadding(padding_in_px, padding_in_px, padding_in_px, padding_in_px);
-			
-			SparseBooleanArray checked = lvComics.getCheckedItemPositions();
+
+			SparseBooleanArray checked = mLvComics.getCheckedItemPositions();
 			boolean hasCheckedElement = false;
-	        for (int i = 0 ; i < checked.size() && ! hasCheckedElement ; i++) {
-	            hasCheckedElement = checked.valueAt(i);
-	        }
-	 
-	        if (hasCheckedElement) {
-	            if (mMode == null) {
-	                mMode = startActionMode(new ModeCallback());
-	            }
-	        } else {
-	            if (mMode != null) {
-	                mMode.finish();
-	            }
-	        }
+			for (int i = 0 ; i < checked.size() && ! hasCheckedElement ; i++) {
+				hasCheckedElement = checked.valueAt(i);
+			}
+
+			if (hasCheckedElement) {
+				if (mMode == null) {
+					mMode = startActionMode(new ModeCallback());
+				}
+			} else {
+				if (mMode != null) {
+					mMode.finish();
+				}
+			}
 		}
 		else {
 			super.onItemClick(parent, view, pos, id);
 		}
 	}
-	
-    private final class ModeCallback implements ActionMode.Callback {    	 
-        @Override
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            // Create the menu from the xml file
-            MenuInflater inflater = getSupportMenuInflater();
-            inflater.inflate(R.menu.actionbar_context_delete, menu);
-            return true;
-        }
- 
-        @Override
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            // Here, you can checked selected items to adapt available actions
-            return false;
-        }
- 
-        @Override
-        public void onDestroyActionMode(ActionMode mode) {
-            // Destroying action mode, let's unselect all items
-            for (int i = 0; i < lvComics.getAdapter().getCount(); i++)
-                lvComics.setItemChecked(i, false);
- 
-            if (mode == mMode) {
-                mMode = null;
-            }
-        }
- 
-        @Override
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-        	SparseBooleanArray checked = lvComics.getCheckedItemPositions();
-        	List<Comic> selected = new ArrayList<Comic>();
-        	for (int i = 0 ; i < checked.size(); i++) {
-        		if (checked.valueAt(i))
-        		{
-        			selected.add(adapter.getComic(i));
-        		}
-        	}
-        	
-        	if (selected.size() > 0)
-        	{
-        		int[] arr = new int[selected.size()];
-        		for (int i = 0; i < selected.size(); i++) {
-        			arr[i] = selected.get(i).getId();
-        			adapter.remove(selected.get(i));
-        		}
-        		getDBHelper().setComicReturned(arr);
-        		lvComics.clearChoices();
-        		lvComics.setAdapter(adapter);
-        	}
-        	
-    		if (adapter.getCount() == 0) {
-    			findViewById(R.id.borrowed_tvEmpty).setVisibility(View.VISIBLE);
-    		}
-    		
-            mode.finish();
-            return true;
-        }
-    };	
+
+	private final class ModeCallback implements ActionMode.Callback {    	 
+		@Override
+		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+			// Create the menu from the xml file
+			MenuInflater inflater = getSupportMenuInflater();
+			inflater.inflate(R.menu.actionbar_context_delete, menu);
+			return true;
+		}
+
+		@Override
+		public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+			// Here, you can checked selected items to adapt available actions
+			return false;
+		}
+
+		@Override
+		public void onDestroyActionMode(ActionMode mode) {
+			// Destroying action mode, let's unselect all items
+			for (int i = 0; i < mLvComics.getAdapter().getCount(); i++)
+				mLvComics.setItemChecked(i, false);
+
+			if (mode == mMode) {
+				mMode = null;
+			}
+		}
+
+		@Override
+		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+			SparseBooleanArray checked = mLvComics.getCheckedItemPositions();
+			List<Comic> selected = new ArrayList<Comic>();
+			for (int i = 0 ; i < checked.size(); i++) {
+				if (checked.valueAt(i))
+				{
+					selected.add(mAdapter.getComic(i));
+				}
+			}
+
+			if (selected.size() > 0)
+			{
+				int[] arr = new int[selected.size()];
+				for (int i = 0; i < selected.size(); i++) {
+					arr[i] = selected.get(i).getId();
+					mAdapter.remove(selected.get(i));
+				}
+				getDBHelper().setComicReturned(arr);
+				mLvComics.clearChoices();
+				mLvComics.setAdapter(mAdapter);
+			}
+
+			if (mAdapter.getCount() == 0) {
+				findViewById(R.id.borrowed_tvEmpty).setVisibility(View.VISIBLE);
+			}
+
+			mode.finish();
+			return true;
+		}
+	};	
 }

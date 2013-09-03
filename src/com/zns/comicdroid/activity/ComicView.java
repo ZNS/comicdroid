@@ -31,143 +31,143 @@ import com.zns.comicdroid.data.Comic;
 
 @SuppressLint("SimpleDateFormat")
 public class ComicView extends BaseFragmentActivity {
-	
+
 	public final static String INTENT_COMIC_ID = "com.zns.comic.COMICID";
 	public final static int CODE_COMIC_EDITED = 100;
-	
-	private Comic currentComic;
-	private TextView tvTitle;
-	private TextView tvSubtitle;
-	private TextView tvSubtitleHeading;
-	private View tvSubtitleDivider;
-	private TextView tvAuthor;
-	private TextView tvIllustrator;
-	private TextView tvPublisher;
-	private TextView tvPublished;
-	private TextView tvAdded;
-	private TextView tvPageCount;
-	private EditText etBorrower;
-	private ImageView ivImage;
-	private TextView tvIssues;
-	private CheckBox cbIsRead;
-	private RatingBar rbRating;
-	
+
+	private Comic mCurrentComic;
+	private TextView mTvTitle;
+	private TextView mTvSubtitle;
+	private TextView mTvSubtitleHeading;
+	private View mTvSubtitleDivider;
+	private TextView mTvAuthor;
+	private TextView mTvIllustrator;
+	private TextView mTvPublisher;
+	private TextView mTvPublished;
+	private TextView mTvAdded;
+	private TextView mTvPageCount;
+	private EditText mEtBorrower;
+	private ImageView mIvImage;
+	private TextView mTvIssues;
+	private CheckBox mCbIsRead;
+	private RatingBar mRbRating;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		setContentView(R.layout.activity_comic_view);
 		super.onCreate(savedInstanceState);
 
-		tvTitle = (TextView)findViewById(R.id.comicView_txtTitle);
-		tvSubtitle = (TextView)findViewById(R.id.comicView_txtSubtitle);
-		tvSubtitleHeading = (TextView)findViewById(R.id.comicView_tvSubtitleHeading);
-		tvSubtitleDivider = (View)findViewById(R.id.comicView_vSubtitleDivider);
-		tvAuthor = (TextView)findViewById(R.id.comicView_txtAuthor);
-		tvIllustrator = (TextView)findViewById(R.id.comicView_txtIllustrator);
-		tvPublisher = (TextView)findViewById(R.id.comicView_txtPublisher);
-		tvPublished = (TextView)findViewById(R.id.comicView_txtPublished);
-		tvAdded = (TextView)findViewById(R.id.comicView_txtAdded);
-		tvPageCount = (TextView)findViewById(R.id.comicView_txtPageCount);
-		etBorrower = (EditText)findViewById(R.id.comicView_etBorrower);
-		ivImage = (ImageView)findViewById(R.id.comicView_ivImage);		
-		tvIssues = (TextView)findViewById(R.id.comicView_txtIssues);
-		cbIsRead = (CheckBox)findViewById(R.id.comicView_cbIsRead);
-		rbRating = (RatingBar)findViewById(R.id.rbComicView);
-		
-		cbIsRead.setOnCheckedChangeListener(new OnCheckedChangeListener() {			
+		mTvTitle = (TextView)findViewById(R.id.comicView_txtTitle);
+		mTvSubtitle = (TextView)findViewById(R.id.comicView_txtSubtitle);
+		mTvSubtitleHeading = (TextView)findViewById(R.id.comicView_tvSubtitleHeading);
+		mTvSubtitleDivider = (View)findViewById(R.id.comicView_vSubtitleDivider);
+		mTvAuthor = (TextView)findViewById(R.id.comicView_txtAuthor);
+		mTvIllustrator = (TextView)findViewById(R.id.comicView_txtIllustrator);
+		mTvPublisher = (TextView)findViewById(R.id.comicView_txtPublisher);
+		mTvPublished = (TextView)findViewById(R.id.comicView_txtPublished);
+		mTvAdded = (TextView)findViewById(R.id.comicView_txtAdded);
+		mTvPageCount = (TextView)findViewById(R.id.comicView_txtPageCount);
+		mEtBorrower = (EditText)findViewById(R.id.comicView_etBorrower);
+		mIvImage = (ImageView)findViewById(R.id.comicView_ivImage);		
+		mTvIssues = (TextView)findViewById(R.id.comicView_txtIssues);
+		mCbIsRead = (CheckBox)findViewById(R.id.comicView_cbIsRead);
+		mRbRating = (RatingBar)findViewById(R.id.rbComicView);
+
+		mCbIsRead.setOnCheckedChangeListener(new OnCheckedChangeListener() {			
 			@Override
 			public void onCheckedChanged(CompoundButton btn, boolean checked) {
-				getDBHelper().setComicRead(currentComic.getId(), checked);
+				getDBHelper().setComicRead(mCurrentComic.getId(), checked);
 			}
 		});
-		
-		rbRating.setOnRatingBarChangeListener(new OnRatingBarChangeListener() {
+
+		mRbRating.setOnRatingBarChangeListener(new OnRatingBarChangeListener() {
 			@Override
 			public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
 				if (fromUser) {
-					getDBHelper().setComicRating(currentComic.getId(), (int)rating);
+					getDBHelper().setComicRating(mCurrentComic.getId(), (int)rating);
 				}
 			}
 		});
-		
-		etBorrower.setOnEditorActionListener(new TextView.OnEditorActionListener() {			
+
+		mEtBorrower.setOnEditorActionListener(new TextView.OnEditorActionListener() {			
 			@Override
 			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-		        if (actionId == EditorInfo.IME_ACTION_DONE) {
-		            InputMethodManager imm = (InputMethodManager)v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-		            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-		            
-		            getDBHelper().setComicBorrowed(currentComic.getId(), etBorrower.getText().toString());
-		            
-		            return true;
-		        }
-		        return false;
+				if (actionId == EditorInfo.IME_ACTION_DONE) {
+					InputMethodManager imm = (InputMethodManager)v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+					imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+
+					getDBHelper().setComicBorrowed(mCurrentComic.getId(), mEtBorrower.getText().toString());
+
+					return true;
+				}
+				return false;
 			}
 		});
-	    
+
 		Intent intent = getIntent();
-	    int comicId = intent.getIntExtra(INTENT_COMIC_ID, 0);
-	    if (comicId > 0)
-	    {
-	    	currentComic = getDBHelper().getComic(comicId);
-	    	BindComic(currentComic);
-	    }
+		int comicId = intent.getIntExtra(INTENT_COMIC_ID, 0);
+		if (comicId > 0)
+		{
+			mCurrentComic = getDBHelper().getComic(comicId);
+			BindComic(mCurrentComic);
+		}
 	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == CODE_COMIC_EDITED && resultCode == RESULT_OK && currentComic != null) {
+		if (requestCode == CODE_COMIC_EDITED && resultCode == RESULT_OK && mCurrentComic != null) {
 			//Comic was edited, refresh
-			currentComic = getDBHelper().getComic(currentComic.getId());
-			BindComic(currentComic);
+			mCurrentComic = getDBHelper().getComic(mCurrentComic.getId());
+			BindComic(mCurrentComic);
 		}
 	}
-	
+
 	@Override
 	protected void onPause()
 	{
-		if (currentComic != null && !currentComic.getBorrower().equals(etBorrower.getText().toString()))
+		if (mCurrentComic != null && !mCurrentComic.getBorrower().equals(mEtBorrower.getText().toString()))
 		{
-			getDBHelper().setComicBorrowed(currentComic.getId(), etBorrower.getText().toString());
+			getDBHelper().setComicBorrowed(mCurrentComic.getId(), mEtBorrower.getText().toString());
 		}
 		super.onPause();
 	}
-	
+
 	private void BindComic(Comic comic)
 	{
 		if (comic == null)
 			return;
-						
-		tvTitle.setText(comic.getTitle() + (comic.getIssue() > 0 ? " - " + getResources().getString(R.string.comicview_issueshort) + " " + comic.getIssue() : ""));
+
+		mTvTitle.setText(comic.getTitle() + (comic.getIssue() > 0 ? " - " + getResources().getString(R.string.comicview_issueshort) + " " + comic.getIssue() : ""));
 		if (comic.getSubTitle() != null)
 		{
-			tvSubtitleHeading.setVisibility(View.VISIBLE);
-			tvSubtitleDivider.setVisibility(View.VISIBLE);
-			tvSubtitle.setVisibility(View.VISIBLE);
-			tvSubtitle.setText(comic.getSubTitle());
+			mTvSubtitleHeading.setVisibility(View.VISIBLE);
+			mTvSubtitleDivider.setVisibility(View.VISIBLE);
+			mTvSubtitle.setVisibility(View.VISIBLE);
+			mTvSubtitle.setText(comic.getSubTitle());
 		}
 		else
 		{
-			tvSubtitleHeading.setVisibility(View.GONE);
-			tvSubtitleDivider.setVisibility(View.GONE);			
-			tvSubtitle.setVisibility(View.GONE);
+			mTvSubtitleHeading.setVisibility(View.GONE);
+			mTvSubtitleDivider.setVisibility(View.GONE);			
+			mTvSubtitle.setVisibility(View.GONE);
 		}
-		tvAuthor.setText(comic.getAuthor());
-		tvIllustrator.setText(comic.getIllustrator());
-		tvPublisher.setText(comic.getPublisher());
-		tvPublished.setText(new SimpleDateFormat("yyyy-MM-dd").format(comic.getPublishDate()));
-		tvAdded.setText(new SimpleDateFormat("yyyy-MM-dd").format(comic.getAddedDate()));
-		tvPageCount.setText(Integer.toString(comic.getPageCount()));
-		tvIssues.setText(comic.getIssues());
-		
-		cbIsRead.setChecked(comic.getIsRead());
+		mTvAuthor.setText(comic.getAuthor());
+		mTvIllustrator.setText(comic.getIllustrator());
+		mTvPublisher.setText(comic.getPublisher());
+		mTvPublished.setText(new SimpleDateFormat("yyyy-MM-dd").format(comic.getPublishDate()));
+		mTvAdded.setText(new SimpleDateFormat("yyyy-MM-dd").format(comic.getAddedDate()));
+		mTvPageCount.setText(Integer.toString(comic.getPageCount()));
+		mTvIssues.setText(comic.getIssues());
+
+		mCbIsRead.setChecked(comic.getIsRead());
 		if (comic.getRating() > 0)
-			rbRating.setRating(comic.getRating());
-		
-		etBorrower.setText(comic.getBorrower());
+			mRbRating.setRating(comic.getRating());
+
+		mEtBorrower.setText(comic.getBorrower());
 		if (comic.getImage() != null)
-			ivImage.setImageBitmap(BitmapFactory.decodeFile(comic.getImage()));		
+			mIvImage.setImageBitmap(BitmapFactory.decodeFile(getImagePath(comic.getImage())));		
 	}	
-		
+
 	//Menu
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -176,40 +176,40 @@ public class ComicView extends BaseFragmentActivity {
 		inflater.inflate(R.menu.actionbar_view, (com.actionbarsherlock.view.Menu) menu);
 		return true;
 	}		
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-	    // Handle item selection
-	    switch (item.getItemId()) {
-        	case R.id.menu_edit:
-	        	Intent intent = new Intent(this, Edit.class);
-				intent.putExtra(Edit.INTENT_COMIC_IDS, new int[] { currentComic.getId() });
-	        	startActivityForResult(intent, CODE_COMIC_EDITED);
-	            return true;
-        	case R.id.menu_delete:
-        		new AlertDialog.Builder(this)
-        	    .setTitle(R.string.comicview_delete_title)
-        	    .setMessage(R.string.comicview_delete_body)
-        	    .setPositiveButton(R.string.common_yes, new DialogInterface.OnClickListener() {
-        	        public void onClick(DialogInterface dialog, int which) { 
-        	        	getDBHelper().deleteComic(currentComic.getId());
-        	    		//Backup
-        	    		BackupManager m = new BackupManager(ComicView.this);
-        	    		m.dataChanged();
-        				//Back to start
-        	        	Intent intent2 = new Intent(ComicView.this, Start.class);
-        	        	startActivity(intent2);
-        	        	finish();
-        	        }
-        	     })
-        	    .setNegativeButton(R.string.common_no, new DialogInterface.OnClickListener() {
-        	        public void onClick(DialogInterface dialog, int which) {
-        	        	dialog.cancel();
-        	        }
-        	     })
-        	     .show();        		
-        		return true;
-	    }
-	    return super.onOptionsItemSelected(item);
+		// Handle item selection
+		switch (item.getItemId()) {
+		case R.id.menu_edit:
+			Intent intent = new Intent(this, Edit.class);
+			intent.putExtra(Edit.INTENT_COMIC_IDS, new int[] { mCurrentComic.getId() });
+			startActivityForResult(intent, CODE_COMIC_EDITED);
+			return true;
+		case R.id.menu_delete:
+			new AlertDialog.Builder(this)
+			.setTitle(R.string.comicview_delete_title)
+			.setMessage(R.string.comicview_delete_body)
+			.setPositiveButton(R.string.common_yes, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int which) { 
+					getDBHelper().deleteComic(mCurrentComic.getId());
+					//Backup
+					BackupManager m = new BackupManager(ComicView.this);
+					m.dataChanged();
+					//Back to start
+					Intent intent2 = new Intent(ComicView.this, Start.class);
+					startActivity(intent2);
+					finish();
+				}
+			})
+			.setNegativeButton(R.string.common_no, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.cancel();
+				}
+			})
+			.show();        		
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 }

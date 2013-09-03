@@ -13,40 +13,40 @@ import android.widget.EditText;
 import com.zns.comicdroid.R;
 
 public class RenameDialogFragment extends DialogFragment {
-	
+
 	public interface OnRenameDialogListener {
-        public void onDialogPositiveClick(String oldName, String newName);
-    }
-	
-	OnRenameDialogListener renameCallback;
-	
-	private String name;
-	public void setName(String name) {
-		this.name = name;
+		public void onDialogPositiveClick(String oldName, String newName);
 	}
+
+	private OnRenameDialogListener mRenameCallback;
+	private String mName;
 	
+	public void setName(String name) {
+		this.mName = name;
+	}
+
 	@Override
 	public void onAttach(Activity activity) {
-	    super.onAttach(activity);
-	    if (getTargetFragment() instanceof OnRenameDialogListener) {
-	    	renameCallback = (OnRenameDialogListener)getTargetFragment();
-	    }
-	    else if (activity instanceof OnRenameDialogListener) {
-	    	renameCallback = (OnRenameDialogListener)activity;
-	    }
+		super.onAttach(activity);
+		if (getTargetFragment() instanceof OnRenameDialogListener) {
+			mRenameCallback = (OnRenameDialogListener)getTargetFragment();
+		}
+		else if (activity instanceof OnRenameDialogListener) {
+			mRenameCallback = (OnRenameDialogListener)activity;
+		}
 	}	
-	
+
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		
+
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 		final View view = inflater.inflate(R.layout.dialog_rename, null);
-		((EditText)view.findViewById(R.id.dialogRename_etName)).setText(name);
-		
+		((EditText)view.findViewById(R.id.dialogRename_etName)).setText(mName);
+
 		builder
 		.setView(view);
-		
+
 		builder
 		.setPositiveButton(getResources().getString(R.string.common_save), new DialogInterface.OnClickListener() {			
 			@Override
@@ -54,18 +54,18 @@ public class RenameDialogFragment extends DialogFragment {
 				AlertDialog ad = (AlertDialog)dialog;
 				EditText etName = (EditText)ad.findViewById(R.id.dialogRename_etName);
 
-				if (renameCallback != null)
-					renameCallback.onDialogPositiveClick(name, etName.getText().toString());
+				if (mRenameCallback != null)
+					mRenameCallback.onDialogPositiveClick(mName, etName.getText().toString());
 			}
 		})
-		
+
 		.setNegativeButton(getResources().getString(R.string.common_cancel), new DialogInterface.OnClickListener() {			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				RenameDialogFragment.this.getDialog().cancel();
 			}
 		});
-					
+
 		AlertDialog dialog = builder.create();		
 		return dialog;
 	}	

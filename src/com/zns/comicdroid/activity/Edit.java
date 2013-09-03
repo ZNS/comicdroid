@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import android.app.backup.BackupManager;
 import android.content.ContentValues;
@@ -40,273 +41,273 @@ import com.zns.comicdroid.dialog.GroupDialogFragment;
 import com.zns.comicdroid.util.ImageHandler;
 
 public class Edit extends BaseFragmentActivity
-	implements	OnClickListener, 
-				GroupDialogFragment.OnGroupAddDialogListener {
-	
+implements	OnClickListener, 
+GroupDialogFragment.OnGroupAddDialogListener {
+
 	public static final String INTENT_COMIC_IDS = "com.zns.comic.COMICIDS";
 	private static final int CAMERA_REQUEST = 1888; 
-	
-	private List<Comic> comics = null;
-	private EditText etTitle;
-	private EditText etSubtitle;
-	private EditText etIssue;
-	private AutoCompleteTextView etAuthor;
-	private AutoCompleteTextView etIllustrator;
-	private AutoCompleteTextView etPublisher;	
-	private EditText etPublished;
-	private EditText etAdded;
-	private EditText etPageCount;
-	private EditText etIssues;
-	private ImageView ivImage;
-	private String newImage = null;
-	private Spinner spGroup;
-	private ImageView ivGroupAdd;
-	private RelativeLayout rowIssue;
-	private RelativeLayout rowPublishDate;
-	private RelativeLayout rowAdded;
-	private RelativeLayout rowPageCount;
-	private RelativeLayout rowIssues;
-	
-	private ArrayAdapter<Group> adapterGroups;		
-	private AutoCompleteAdapter adapterAuthors;
-	private AutoCompleteAdapter adapterIllustrators;
-	private AutoCompleteAdapter adapterPublisher;
-	
+
+	private List<Comic> mComics = null;
+	private EditText mEtTitle;
+	private EditText mEtSubtitle;
+	private EditText mEtIssue;
+	private AutoCompleteTextView mEtAuthor;
+	private AutoCompleteTextView mEtIllustrator;
+	private AutoCompleteTextView mEtPublisher;	
+	private EditText mEtPublished;
+	private EditText mEtAdded;
+	private EditText mEtPageCount;
+	private EditText mEtIssues;
+	private ImageView mIvImage;
+	private String mNewImage = null;
+	private Spinner mSpGroup;
+	private ImageView mIvGroupAdd;
+	private RelativeLayout mRowIssue;
+	private RelativeLayout mRowPublishDate;
+	private RelativeLayout mRowAdded;
+	private RelativeLayout mRowPageCount;
+	private RelativeLayout mRowIssues;
+
+	private ArrayAdapter<Group> mAdapterGroups;		
+	private AutoCompleteAdapter mAdapterAuthors;
+	private AutoCompleteAdapter mAdapterIllustrators;
+	private AutoCompleteAdapter mAdapterPublisher;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		setContentView(R.layout.activity_edit);
 		super.onCreate(savedInstanceState);
 
-		etTitle = (EditText)findViewById(R.id.comicEdit_etTitle);
-		etSubtitle = (EditText)findViewById(R.id.comicEdit_etSubtitle);
-		etIssue = (EditText)findViewById(R.id.comicEdit_etIssue);
-		etIssues = (EditText)findViewById(R.id.comicEdit_etIssues);
-		etAuthor = (AutoCompleteTextView)findViewById(R.id.comicEdit_actAuthor);
-		etIllustrator = (AutoCompleteTextView)findViewById(R.id.comicEdit_actIllustrator);
-		etPublisher = (AutoCompleteTextView)findViewById(R.id.comicEdit_actPublisher);
-		etPublished = (EditText)findViewById(R.id.comicEdit_etPublished);
-		etAdded = (EditText)findViewById(R.id.comicEdit_etAdded);
-		etPageCount = (EditText)findViewById(R.id.comicEdit_etPageCount);
-		ivImage = (ImageView)findViewById(R.id.comicEdit_ivImage);		
-		spGroup = (Spinner)findViewById(R.id.comicEdit_spGroup);
-		ivGroupAdd = (ImageView)findViewById(R.id.comicEdit_ivGroupAdd);
-		rowIssue = (RelativeLayout)findViewById(R.id.comicEdit_issue);
-		rowPublishDate = (RelativeLayout)findViewById(R.id.comicEdit_publishDate);
-		rowAdded = (RelativeLayout)findViewById(R.id.comicEdit_added);
-		rowPageCount = (RelativeLayout)findViewById(R.id.comicEdit_pageCount);
-		rowIssues = (RelativeLayout)findViewById(R.id.comicEdit_issues);
+		mEtTitle = (EditText)findViewById(R.id.comicEdit_etTitle);
+		mEtSubtitle = (EditText)findViewById(R.id.comicEdit_etSubtitle);
+		mEtIssue = (EditText)findViewById(R.id.comicEdit_etIssue);
+		mEtIssues = (EditText)findViewById(R.id.comicEdit_etIssues);
+		mEtAuthor = (AutoCompleteTextView)findViewById(R.id.comicEdit_actAuthor);
+		mEtIllustrator = (AutoCompleteTextView)findViewById(R.id.comicEdit_actIllustrator);
+		mEtPublisher = (AutoCompleteTextView)findViewById(R.id.comicEdit_actPublisher);
+		mEtPublished = (EditText)findViewById(R.id.comicEdit_etPublished);
+		mEtAdded = (EditText)findViewById(R.id.comicEdit_etAdded);
+		mEtPageCount = (EditText)findViewById(R.id.comicEdit_etPageCount);
+		mIvImage = (ImageView)findViewById(R.id.comicEdit_ivImage);		
+		mSpGroup = (Spinner)findViewById(R.id.comicEdit_spGroup);
+		mIvGroupAdd = (ImageView)findViewById(R.id.comicEdit_ivGroupAdd);
+		mRowIssue = (RelativeLayout)findViewById(R.id.comicEdit_issue);
+		mRowPublishDate = (RelativeLayout)findViewById(R.id.comicEdit_publishDate);
+		mRowAdded = (RelativeLayout)findViewById(R.id.comicEdit_added);
+		mRowPageCount = (RelativeLayout)findViewById(R.id.comicEdit_pageCount);
+		mRowIssues = (RelativeLayout)findViewById(R.id.comicEdit_issues);
 		SlidingDrawer drawer = (SlidingDrawer)findViewById(R.id.comicEdit_drawer);
-		
-		Intent intent = getIntent();
-	    int[] comicIds = intent.getIntArrayExtra(INTENT_COMIC_IDS);
-	    
-    	//Spinner groups
-    	List<Group> groups = getDBHelper().getGroups();
-    	if (groups == null)
-    		groups = new ArrayList<Group>();
-    	groups.add(0, new Group(0, getResources().getString(R.string.common_nogroup), null, 0, 0, 0, 0, 0));
-    	adapterGroups = new ArrayAdapter<Group>(this, android.R.layout.simple_spinner_item, groups);
-    	adapterGroups.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-    	spGroup.setAdapter(adapterGroups);
 
-    	//Dialog
-    	ivGroupAdd.setOnClickListener(new OnClickListener() {
+		Intent intent = getIntent();
+		int[] comicIds = intent.getIntArrayExtra(INTENT_COMIC_IDS);
+
+		//Spinner groups
+		List<Group> groups = getDBHelper().getGroups();
+		if (groups == null)
+			groups = new ArrayList<Group>();
+		groups.add(0, new Group(0, getResources().getString(R.string.common_nogroup), null, 0, 0, 0, 0, 0));
+		mAdapterGroups = new ArrayAdapter<Group>(this, android.R.layout.simple_spinner_item, groups);
+		mAdapterGroups.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		mSpGroup.setAdapter(mAdapterGroups);
+
+		//Dialog
+		mIvGroupAdd.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				DialogFragment dialogAddGroup = new GroupDialogFragment();
 				dialogAddGroup.show(getSupportFragmentManager(), "GROUPADD");
 			}
 		});
-    	
+
 		//Autocomplete author
-		adapterAuthors = new AutoCompleteAdapter(this, 
+		mAdapterAuthors = new AutoCompleteAdapter(this, 
 				"SELECT DISTINCT 0 AS _id, Author FROM tblBooks WHERE Author LIKE ? ORDER BY Author", 
 				"Author", 
 				1); 	    	
-		etAuthor.setThreshold(3);
-		etAuthor.setAdapter(adapterAuthors);
-					
+		mEtAuthor.setThreshold(3);
+		mEtAuthor.setAdapter(mAdapterAuthors);
+
 		//Autocomplete illustrator
-		adapterIllustrators = new AutoCompleteAdapter(this, 
+		mAdapterIllustrators = new AutoCompleteAdapter(this, 
 				"SELECT DISTINCT 0 AS _id, Illustrator FROM tblBooks WHERE Illustrator LIKE ? ORDER BY Illustrator", 
 				"Illustrator", 
 				1); 	    	
-		etIllustrator.setThreshold(3);
-		etIllustrator.setAdapter(adapterIllustrators);
-		
+		mEtIllustrator.setThreshold(3);
+		mEtIllustrator.setAdapter(mAdapterIllustrators);
+
 		//Autocomplete publisher
-		adapterPublisher = new AutoCompleteAdapter(this, 
+		mAdapterPublisher = new AutoCompleteAdapter(this, 
 				"SELECT DISTINCT 0 AS _id, Publisher FROM tblBooks WHERE Publisher LIKE ? ORDER BY Publisher", 
 				"Publisher", 
 				1); 
-		etPublisher.setThreshold(3);
-		etPublisher.setAdapter(adapterPublisher);
-		
-	    if (comicIds != null && comicIds.length > 0)
-	    {
-	    	comics = getDBHelper().getComics(comicIds);
-	    				
-	    	ListView lvEdit = (ListView)findViewById(R.id.comicEdit_listView);			
-	    	if (comicIds.length > 1)
-	    	{
-	    		drawer.setVisibility(View.VISIBLE);
-		    	ComicArrayAdapter adapter = new ComicArrayAdapter(this, comics);		    	
-		    	lvEdit.setAdapter(adapter);
-	    	}
-	    	else {
-	    		ivImage.setOnClickListener(this);
-	    		drawer.setVisibility(View.GONE);
-	    	}
-	    	
-	    	BindComics();
-	    }
-	    else {
-	    	ivImage.setOnClickListener(this);
-	    	drawer.setVisibility(View.GONE);
-	    }
+		mEtPublisher.setThreshold(3);
+		mEtPublisher.setAdapter(mAdapterPublisher);
+
+		if (comicIds != null && comicIds.length > 0)
+		{
+			mComics = getDBHelper().getComics(comicIds);
+
+			ListView lvEdit = (ListView)findViewById(R.id.comicEdit_listView);			
+			if (comicIds.length > 1)
+			{
+				drawer.setVisibility(View.VISIBLE);
+				ComicArrayAdapter adapter = new ComicArrayAdapter(this, mComics, getImagePath(true));		    	
+				lvEdit.setAdapter(adapter);
+			}
+			else {
+				mIvImage.setOnClickListener(this);
+				drawer.setVisibility(View.GONE);
+			}
+
+			BindComics();
+		}
+		else {
+			mIvImage.setOnClickListener(this);
+			drawer.setVisibility(View.GONE);
+		}
 	}
-	
+
 	private void BindComics()
 	{
-		if (comics == null || comics.size() == 0)
+		if (mComics == null || mComics.size() == 0)
 			return;
-		
-		if (comics.size() == 1)
+
+		if (mComics.size() == 1)
 		{
-			Comic comic = comics.get(0);
-			rowIssue.setVisibility(View.VISIBLE);
-			rowPublishDate.setVisibility(View.VISIBLE);
-			rowAdded.setVisibility(View.VISIBLE);
-			rowPageCount.setVisibility(View.VISIBLE);
-			rowIssues.setVisibility(View.VISIBLE);
-			
-			setTextField(etTitle, comic.getTitle(), false);
-			setTextField(etSubtitle, comic.getSubTitle(), false);
-			setTextField(etIssue, comic.getIssue() > 0 ? Integer.toString(comic.getIssue()) : "", false);
-			setTextField(etAuthor, comic.getAuthor(), false);
-			setTextField(etIllustrator, comic.getIllustrator(), false);
-			setTextField(etPublisher, comic.getPublisher(), false);
-			setTextField(etIssues, comic.getIssues(), false);
-			
+			Comic comic = mComics.get(0);
+			mRowIssue.setVisibility(View.VISIBLE);
+			mRowPublishDate.setVisibility(View.VISIBLE);
+			mRowAdded.setVisibility(View.VISIBLE);
+			mRowPageCount.setVisibility(View.VISIBLE);
+			mRowIssues.setVisibility(View.VISIBLE);
+
+			setTextField(mEtTitle, comic.getTitle(), false);
+			setTextField(mEtSubtitle, comic.getSubTitle(), false);
+			setTextField(mEtIssue, comic.getIssue() > 0 ? Integer.toString(comic.getIssue()) : "", false);
+			setTextField(mEtAuthor, comic.getAuthor(), false);
+			setTextField(mEtIllustrator, comic.getIllustrator(), false);
+			setTextField(mEtPublisher, comic.getPublisher(), false);
+			setTextField(mEtIssues, comic.getIssues(), false);
+
 			if (comic.getPublishDateTimestamp() > 0)
-				setTextField(etPublished, new SimpleDateFormat("yyyy-MM-dd").format(comic.getPublishDate()), false);
+				setTextField(mEtPublished, new SimpleDateFormat("yyyy-MM-dd").format(comic.getPublishDate()), false);
 			else
-				setTextField(etPublished, "", false);
-			
+				setTextField(mEtPublished, "", false);
+
 			if (comic.getAddedDateTimestamp() > 0)
-				setTextField(etAdded, new SimpleDateFormat("yyyy-MM-dd").format(comic.getAddedDate()), false);
+				setTextField(mEtAdded, new SimpleDateFormat("yyyy-MM-dd").format(comic.getAddedDate()), false);
 			else
-				setTextField(etAdded, "", false);
-			
+				setTextField(mEtAdded, "", false);
+
 			if (comic.getPageCount() > 0)
-				setTextField(etPageCount, Integer.toString(comic.getPageCount()), false);
+				setTextField(mEtPageCount, Integer.toString(comic.getPageCount()), false);
 			else
-				setTextField(etPageCount, "", false);
+				setTextField(mEtPageCount, "", false);
 
 			if (comic.getGroupId() > 0) {
-				int pos = adapterGroups.getPosition(new Group(comic.getGroupId()));
-				spGroup.setSelection(pos);
+				int pos = mAdapterGroups.getPosition(new Group(comic.getGroupId()));
+				mSpGroup.setSelection(pos);
 			}
-			
-			ivImage.setVisibility(View.VISIBLE);
+
+			mIvImage.setVisibility(View.VISIBLE);
 			if (comic.getImage() != null && comic.getImage().length() > 0)
-				ivImage.setImageBitmap(BitmapFactory.decodeFile(comic.getImage()));
+				mIvImage.setImageBitmap(BitmapFactory.decodeFile(getImagePath(comic.getImage())));
 			else
-				ivImage.setImageDrawable(getResources().getDrawable(R.drawable.camera_icon));
+				mIvImage.setImageDrawable(getResources().getDrawable(R.drawable.camera_icon));
 		}
 		else
 		{
 			//Multi edit
-			Comic comic = comics.get(0);
-			rowIssue.setVisibility(View.GONE);
-			rowPublishDate.setVisibility(View.GONE);
-			rowAdded.setVisibility(View.GONE);
-			rowPageCount.setVisibility(View.GONE);
-			rowIssues.setVisibility(View.GONE);
-			setTextField(etTitle, comic.getTitle(), true);
-			setTextField(etSubtitle, comic.getSubTitle(), true);			
-			setTextField(etAuthor, comic.getAuthor(), true);
-			setTextField(etIllustrator, comic.getIllustrator(), true);
-			setTextField(etPublisher, comic.getPublisher(), true);
-			int groupId = getCommonGroupId(comics);
+			Comic comic = mComics.get(0);
+			mRowIssue.setVisibility(View.GONE);
+			mRowPublishDate.setVisibility(View.GONE);
+			mRowAdded.setVisibility(View.GONE);
+			mRowPageCount.setVisibility(View.GONE);
+			mRowIssues.setVisibility(View.GONE);
+			setTextField(mEtTitle, comic.getTitle(), true);
+			setTextField(mEtSubtitle, comic.getSubTitle(), true);			
+			setTextField(mEtAuthor, comic.getAuthor(), true);
+			setTextField(mEtIllustrator, comic.getIllustrator(), true);
+			setTextField(mEtPublisher, comic.getPublisher(), true);
+			int groupId = getCommonGroupId(mComics);
 			if (groupId > 0) {
-				int pos = adapterGroups.getPosition(new Group(groupId));
-				spGroup.setSelection(pos);
+				int pos = mAdapterGroups.getPosition(new Group(groupId));
+				mSpGroup.setSelection(pos);
 			}
-			ivImage.setVisibility(View.GONE);
+			mIvImage.setVisibility(View.GONE);
 		}
 	}
-	
+
 	private void UpdateComics()
 	{
 		ContentValues values = new ContentValues();
 		try
 		{
-			String title = etTitle.getText().toString().trim();
-			if (title.toLowerCase().startsWith("the ")) {
+			String title = mEtTitle.getText().toString().trim();
+			if (title.toLowerCase(Locale.ENGLISH).startsWith("the ")) {
 				title = title.substring(4) + ", The";
 			}
-			
-			if (comics != null && comics.size() > 1)
+
+			if (mComics != null && mComics.size() > 1)
 			{
-				if (!isEmpty(etTitle))
+				if (!isEmpty(mEtTitle))
 					values.put("Title", title);
-				if (!isEmpty(etSubtitle))
-					values.put("SubTitle", etSubtitle.getText().toString());
-				if (!isEmpty(etAuthor))
-					values.put("Author", etAuthor.getText().toString());
-				if (!isEmpty(etIllustrator))
-					values.put("Illustrator", etIllustrator.getText().toString());				
-				if (!isEmpty(etPublisher))
-					values.put("Publisher", etPublisher.getText().toString());
-				if (spGroup.getSelectedItemPosition() > 0) {
-					Group g = (Group)spGroup.getSelectedItem();
+				if (!isEmpty(mEtSubtitle))
+					values.put("SubTitle", mEtSubtitle.getText().toString());
+				if (!isEmpty(mEtAuthor))
+					values.put("Author", mEtAuthor.getText().toString());
+				if (!isEmpty(mEtIllustrator))
+					values.put("Illustrator", mEtIllustrator.getText().toString());				
+				if (!isEmpty(mEtPublisher))
+					values.put("Publisher", mEtPublisher.getText().toString());
+				if (mSpGroup.getSelectedItemPosition() > 0) {
+					Group g = (Group)mSpGroup.getSelectedItem();
 					values.put("GroupId", g.getId());
 				}	
 			}
 			else
 			{
 				values.put("Title", title);
-				values.put("SubTitle", etSubtitle.getText().toString());
-				values.put("Author", etAuthor.getText().toString());
-				values.put("Illustrator", etIllustrator.getText().toString());
-				values.put("Publisher", etPublisher.getText().toString());
-				if (!isEmpty(etIssue))
-					values.put("Issue", Integer.parseInt(etIssue.getText().toString()));
-				if (!isEmpty(etIssues))
-					values.put("Issues", etIssues.getText().toString());
-				if (!isEmpty(etPageCount))
-					values.put("PageCount", Integer.parseInt(etPageCount.getText().toString()));
-				if (!isEmpty(etPublished))
-					values.put("PublishDate", getDBHelper().GetDateStamp(etPublished.getText().toString()));
-				if (!isEmpty(etAdded))
-					values.put("AddedDate", getDBHelper().GetDateStamp(etAdded.getText().toString()));
-				if (spGroup.getSelectedItemPosition() > 0) {
-					Group g = (Group)spGroup.getSelectedItem();
+				values.put("SubTitle", mEtSubtitle.getText().toString());
+				values.put("Author", mEtAuthor.getText().toString());
+				values.put("Illustrator", mEtIllustrator.getText().toString());
+				values.put("Publisher", mEtPublisher.getText().toString());
+				if (!isEmpty(mEtIssue))
+					values.put("Issue", Integer.parseInt(mEtIssue.getText().toString()));
+				if (!isEmpty(mEtIssues))
+					values.put("Issues", mEtIssues.getText().toString());
+				if (!isEmpty(mEtPageCount))
+					values.put("PageCount", Integer.parseInt(mEtPageCount.getText().toString()));
+				if (!isEmpty(mEtPublished))
+					values.put("PublishDate", getDBHelper().GetDateStamp(mEtPublished.getText().toString()));
+				if (!isEmpty(mEtAdded))
+					values.put("AddedDate", getDBHelper().GetDateStamp(mEtAdded.getText().toString()));
+				if (mSpGroup.getSelectedItemPosition() > 0) {
+					Group g = (Group)mSpGroup.getSelectedItem();
 					values.put("GroupId", g.getId());
 				}
-				if (newImage != null) {					
+				if (mNewImage != null) {					
 					values.put("ImageUrl", "");
-					values.put("Image", newImage);
+					values.put("Image", mNewImage);
 				}
 			}
 		}
 		catch (ParseException e) {}
-		
-		if (comics != null)
+
+		if (mComics != null)
 		{
 			//UPDATE
 			StringBuilder sbWhere = new StringBuilder("_id IN (");
-			String[] ids = new String[comics.size()];
+			String[] ids = new String[mComics.size()];
 			int i = 0;
-			for (Comic c : comics) {
+			for (Comic c : mComics) {
 				sbWhere.append("?,");
 				ids[i] = Integer.toString(c.getId());
 				i++;
 			}
 			sbWhere.setLength(sbWhere.length() - 1);
 			sbWhere.append(")");
-				
+
 			getDBHelper().update("tblBooks", values, sbWhere.toString(), ids);
 		}
 		else
@@ -319,20 +320,20 @@ public class Edit extends BaseFragmentActivity
 			long id = getDBHelper().insert("tblBooks", values);
 			Comic comic = getDBHelper().getComic((int)id);
 			if (comic != null){
-				comics = new ArrayList<Comic>();
-				comics.add(comic);
+				mComics = new ArrayList<Comic>();
+				mComics.add(comic);
 			}
 		}
-		
+
 		//Backup
 		BackupManager m = new BackupManager(this);
 		m.dataChanged();
-		
+
 		setResult(RESULT_OK);
-		
+
 		Toast.makeText(this, getResources().getString(R.string.edit_done), Toast.LENGTH_LONG).show();
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
@@ -343,75 +344,74 @@ public class Edit extends BaseFragmentActivity
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-	    // Handle item selection
-	    switch (item.getItemId()) {
-        	case R.id.menu_done:
-        		UpdateComics();
-	            return true;
-	    }
-	    return super.onOptionsItemSelected(item);
+		// Handle item selection
+		switch (item.getItemId()) {
+		case R.id.menu_done:
+			UpdateComics();
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
 	}
-	
+
 	@Override
 	public void onClick(View v) {
 		if (v.getId() == R.id.comicEdit_ivImage) {
-			if (comics == null) {
+			if (mComics == null) {
 				Toast.makeText(Edit.this, getResources().getString(R.string.edit_needtosave), Toast.LENGTH_LONG).show();
 				return;
 			}
 			Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE); 
-			String fileName = "thumb" + comics.get(0).hashCode() + ".jpg";
-			File file = new File(getExternalFilesDir(null), fileName);
-			newImage = file.toString();
-			cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
-            startActivityForResult(cameraIntent, CAMERA_REQUEST);
+			String fileName = "thumb" + mComics.get(0).hashCode() + ".jpg";
+			mNewImage = getImagePath(fileName);
+			cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(mNewImage)));
+			startActivityForResult(cameraIntent, CAMERA_REQUEST);
 		}
 	}
-	
+
 	@Override
 	public void onDialogPositiveClick(DialogFragment dialog) {
 		List<Group> groups = getDBHelper().getGroups();
 		groups.add(0, new Group(0, getResources().getString(R.string.common_nogroup), null, 0, 0, 0, 0, 0));
-		adapterGroups.clear();
+		mAdapterGroups.clear();
 		for (Group g : groups)
-			adapterGroups.add(g);
-		spGroup.setEnabled(true);
+			mAdapterGroups.add(g);
+		mSpGroup.setEnabled(true);
 	}
-	
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CAMERA_REQUEST) {
-        	if (resultCode == RESULT_OK) {
-        		try
-        		{
-        			ImageHandler.resizeOnDisk(newImage);
-        		}
-        		catch (Exception e) {
-        			Toast.makeText(this, R.string.error_storeimage, Toast.LENGTH_SHORT).show();
-        		}
-        		Bitmap bmp = BitmapFactory.decodeFile(newImage);
-        		ivImage.setImageBitmap(bmp);
-        	}
-        	else {
-        		Toast.makeText(this, R.string.error_storeimage, Toast.LENGTH_SHORT).show();
-        		newImage = null;
-        	}
-        }
-    }
-    
-    private int getCommonGroupId(List<Comic> comics) {
-    	int groupId = comics.get(0).getGroupId();
-    	for (Comic c : comics.subList(1, comics.size() - 1)) {
-    		if (c.getGroupId() != groupId) {
-    			groupId = -1;
-    			break;
-    		}
-    	}
-    	return groupId;
-    }
-    
-    private boolean isEmpty(EditText et) {
-    	return et.getText().toString().trim().length() == 0;
-    }
+
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == CAMERA_REQUEST) {
+			if (resultCode == RESULT_OK) {
+				try
+				{
+					ImageHandler.resizeOnDisk(mNewImage);
+				}
+				catch (Exception e) {
+					Toast.makeText(this, R.string.error_storeimage, Toast.LENGTH_SHORT).show();
+				}
+				Bitmap bmp = BitmapFactory.decodeFile(mNewImage);
+				mIvImage.setImageBitmap(bmp);
+			}
+			else {
+				Toast.makeText(this, R.string.error_storeimage, Toast.LENGTH_SHORT).show();
+				mNewImage = null;
+			}
+		}
+	}
+
+	private int getCommonGroupId(List<Comic> comics) {
+		int groupId = comics.get(0).getGroupId();
+		for (Comic c : comics.subList(1, comics.size() - 1)) {
+			if (c.getGroupId() != groupId) {
+				groupId = -1;
+				break;
+			}
+		}
+		return groupId;
+	}
+
+	private boolean isEmpty(EditText et) {
+		return et.getText().toString().trim().length() == 0;
+	}
 
 	private void setTextField(EditText view, String text, boolean asHint)
 	{
@@ -426,9 +426,9 @@ public class Edit extends BaseFragmentActivity
 
 	@Override
 	protected void onDestroy() {
-		adapterPublisher.close();
-		adapterAuthors.close();
-		adapterIllustrators.close();
+		mAdapterPublisher.close();
+		mAdapterAuthors.close();
+		mAdapterIllustrators.close();
 		super.onDestroy();	
 	}
 }

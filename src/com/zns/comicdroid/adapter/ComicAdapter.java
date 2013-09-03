@@ -17,13 +17,14 @@ import android.widget.TextView;
 
 public class ComicAdapter extends SimpleCursorAdapter
 {
-	private final int _layout;
-	private final LayoutInflater _layoutInflater;
-	private final ImageWorker imageWorker = new ImageWorker();
-	private int colorDefault;
-	private int colorIsBorrowed;
-	public boolean renderTitle = true;
-	
+	private final int mLayout;
+	private final LayoutInflater mLayoutInflater;
+	private final ImageWorker mImageWorker = new ImageWorker();
+	private final int mColorDefault;
+	private final int mColorIsBorrowed;
+	private final String mImagePath;
+	public boolean mRenderTitle = true;	
+
 	static class ComicHolder
 	{
 		TextView tvTitle;
@@ -33,17 +34,18 @@ public class ComicAdapter extends SimpleCursorAdapter
 		RatingBar rbComic;
 		RelativeLayout rlRow;
 	}
-	  
-	public ComicAdapter(Context context)
+
+	public ComicAdapter(Context context, String imagePath)
 	{
 		super(context, R.layout.list_comicrow, null, new String[] { "Title" }, null, 0);
-		_layout = R.layout.list_comicrow;
-		_layoutInflater = LayoutInflater.from(context);
+		mLayout = R.layout.list_comicrow;
+		mLayoutInflater = LayoutInflater.from(context);
 		Resources res = context.getResources();
-		colorDefault = res.getColor(R.color.contentBg);
-		colorIsBorrowed = res.getColor(R.color.listViewBorrowed);
+		mColorDefault = res.getColor(R.color.contentBg);
+		mColorIsBorrowed = res.getColor(R.color.listViewBorrowed);
+		mImagePath = imagePath;
 	}
-	
+
 	public int getComicId(int position)
 	{
 		Cursor cursor = getCursor();
@@ -51,7 +53,7 @@ public class ComicAdapter extends SimpleCursorAdapter
 			return cursor.getInt(0);
 		return 0;
 	}
-	
+
 	public int[] getComicIds()
 	{
 		int[] ids = null;
@@ -68,31 +70,31 @@ public class ComicAdapter extends SimpleCursorAdapter
 		}
 		return ids;		
 	}
-	
+
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		Cursor cursor = getCursor();
-	    if (cursor.moveToPosition(position)) 
-	    {
-	    	ComicHolder holder;
-	    	
-	    	if (convertView == null)
-	    	{
-	    		convertView = _layoutInflater.inflate(_layout, null);	    		
-	    		holder = new ComicHolder();
-	    		holder.tvTitle = (TextView)convertView.findViewById(R.id.tvTitle);
-	    		holder.tvAuthor = (TextView)convertView.findViewById(R.id.tvAuthor);
-	    		holder.ivImage = (ImageView)convertView.findViewById(R.id.ivImage);
-	    		holder.tvIssue = (TextView)convertView.findViewById(R.id.tvIssue);
-	    		holder.rlRow = (RelativeLayout)convertView.findViewById(R.id.rlRow);
-	    		holder.rbComic = (RatingBar)convertView.findViewById(R.id.rbComicList);
-	    		convertView.setTag(holder);
-	    	}
-	    	else
-	    	{
-	    		holder = (ComicHolder)convertView.getTag();
-	    	}
-	    	
+		if (cursor.moveToPosition(position)) 
+		{
+			ComicHolder holder;
+
+			if (convertView == null)
+			{
+				convertView = mLayoutInflater.inflate(mLayout, null);	    		
+				holder = new ComicHolder();
+				holder.tvTitle = (TextView)convertView.findViewById(R.id.tvTitle);
+				holder.tvAuthor = (TextView)convertView.findViewById(R.id.tvAuthor);
+				holder.ivImage = (ImageView)convertView.findViewById(R.id.ivImage);
+				holder.tvIssue = (TextView)convertView.findViewById(R.id.tvIssue);
+				holder.rlRow = (RelativeLayout)convertView.findViewById(R.id.rlRow);
+				holder.rbComic = (RatingBar)convertView.findViewById(R.id.rbComicList);
+				convertView.setTag(holder);
+			}
+			else
+			{
+				holder = (ComicHolder)convertView.getTag();
+			}
+
 			String title = cursor.getString(1);
 			String subTitle = cursor.getString(2);
 			if (subTitle == null)
@@ -103,39 +105,39 @@ public class ComicAdapter extends SimpleCursorAdapter
 			boolean isBorrowed = cursor.getInt(6) == 1;
 			boolean isRead = cursor.getInt(7) == 1;
 			int rating = cursor.getInt(8);
-			
+
 			String strTitle = title + (subTitle.length() > 0 ? " - " + subTitle : "");
-			if (!renderTitle)
+			if (!mRenderTitle)
 				strTitle = subTitle.length() > 0 ? subTitle : title;
-				
-			holder.tvTitle.setText(strTitle);
-			holder.tvAuthor.setText(author);
-			if (issue > 0) {
-				holder.tvIssue.setText("Vol. " + Integer.toString(issue));
-			}
-			else {
-				holder.tvIssue.setText("");
-			}
-			
-			if (image != null) {
-				imageWorker.load(image, holder.ivImage);
-				holder.ivImage.setVisibility(View.VISIBLE);
-			}
-			else {
-				holder.ivImage.setVisibility(View.GONE);
-			}
-			
-			if (isBorrowed) {
-				holder.rlRow.setBackgroundColor(colorIsBorrowed);
-			}
-			else {
-				holder.rlRow.setBackgroundColor(colorDefault);
-			}
-			
-			holder.rbComic.setVisibility(rating > 0 ? View.VISIBLE : View.GONE);
-			holder.rbComic.setRating(rating);			
-	    }
-	    
+
+				holder.tvTitle.setText(strTitle);
+				holder.tvAuthor.setText(author);
+				if (issue > 0) {
+					holder.tvIssue.setText("Vol. " + Integer.toString(issue));
+				}
+				else {
+					holder.tvIssue.setText("");
+				}
+
+				if (image != null && !image.equals("")) {
+					mImageWorker.load(mImagePath.concat(image), holder.ivImage);
+					holder.ivImage.setVisibility(View.VISIBLE);
+				}
+				else {
+					holder.ivImage.setVisibility(View.GONE);
+				}
+
+				if (isBorrowed) {
+					holder.rlRow.setBackgroundColor(mColorIsBorrowed);
+				}
+				else {
+					holder.rlRow.setBackgroundColor(mColorDefault);
+				}
+
+				holder.rbComic.setVisibility(rating > 0 ? View.VISIBLE : View.GONE);
+				holder.rbComic.setRating(rating);			
+		}
+
 		return convertView;	    
 	}	
 }
