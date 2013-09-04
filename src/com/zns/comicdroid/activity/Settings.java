@@ -77,7 +77,7 @@ implements OnCheckedChangeListener {
 		if (resultCode == RESULT_OK)
 		{
 			final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());			
-			if (requestCode == 101 || requestCode == 201) {
+			if (requestCode == 101 || requestCode == 201 || requestCode == 301) {
 				//Get Account name from result
 				mAccount = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);							
 				//Store account			
@@ -117,6 +117,10 @@ implements OnCheckedChangeListener {
 							//Check checkbox
 							mTbDrivePublish.setChecked(true);
 						}
+						else if (result.fileExists) {
+							Toast.makeText(Settings.this, R.string.error_webfolderexists, Toast.LENGTH_LONG).show();
+							mTbDrivePublish.setChecked(false);
+						}
 						else
 						{
 							Toast.makeText(Settings.this, R.string.error_webfoldercreate, Toast.LENGTH_SHORT).show();
@@ -127,18 +131,19 @@ implements OnCheckedChangeListener {
 			}
 			else if (requestCode == 201 || requestCode == 202)
 			{
-				//Make sure we have access to appdata folder
-				DriveBackupInitTaskArg args = new DriveBackupInitTaskArg();
+				//Make sure we have access to appdata folder				
 				GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(getApplicationContext(), Arrays.asList(Application.DRIVE_SCOPE_BACKUP));
-				credential.setSelectedAccountName(mAccount);				
+				credential.setSelectedAccountName(mAccount);
+				DriveBackupInitTaskArg args = new DriveBackupInitTaskArg();
 				args.credentials = credential;
+				args.appId = pref.getString(Application.PREF_APP_ID, "");
 				new DriveBackupInitTask() {
 					protected void onPostExecute(DriveBackupInitTaskResult result) {
 						if (result.intent != null) {
 							//Not authorized, prompt for authorization
 							startActivityForResult(result.intent, 202);
 						}
-						else if (result.success)
+						else if (result.success && result.backupAllowed)
 						{
 							//Store preferences
 							SharedPreferences.Editor editor = pref.edit();
@@ -150,11 +155,42 @@ implements OnCheckedChangeListener {
 							//Check checkbox
 							mTbDriveBackup.setChecked(true);
 						}
+						else if (!result.backupAllowed)
+						{
+							Toast.makeText(Settings.this, R.string.error_backupdisallowed, Toast.LENGTH_LONG).show();
+							mTbDriveBackup.setChecked(false);
+						}
 						else
 						{
 							Toast.makeText(Settings.this, R.string.error_driveappdataaccess, Toast.LENGTH_SHORT).show();
 							mTbDriveBackup.setChecked(false);
 						}						
+					}
+				}.execute(args);
+			}
+			else if (requestCode == 301 || requestCode == 302) 
+			{
+				//Request access to restore data
+				GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(getApplicationContext(), Arrays.asList(Application.DRIVE_SCOPE_BACKUP));
+				credential.setSelectedAccountName(mAccount);
+				DriveBackupInitTaskArg args = new DriveBackupInitTaskArg();
+				args.credentials = credential;
+				args.appId = null;				
+				new DriveBackupInitTask() {
+					protected void onPostExecute(DriveBackupInitTaskResult result) {
+						if (result.intent != null) {
+							//Not authorized, prompt for authorization
+							startActivityForResult(result.intent, 302);
+						}
+						else if (result.success) {
+							//Start restore
+							Intent intent = new Intent(Settings.this, RestoreFromDriveService.class);
+							startService(intent);							
+						}
+						else
+						{
+							Toast.makeText(Settings.this, R.string.error_driveappdataaccess, Toast.LENGTH_SHORT).show();
+						}
 					}
 				}.execute(args);
 			}
@@ -218,7 +254,6 @@ implements OnCheckedChangeListener {
 
 	public void restoreClick(View view) {
 		//Restore
-		Intent intent = new Intent(Settings.this, RestoreFromDriveService.class);
-		startService(intent);		
+		pickAccount(301);
 	}
 }

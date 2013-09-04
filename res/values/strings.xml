@@ -119,4 +119,6 @@
     <string name="nUploaderrorheading">ComicDroid couldn\'t publish on google drive</string>
     <string name="nUploaderrorsub">Click here to enable publishing again</string>
     <string name="error_driveappdataaccess">Unable to access google drive</string>
+    <string name="error_backupdisallowed">Cannot enable backup on multiple devices</string>
+    <string name="error_webfolderexists">ComicDroid-folder already exists on drive. Maybe another device is publishing, otherwise delete "ComicDroid"-folder from google drive</string>
 </resources>

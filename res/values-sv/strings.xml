@@ -117,4 +117,6 @@
     <string name="nUploaderrorheading">ComicDroid kunde inte publicera till google drive</string>
     <string name="nUploaderrorsub">Klicka här för att aktivera publiceringen igen</string>
     <string name="error_driveappdataaccess">Kunde inte använda google drive</string>
+    <string name="error_backupdisallowed">Du kan bara ha backup påslaget på en mobil/platta</string>
+    <string name="error_webfolderexists">ComicDroid-mappen existerar redan på drive. Kanske publicerar du från en annan mobil/platta, annars radera "ComicDroid"-mappen från google drive</string>
 </resources>

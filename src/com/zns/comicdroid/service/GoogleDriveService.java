@@ -108,8 +108,8 @@ public class GoogleDriveService extends IntentService {
 			int lastBackupRestore = data.readInt();
 			if (lastBackupRestore >= lastModified) {
 				//Data has not been changed since last backup/restore. Stop service and return.
-				stopSelf();
-				return;
+				//stopSelf();
+				//return;
 			}
 		}
 		catch (Exception e) {

@@ -7,6 +7,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -19,6 +20,9 @@ import com.zns.comicdroid.activity.Start;
 import com.zns.comicdroid.activity.WatchedGroups;
 import com.zns.comicdroid.adapter.DrawerMenuAdapter;
 import com.zns.comicdroid.data.DBHelper;
+import com.zns.comicdroid.service.ProgressResult;
+
+import de.greenrobot.event.EventBus;
 
 public class BaseFragmentActivity 
 extends com.actionbarsherlock.app.SherlockFragmentActivity
@@ -27,6 +31,7 @@ implements ListView.OnItemClickListener {
 	private DrawerLayout mDrawer;
 	private ListView mDrawerList;
 	private ActionBarDrawerToggle mDrawerToggle;
+	private ProgressBar mPbService;
 
 	public DBHelper getDBHelper() {
 		return DBHelper.getHelper(this);
@@ -47,6 +52,8 @@ implements ListView.OnItemClickListener {
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);		
 		mDrawer = (DrawerLayout)findViewById(R.id.drawer_layout);
 		mDrawerList = (ListView)findViewById(R.id.drawer_left);
+		mPbService = (ProgressBar)findViewById(R.id.pbService);		
+		
 		String[] titles = new String[] { 
 				getString(R.string.menu_start), 
 				getString(R.string.menu_borrowed),
@@ -80,6 +87,32 @@ implements ListView.OnItemClickListener {
 		}
 	}
 
+	@Override
+	protected void onResume() {
+		super.onResume();
+		EventBus.getDefault().register(this, "onRestoreServiceProgress", ProgressResult.class);		
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		EventBus.getDefault().unregister(this, ProgressResult.class);
+	}
+	
+	public void onRestoreServiceProgressMainThread(ProgressResult progress) {
+		if (mPbService.getVisibility() == View.GONE) {
+			mPbService.setProgress(0);
+			mPbService.setMax(100);			
+			mPbService.setVisibility(View.VISIBLE);
+		}
+		if (progress.value < 100) {
+			mPbService.setProgress(progress.value);
+		}
+		else {
+			mPbService.setVisibility(View.GONE);
+		}
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.

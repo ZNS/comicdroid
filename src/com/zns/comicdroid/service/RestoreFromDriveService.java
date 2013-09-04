@@ -35,8 +35,12 @@ import com.zns.comicdroid.Application;
 import com.zns.comicdroid.data.DBHelper;
 import com.zns.comicdroid.util.ImageHandler;
 
+import de.greenrobot.event.EventBus;
+
 public class RestoreFromDriveService extends IntentService {
 
+	public static final String INTENT_RESTORE_PROGRESS = "com.zns.comicdroid.RESTORE_PROGRESS";
+	
 	public RestoreFromDriveService() {
 		super("ComicDroid restore service");
 	}
@@ -165,6 +169,9 @@ public class RestoreFromDriveService extends IntentService {
 							x.printStackTrace();
 						}
 					}
+					
+					Double part = (((double)i + 1) / (double)rows) * 100.0;
+					EventBus.getDefault().post(new ProgressResult(part.intValue()));
 				}
 
 				//Groups
@@ -188,6 +195,8 @@ public class RestoreFromDriveService extends IntentService {
 				{
 					String ids = Joiner.on(',').join(addedComics);
 					cb = db.getCursor("SELECT _id, Image, ImageUrl FROM tblBooks WHERE _id IN (" + ids  + ") AND ImageUrl <> ''", null);
+					int count = cb.getCount();
+					int i = 0;
 					while (cb.moveToNext()) {
 						String fileName = cb.getString(1);
 						if (fileName.length() > 0) {
@@ -210,6 +219,10 @@ public class RestoreFromDriveService extends IntentService {
 								x.printStackTrace();
 							}
 						}
+						
+						Double part = (((double)i + 1) / (double)count) * 100.0;
+						EventBus.getDefault().post(new ProgressResult(part.intValue()));						
+						i++;
 					}
 				}
 				finally
