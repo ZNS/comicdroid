@@ -103,7 +103,7 @@ public class ComicAdapter extends SimpleCursorAdapter
 			String image = cursor.getString(4);
 			int issue = cursor.getInt(5);
 			boolean isBorrowed = cursor.getInt(6) == 1;
-			boolean isRead = cursor.getInt(7) == 1;
+			//boolean isRead = cursor.getInt(7) == 1;
 			int rating = cursor.getInt(8);
 
 			String strTitle = title + (subTitle.length() > 0 ? " - " + subTitle : "");

@@ -23,7 +23,6 @@ import com.actionbarsherlock.app.ActionBar.Tab;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
-import com.zns.comicdroid.Application;
 import com.zns.comicdroid.BaseFragmentActivity;
 import com.zns.comicdroid.BaseListFragment;
 import com.zns.comicdroid.R;

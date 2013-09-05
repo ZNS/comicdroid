@@ -96,7 +96,7 @@ public class AggregateAdapter extends SimpleCursorAdapter {
 			boolean isFinished = cursor.getInt(9) == 1;
 			boolean isComplete = cursor.getInt(10) == 1;
 			boolean isWatched = cursor.getInt(11) == 1;
-			boolean isRead = cursor.getInt(12) == 1;
+			//boolean isRead = cursor.getInt(12) == 1;
 			int rating = cursor.getInt(13);
 
 			holder.tvTitle.setText(title + (subTitle != null && !subTitle.equals("") ? " - " + subTitle : ""));
