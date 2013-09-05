@@ -6,8 +6,10 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -32,6 +34,8 @@ implements ListView.OnItemClickListener {
 	private ListView mDrawerList;
 	private ActionBarDrawerToggle mDrawerToggle;
 	private ProgressBar mPbService;
+	private TextView mTvProgressService;
+	private LinearLayout mLLProgressService;
 
 	public DBHelper getDBHelper() {
 		return DBHelper.getHelper(this);
@@ -53,6 +57,8 @@ implements ListView.OnItemClickListener {
 		mDrawer = (DrawerLayout)findViewById(R.id.drawer_layout);
 		mDrawerList = (ListView)findViewById(R.id.drawer_left);
 		mPbService = (ProgressBar)findViewById(R.id.pbService);		
+		mTvProgressService = (TextView)findViewById(R.id.tvProgressService);
+		mLLProgressService = (LinearLayout)findViewById(R.id.llProgressService);
 		
 		String[] titles = new String[] { 
 				getString(R.string.menu_start), 
@@ -84,13 +90,14 @@ implements ListView.OnItemClickListener {
 		//First use check
 		if (((Application)getApplication()).isFirstUse) {			
 			mDrawer.openDrawer(mDrawerList);
+			((Application)getApplication()).isFirstUse = false;
 		}
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		EventBus.getDefault().register(this, "onRestoreServiceProgress", ProgressResult.class);		
+		EventBus.getDefault().register(this, "onServiceProgress", ProgressResult.class);
 	}
 	
 	@Override
@@ -99,17 +106,21 @@ implements ListView.OnItemClickListener {
 		EventBus.getDefault().unregister(this, ProgressResult.class);
 	}
 	
-	public void onRestoreServiceProgressMainThread(ProgressResult progress) {
-		if (mPbService.getVisibility() == View.GONE) {
+	public void onServiceProgressMainThread(ProgressResult progress) {
+		if (mPbService == null)
+			return;
+		
+		if (mLLProgressService.getVisibility() == View.GONE) {
 			mPbService.setProgress(0);
 			mPbService.setMax(100);			
-			mPbService.setVisibility(View.VISIBLE);
+			mTvProgressService.setText(progress.desc);
+			mLLProgressService.setVisibility(View.VISIBLE);
 		}
 		if (progress.value < 100) {
 			mPbService.setProgress(progress.value);
 		}
 		else {
-			mPbService.setVisibility(View.GONE);
+			mLLProgressService.setVisibility(View.GONE);
 		}
 	}
 	

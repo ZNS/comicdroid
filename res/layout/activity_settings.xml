@@ -8,7 +8,7 @@
 	    android:orientation="vertical"
 	    android:padding="5dp" >
 
-		<include layout="@layout/service_progress" />        	    	                
+		<include layout="@layout/service_progress" />    	    	                
                 
 		<ScrollView
 		    android:id="@+id/settings_svContent"
@@ -27,7 +27,7 @@
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
 		        android:textAppearance="?android:attr/textAppearanceLarge"
-		        android:text="Inställningar" />
+		        android:text="@string/settings_heading" />
 
 			<View
 		    	android:layout_width="fill_parent"
@@ -113,13 +113,52 @@
 		            android:textAppearance="?android:attr/textAppearanceSmall" />		        		        
 		    </RelativeLayout>
 		    			
+			<View
+		    	android:layout_width="fill_parent"
+		    	android:layout_height="1dp"
+		    	android:layout_marginTop="10dp"
+		    	android:layout_marginBottom="10dp"
+		    	android:background="@android:color/darker_gray"/>
+					    
+			<!-- Backup on Wifi only -->
+		    <RelativeLayout
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content" >
+		
+		        <ToggleButton
+		            android:id="@+id/settings_tbBackupWifi"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:layout_centerVertical="true"
+		            android:layout_alignParentRight="true" />
+		
+		        <TextView
+		            android:id="@+id/settings_tvBackupWifiHeading"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:layout_alignParentLeft="true"
+		            android:layout_toLeftOf="@id/settings_tbBackupWifi"
+		            android:text="@string/settings_backupwifilabel"
+		            android:textAppearance="?android:attr/textAppearanceMedium" />
+		
+		        <TextView
+		            android:id="@+id/settings_tvBackupWifiSub"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:layout_alignParentLeft="true"		            
+		            android:layout_below="@id/settings_tvBackupWifiHeading"
+		            android:layout_toLeftOf="@id/settings_tbBackupWifi"		            
+		            android:text="@string/settings_backupwifisub"
+		            android:textAppearance="?android:attr/textAppearanceSmall" />		        		        
+		    </RelativeLayout>
+		    		    
 		    <!--  ACTIONS  -->
 		    <TextView
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
 		        android:layout_marginTop="10dp"
 		        android:textAppearance="?android:attr/textAppearanceLarge"
-		        android:text="Aktiviteter" />
+		        android:text="@string/settings_actions" />
 		    		    
 			<View
 		    	android:layout_width="fill_parent"
@@ -147,8 +186,9 @@
 	            android:id="@+id/settings_btnPublish"
 	            android:layout_width="fill_parent"
 	            android:layout_height="30dp"
-			    style="@style/ButtonText"		        
+			    style="@style/ButtonText"
 		        android:background="@drawable/button"
+			    android:textSize="13sp"		        
 		        android:text="@string/settings_btnPublish"
 		        android:onClick="publishToDriveClick" />
 		        		    			
@@ -178,6 +218,7 @@
 	            android:layout_height="30dp"
 			    style="@style/ButtonText"		        
 		        android:background="@drawable/button"
+			    android:textSize="13sp"		        
 		        android:text="@string/settings_btnRead"
 		        android:onClick="setReadClick" />
 	        	        
@@ -207,9 +248,17 @@
 	            android:layout_height="30dp"
 			    style="@style/ButtonText"		        
 		        android:background="@drawable/button"
+			    android:textSize="13sp"		        
 		        android:text="@string/settings_btnGroupCount"
 		        android:onClick="updateGroupCountClick" />
 	        	        
+			<View
+		    	android:layout_width="fill_parent"
+		    	android:layout_height="1dp"
+		    	android:layout_marginTop="10dp"
+		    	android:layout_marginBottom="10dp"
+		    	android:background="@android:color/darker_gray"/>
+				        
 			<!-- Restore -->
 			<TextView
 	            android:layout_width="wrap_content"
@@ -227,7 +276,8 @@
 	            android:id="@+id/settings_btnRestore"
 	            android:layout_width="fill_parent"
 	            android:layout_height="30dp"
-			    style="@style/ButtonText"		        
+			    style="@style/ButtonText"
+			    android:textSize="13sp"		        
 		        android:background="@drawable/button"
 		        android:text="@string/settings_btnRestore"
 		        android:onClick="restoreClick" />

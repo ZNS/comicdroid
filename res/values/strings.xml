@@ -78,14 +78,19 @@
     <string name="borrow_added">Comic has been marked as on loan</string>
     <string name="dialog_group_create">Save collection</string>
     <string name="borrowed_empty">Nothing is on loan. Get some reading done..</string>
+    <string name="settings_heading">Settings</string>
+    <string name="settings_actions">Actions</string>
     <string name="settings_drivelabel">Publish on drive</string>
     <string name="settings_drivesub">Make your archive public by publishing an HTML-page on your google drive account.</string>
     <string name="settings_publishlabel">Publish now</string>
     <string name="settings_publishsub">If google drive isn\'t up to date you can publish now. You need to have publishing enabled above.</string>
+    <string name="settings_backupwifilabel">Wifi only</string>
+    <string name="settings_backupwifisub">Only perform backups when connected to wifi</string>
     <string name="settings_btnPublish">Publish now</string>
     <string name="settings_readlabel">Mark as read</string>
     <string name="settings_readsub">Press the button below to mark all comics as read.</string>
     <string name="settings_btnRead">Mark all as read</string>    
+    <string name="settings_readconfirm">Do you really want to mark all comics as read?</string>
     <string name="settings_groupcountlabel">Update collections</string>
     <string name="settings_groupcountsub">If the number of comics for collections are incorrect you can fix it by pressing the button below.</string>
     <string name="settings_btnGroupCount">Update collection count</string>        
@@ -121,4 +126,7 @@
     <string name="error_driveappdataaccess">Unable to access google drive</string>
     <string name="error_backupdisallowed">Cannot enable backup on multiple devices</string>
     <string name="error_webfolderexists">ComicDroid-folder already exists on drive. Maybe another device is publishing, otherwise delete "ComicDroid"-folder from google drive</string>
+    <string name="progress_restorecomics">Restoring comics</string>
+    <string name="progress_restoreimages">Restoring images</string>
+    <string name="progress_init">Starting restore</string>
 </resources>

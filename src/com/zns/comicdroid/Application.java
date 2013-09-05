@@ -15,6 +15,8 @@ public class Application extends android.app.Application {
 	public final static String PREF_DRIVE_BACKUP = "DRIVE_BACKUP";
 	public final static String PREF_FIRST_TIME_USE = "PREF_FIRST_TIME_USE";
 	public final static String PREF_APP_ID = "PREF_APP_ID";
+	public final static String PREF_BACKUP_SUCCESS = "PREF_BACKUP_SUCCESS";
+	public final static String PREF_BACKUP_WIFIONLY = "PREF_BACKUP_WIFIONLY";
 	public final static String DRIVE_SCOPE_PUBLISH = DriveScopes.DRIVE_FILE;
 	public final static String DRIVE_SCOPE_BACKUP = DriveScopes.DRIVE_APPDATA;
 	public final static String DRIVE_WEBFOLDER_NAME = "ComicDroid";

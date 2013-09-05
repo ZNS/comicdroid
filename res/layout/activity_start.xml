@@ -2,12 +2,13 @@
  android:id="@+id/drawer_layout"
  android:layout_width="match_parent"
  android:layout_height="match_parent">
-	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	    xmlns:tools="http://schemas.android.com/tools"
+	<LinearLayout
 	    android:id="@+id/start_fragmentcontainer"
 	    android:layout_width="match_parent"
 	    android:layout_height="match_parent"
 	    android:orientation="vertical" >
+	    
+	    <include layout="@layout/service_progress" />
 	    
 	    <TextView 
 	        android:id="@+id/start_tvEmpty"

@@ -2,11 +2,13 @@
  android:id="@+id/drawer_layout"
  android:layout_width="match_parent"
  android:layout_height="match_parent">
-	<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	    xmlns:tools="http://schemas.android.com/tools"
+	<LinearLayout
 	    android:layout_width="match_parent"
-	    android:layout_height="match_parent" 
-	    tools:context=".Edit">
+	    android:layout_height="match_parent"
+	    android:orientation="vertical"
+	    android:padding="5dp" >
+		
+		<include layout="@layout/service_progress" />
 	
 	    <ScrollView
 	        android:layout_width="match_parent"
@@ -294,7 +296,7 @@
 	        </RelativeLayout>
 	    </SlidingDrawer>
 	    		
-	</FrameLayout>
+	</LinearLayout>
 	
 	<include layout="@layout/navigation_drawer_left" />
 </android.support.v4.widget.DrawerLayout>

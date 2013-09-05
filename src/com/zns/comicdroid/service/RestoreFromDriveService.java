@@ -32,14 +32,13 @@ import com.google.api.services.drive.model.ChildList;
 import com.google.api.services.drive.model.ChildReference;
 import com.google.common.base.Joiner;
 import com.zns.comicdroid.Application;
+import com.zns.comicdroid.R;
 import com.zns.comicdroid.data.DBHelper;
 import com.zns.comicdroid.util.ImageHandler;
 
 import de.greenrobot.event.EventBus;
 
 public class RestoreFromDriveService extends IntentService {
-
-	public static final String INTENT_RESTORE_PROGRESS = "com.zns.comicdroid.RESTORE_PROGRESS";
 	
 	public RestoreFromDriveService() {
 		super("ComicDroid restore service");
@@ -47,7 +46,7 @@ public class RestoreFromDriveService extends IntentService {
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
-
+		
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 		String account = prefs.getString(Application.PREF_DRIVE_ACCOUNT, null);
 		String appId = prefs.getString(Application.PREF_APP_ID, "");
@@ -171,7 +170,7 @@ public class RestoreFromDriveService extends IntentService {
 					}
 					
 					Double part = (((double)i + 1) / (double)rows) * 100.0;
-					EventBus.getDefault().post(new ProgressResult(part.intValue()));
+					EventBus.getDefault().post(new ProgressResult(part.intValue(), getString(R.string.progress_restorecomics)));
 				}
 
 				//Groups
@@ -201,8 +200,12 @@ public class RestoreFromDriveService extends IntentService {
 						String fileName = cb.getString(1);
 						if (fileName.length() > 0) {
 							File file = new File(imagePath.concat(cb.getString(1)));
-							if (file.exists())
+							if (file.exists()) {
+								Double part = (((double)i + 1) / (double)count) * 100.0;
+								EventBus.getDefault().post(new ProgressResult(part.intValue(), getString(R.string.progress_restoreimages)));						
+								i++;
 								continue;
+							}
 						}
 						String url = cb.getString(2);
 						if (url.length() > 0) {
@@ -221,7 +224,7 @@ public class RestoreFromDriveService extends IntentService {
 						}
 						
 						Double part = (((double)i + 1) / (double)count) * 100.0;
-						EventBus.getDefault().post(new ProgressResult(part.intValue()));						
+						EventBus.getDefault().post(new ProgressResult(part.intValue(), getString(R.string.progress_restoreimages)));						
 						i++;
 					}
 				}
@@ -231,7 +234,7 @@ public class RestoreFromDriveService extends IntentService {
 				}
 
 				//Fix group images
-				db.execSQL("UPDATE tblGroups SET Image = (SELECT Image FROM tblBooks WHERE GroupId = tblGroups._id AND Issue = 1 LIMIT 1)");
+				db.execSQL("UPDATE tblGroups SET Image = (SELECT Image FROM tblBooks WHERE GroupId = tblGroups._id AND Issue = 1 LIMIT 1), ImageUrl = (SELECT ImageUrl FROM tblBooks WHERE GroupId = tblGroups._id AND Issue = 1 LIMIT 1)");
 			}
 			catch (Exception e) {				
 			}

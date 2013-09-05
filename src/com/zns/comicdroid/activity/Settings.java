@@ -24,11 +24,14 @@ import com.zns.comicdroid.Application;
 import com.zns.comicdroid.BaseFragmentActivity;
 import com.zns.comicdroid.R;
 import com.zns.comicdroid.service.GoogleDriveService;
+import com.zns.comicdroid.service.ProgressResult;
 import com.zns.comicdroid.service.RestoreFromDriveService;
 import com.zns.comicdroid.task.DriveBackupInitTask;
 import com.zns.comicdroid.task.DriveBackupInitTask.DriveBackupInitTaskArg;
 import com.zns.comicdroid.task.DriveWebFolderTask;
 import com.zns.comicdroid.task.DriveWebFolderTask.DriveWebFolderTaskArg;
+
+import de.greenrobot.event.EventBus;
 
 public class Settings extends BaseFragmentActivity
 implements OnCheckedChangeListener {
@@ -36,8 +39,10 @@ implements OnCheckedChangeListener {
 	public final static String INTENT_STOP_UPLOAD = "com.zns.comicdroid.SETTINGS_STOP_UPLOAD";
 	private ToggleButton mTbDrivePublish;
 	private ToggleButton mTbDriveBackup;
+	private ToggleButton mTbBackupWifi;
 	private TextView mTvLink;
 	private String mAccount;
+	private SharedPreferences mPrefs;
 
 	private void pickAccount(int code) {
 		Intent intent = AccountPicker.newChooseAccountIntent(null, null, new String[]{"com.google"},
@@ -50,17 +55,20 @@ implements OnCheckedChangeListener {
 		setContentView(R.layout.activity_settings);
 		super.onCreate(savedInstanceState);	
 
-		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 		mTbDrivePublish = (ToggleButton)findViewById(R.id.settings_tbDropbox);		
-		mTbDrivePublish.setChecked(pref.getBoolean(Application.PREF_DRIVE_PUBLISH, false));
+		mTbDrivePublish.setChecked(mPrefs.getBoolean(Application.PREF_DRIVE_PUBLISH, false));
 		mTbDrivePublish.setOnCheckedChangeListener(this);
 		mTbDriveBackup = (ToggleButton)findViewById(R.id.settings_tbDriveBackup);
-		mTbDriveBackup.setChecked(pref.getBoolean(Application.PREF_DRIVE_BACKUP, false));
+		mTbDriveBackup.setChecked(mPrefs.getBoolean(Application.PREF_DRIVE_BACKUP, false));
 		mTbDriveBackup.setOnCheckedChangeListener(this);
-
+		mTbBackupWifi = (ToggleButton)findViewById(R.id.settings_tbBackupWifi);
+		mTbBackupWifi.setChecked(mPrefs.getBoolean(Application.PREF_BACKUP_WIFIONLY, false));
+		mTbBackupWifi.setOnCheckedChangeListener(this);
+		
 		mTvLink = (TextView)findViewById(R.id.settings_tvLink);
-		if (pref.getString(Application.PREF_DRIVE_WEBFOLDERID, null) != null) {
-			mTvLink.setText(Html.fromHtml("<a href=\"https://googledrive.com/host/" + pref.getString(Application.PREF_DRIVE_WEBFOLDERID, "") + "/\">" + getResources().getString(R.string.settings_linktext) + "</a>"));
+		if (mPrefs.getString(Application.PREF_DRIVE_WEBFOLDERID, null) != null) {
+			mTvLink.setText(Html.fromHtml("<a href=\"https://googledrive.com/host/" + mPrefs.getString(Application.PREF_DRIVE_WEBFOLDERID, "") + "/\">" + getResources().getString(R.string.settings_linktext) + "</a>"));
 			mTvLink.setMovementMethod(LinkMovementMethod.getInstance());
 		}
 
@@ -76,12 +84,11 @@ implements OnCheckedChangeListener {
 	protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
 		if (resultCode == RESULT_OK)
 		{
-			final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());			
 			if (requestCode == 101 || requestCode == 201 || requestCode == 301) {
 				//Get Account name from result
 				mAccount = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);							
 				//Store account			
-				SharedPreferences.Editor editor = pref.edit();
+				SharedPreferences.Editor editor = mPrefs.edit();
 				editor.putString(Application.PREF_DRIVE_ACCOUNT, mAccount);
 				editor.commit();			
 			}	
@@ -93,7 +100,7 @@ implements OnCheckedChangeListener {
 				GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(getApplicationContext(), Arrays.asList(Application.DRIVE_SCOPE_PUBLISH));
 				credential.setSelectedAccountName(mAccount);				
 				args.credentials = credential;
-				args.webFolderId = pref.getString(Application.PREF_DRIVE_WEBFOLDERID, null);
+				args.webFolderId = mPrefs.getString(Application.PREF_DRIVE_WEBFOLDERID, null);
 				new DriveWebFolderTask() {
 					protected void onPostExecute(DriveWebFolderTaskResult result) {
 						if (result.intent != null) {
@@ -103,7 +110,7 @@ implements OnCheckedChangeListener {
 						else if (result.success && result.fileId != null)
 						{
 							//Store url
-							SharedPreferences.Editor editor = pref.edit();
+							SharedPreferences.Editor editor = mPrefs.edit();
 							editor.putString(Application.PREF_DRIVE_WEBFOLDERID, result.fileId);
 							//Google drive authorized, store status							
 							editor.putBoolean(Application.PREF_DRIVE_PUBLISH, true);							
@@ -136,7 +143,7 @@ implements OnCheckedChangeListener {
 				credential.setSelectedAccountName(mAccount);
 				DriveBackupInitTaskArg args = new DriveBackupInitTaskArg();
 				args.credentials = credential;
-				args.appId = pref.getString(Application.PREF_APP_ID, "");
+				args.appId = mPrefs.getString(Application.PREF_APP_ID, "");
 				new DriveBackupInitTask() {
 					protected void onPostExecute(DriveBackupInitTaskResult result) {
 						if (result.intent != null) {
@@ -146,7 +153,7 @@ implements OnCheckedChangeListener {
 						else if (result.success && result.backupAllowed)
 						{
 							//Store preferences
-							SharedPreferences.Editor editor = pref.edit();
+							SharedPreferences.Editor editor = mPrefs.edit();
 							editor.putBoolean(Application.PREF_DRIVE_BACKUP, true);
 							editor.commit();
 							//Backup
@@ -206,8 +213,7 @@ implements OnCheckedChangeListener {
 			}
 			else
 			{
-				SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-				SharedPreferences.Editor editor = pref.edit();
+				SharedPreferences.Editor editor = mPrefs.edit();
 				editor.putBoolean(Application.PREF_DRIVE_PUBLISH, false);
 				editor.commit();
 			}
@@ -219,11 +225,15 @@ implements OnCheckedChangeListener {
 			}
 			else
 			{
-				SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-				SharedPreferences.Editor editor = pref.edit();
+				SharedPreferences.Editor editor = mPrefs.edit();
 				editor.putBoolean(Application.PREF_DRIVE_BACKUP, false);
 				editor.commit();				
 			}
+		}
+		else if (buttonView == mTbBackupWifi) {
+			SharedPreferences.Editor editor = mPrefs.edit();
+			editor.putBoolean(Application.PREF_BACKUP_WIFIONLY, isChecked);
+			editor.commit();		
 		}
 	}
 
@@ -239,6 +249,7 @@ implements OnCheckedChangeListener {
 
 	public void publishToDriveClick(View view) {
 		Intent intent = new Intent(getApplicationContext(), GoogleDriveService.class);
+		intent.putExtra(GoogleDriveService.INTENT_PUBLISH_ONLY, true);
 		startService(intent);
 		showNotificationDialog(R.string.settings_publish_notification);
 	}
@@ -249,10 +260,22 @@ implements OnCheckedChangeListener {
 	}
 
 	public void setReadClick(View view) {
-		getDBHelper().setAllComicsRead();
+		new AlertDialog.Builder(this)
+		.setMessage(getString(R.string.settings_readconfirm))
+		.setPositiveButton(R.string.common_yes, new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				getDBHelper().setAllComicsRead();
+			}
+		})
+		.setNegativeButton(R.string.common_cancel, new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				dialog.cancel();
+			}
+		}).show();		
 	}
 
 	public void restoreClick(View view) {
+		EventBus.getDefault().post(new ProgressResult(1, getString(R.string.progress_init)));
 		//Restore
 		pickAccount(301);
 	}

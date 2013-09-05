@@ -28,6 +28,10 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
+import android.net.wifi.WifiManager.WifiLock;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
@@ -54,8 +58,10 @@ import com.zns.comicdroid.data.DBHelper;
 
 public class GoogleDriveService extends IntentService {
 
+	public static final String INTENT_PUBLISH_ONLY = "com.zns.comicdroid.PUBLISH_ONLY";
 	public static final String BACKUP_META_FILENAME = "backup.meta";
 	private DBHelper mDb;
+	private WifiLock mWifiLock = null;
 	
 	private NotificationManager notificationManager;
 
@@ -96,38 +102,62 @@ public class GoogleDriveService extends IntentService {
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
+		boolean publishOnly = intent.getBooleanExtra(INTENT_PUBLISH_ONLY, false);
 
-		//Has data changed?
-		mDb = DBHelper.getHelper(getApplicationContext());
-		int lastModified = mDb.GetLastModifiedDate();
-		File metaFile = new File(getFilesDir(), BACKUP_META_FILENAME);
-		DataInputStream data = null;
-		try
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		boolean lastBackupSuccess = prefs.getBoolean(Application.PREF_BACKUP_SUCCESS, false);
+	
+		//Wifi?
+		if (prefs.getBoolean(Application.PREF_BACKUP_WIFIONLY, false))
 		{
-			data = new DataInputStream(new FileInputStream(metaFile));
-			int lastBackupRestore = data.readInt();
-			if (lastBackupRestore >= lastModified) {
-				//Data has not been changed since last backup/restore. Stop service and return.
-				//stopSelf();
-				//return;
+			//We only allow backup on wifi connection. Make sure we are connected and if so lock the wifi connection
+			ConnectivityManager connManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+			NetworkInfo wifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+			if (wifi.isConnected()) {
+		        WifiManager wm = (WifiManager) getSystemService(WIFI_SERVICE);
+		        mWifiLock = wm.createWifiLock(WifiManager.WIFI_MODE_FULL , "com.zns.comicdroid.wifilock");
+		        mWifiLock.acquire();				
+			}
+			else {
+				stopAndClean();
+				return;
 			}
 		}
-		catch (Exception e) {
-			//Unable to read meta data, continue with backup
-			e.printStackTrace();
-		}
-		finally {
-			try {
-				if (data != null)
-					data.close();
-			} 
-			catch (IOException e) {
+
+		//If publishOnly is true then we do a publish no matter if it's needed or not
+		if (!publishOnly)
+		{		
+			//Has data changed and was last backup successful?
+			mDb = DBHelper.getHelper(getApplicationContext());
+			int lastModified = mDb.GetLastModifiedDate();
+			File metaFile = new File(getFilesDir(), BACKUP_META_FILENAME);
+			DataInputStream data = null;
+			try
+			{
+				data = new DataInputStream(new FileInputStream(metaFile));
+				int lastBackupRestore = data.readInt();
+				if (lastBackupRestore >= lastModified && lastBackupSuccess) {
+					//Data has not been changed since last backup/restore, and last backup was successful. Stop service and return.
+					stopAndClean();
+					return;
+				}
+			}
+			catch (Exception e) {
+				//Unable to read meta data, continue with backup
 				e.printStackTrace();
+			}
+			finally {
+				try {
+					if (data != null)
+						data.close();
+				} 
+				catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		
 		//Google drive check		
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 		boolean publishEnabled = prefs.getBoolean(Application.PREF_DRIVE_PUBLISH, false);
 		boolean backupEnabled = prefs.getBoolean(Application.PREF_DRIVE_BACKUP, false);
 		String account = prefs.getString(Application.PREF_DRIVE_ACCOUNT, null);
@@ -135,7 +165,7 @@ public class GoogleDriveService extends IntentService {
 		String appId = prefs.getString(Application.PREF_APP_ID, "");
 
 		//Backup
-		if (backupEnabled) {
+		if (backupEnabled && !publishOnly) {
 			if (account != null) {
 				Backup(account, appId);
 			}
@@ -146,7 +176,7 @@ public class GoogleDriveService extends IntentService {
 		}
 
 		//Publish  
-		if (publishEnabled) {
+		if (publishEnabled || publishOnly) {
 			if (account != null && webFolderId != null) {
 				PublishComics(account, webFolderId);
 			}
@@ -156,7 +186,7 @@ public class GoogleDriveService extends IntentService {
 			}
 		}
 		
-		stopSelf();
+		stopAndClean();
 	}
 
 	private synchronized void Backup(String account, String appId)
@@ -197,7 +227,6 @@ public class GoogleDriveService extends IntentService {
 				response.disconnect();
 				
 				if (!backupAppId.equals(appId)) {
-					stopSelf();
 					return;
 				}
 			}
@@ -251,66 +280,74 @@ public class GoogleDriveService extends IntentService {
 
 		//Write data
 		DataOutputStream writer = null;		
-		try
+		try //Destroy writer
 		{					
 			Cursor cb = null;			
 			writer = new DataOutputStream(new FileOutputStream(fileSql));
 
-			try
+			try //Destroy cursor
 			{
-				cb = mDb.getCursor("SELECT _id, GroupId, Title, Subtitle, Publisher, Author, Image, ImageUrl, PublishDate, AddedDate, PageCount, IsBorrowed, Borrower, BorrowedDate, ISBN, Issue, Issues, IsRead, Rating" +
+				cb = mDb.getCursor("SELECT _id, GroupId, Title, Subtitle, Publisher, Author, Illustrator, Image, ImageUrl, PublishDate, AddedDate, PageCount, IsBorrowed, Borrower, BorrowedDate, ISBN, Issue, Issues, IsRead, Rating" +
 						" FROM tblBooks ORDER BY _id", null);
 				int count = cb.getCount();
 				writer.writeInt(count);					
 				while (cb.moveToNext())
 				{
-					writer.writeInt(cb.getInt(0));
-					writer.writeUTF(String.format("INSERT OR REPLACE INTO tblBooks(_id, GroupId, Title, Subtitle, Publisher, Author, Image, ImageUrl, PublishDate, AddedDate, PageCount, IsBorrowed, Borrower, BorrowedDate, ISBN, Issue, Issues, IsRead, Rating)" +
-							" VALUES(%d ,%d, %s, %s, %s, %s, %s, %s, %d, %d, %d, %d, %s, %d, %s, %d, %s, %d, %d);", 
-							cb.getInt(0),
-							cb.getInt(1),
-							dbString(cb.getString(2)),
-							dbString(cb.getString(3)),
-							dbString(cb.getString(4)),
-							dbString(cb.getString(5)),
-							dbString(cb.getString(6)),
-							dbString(cb.getString(7)),
-							cb.getInt(8),
-							cb.getInt(9),
-							cb.getInt(10),
-							cb.getInt(11),
-							dbString(cb.getString(12)),
-							cb.getInt(13),
-							dbString(cb.getString(14)),
-							cb.getInt(15),
-							dbString(cb.getString(16)),
-							cb.getInt(17),
-							cb.getInt(18)));
-					//Image
-					String fileName = cb.getString(6);
-					String imgUrl = cb.getString(7);
-					if ((imgUrl == null || imgUrl.length() == 0) && (fileName != null && fileName.length() > 0))
-					{							
-						Bitmap bmp = BitmapFactory.decodeFile(imagePath.concat(fileName));
-						if (bmp != null)
-						{
-							ByteArrayOutputStream stream = new ByteArrayOutputStream();
-							bmp.compress(CompressFormat.JPEG, 100, stream);
-							byte[] data = stream.toByteArray();
-							//Write image size
-							writer.writeInt(data.length);
-							//Write file name
-							writer.writeUTF(fileName);
-							//Write image data							
-							writer.write(data);
+					try //This is just to make sure one failed insert doesn't abort everything
+					{
+						writer.writeInt(cb.getInt(0));
+						writer.writeUTF(String.format("INSERT OR REPLACE INTO tblBooks(_id, GroupId, Title, Subtitle, Publisher, Author, Illustrator, Image, ImageUrl, PublishDate, AddedDate, PageCount, IsBorrowed, Borrower, BorrowedDate, ISBN, Issue, Issues, IsRead, Rating)" +
+								" VALUES(%d ,%d, %s, %s, %s, %s, %s, %s, %s, %d, %d, %d, %d, %s, %d, %s, %d, %s, %d, %d);", 
+								cb.getInt(0),
+								cb.getInt(1),
+								dbString(cb.getString(2)),
+								dbString(cb.getString(3)),
+								dbString(cb.getString(4)),
+								dbString(cb.getString(5)),
+								dbString(cb.getString(6)),
+								dbString(cb.getString(7)),
+								dbString(cb.getString(8)),
+								cb.getInt(9),
+								cb.getInt(10),
+								cb.getInt(11),
+								cb.getInt(12),
+								dbString(cb.getString(13)),
+								cb.getInt(14),
+								dbString(cb.getString(15)),
+								cb.getInt(16),
+								dbString(cb.getString(17)),
+								cb.getInt(18),
+								cb.getInt(19)));
+						//Image
+						String fileName = cb.getString(6);
+						String imgUrl = cb.getString(7);
+						if ((imgUrl == null || imgUrl.length() == 0) && (fileName != null && fileName.length() > 0))
+						{							
+							Bitmap bmp = BitmapFactory.decodeFile(imagePath.concat(fileName));
+							if (bmp != null)
+							{
+								ByteArrayOutputStream stream = new ByteArrayOutputStream();
+								bmp.compress(CompressFormat.JPEG, 100, stream);
+								byte[] data = stream.toByteArray();
+								//Write image size
+								writer.writeInt(data.length);
+								//Write file name
+								writer.writeUTF(fileName);
+								//Write image data							
+								writer.write(data);
+							}
+							else {
+								writer.writeInt(0);
+							}
 						}
-						else {
+						else
+						{
 							writer.writeInt(0);
 						}
 					}
-					else
-					{
-						writer.writeInt(0);
+					catch (Exception e) {
+						sqlSuccess = false; //At least one comic failed
+						e.printStackTrace();
 					}
 				}
 			}
@@ -340,7 +377,7 @@ public class GoogleDriveService extends IntentService {
 				cb.close();
 			}			
 		}
-		catch (IOException e) {
+		catch (Exception e) {
 			sqlSuccess = false;
 			e.printStackTrace();
 		}
@@ -355,6 +392,7 @@ public class GoogleDriveService extends IntentService {
 
 		//Upload to google drive
 		int timeStamp = (int)(System.currentTimeMillis() / 1000L);		
+		boolean uploadSuccess = true;
 		try 
 		{						
 			com.google.api.services.drive.model.File prefsDriveFile = null;
@@ -396,7 +434,7 @@ public class GoogleDriveService extends IntentService {
 					service.files().insert(fPrefs, contentPrefs).execute();
 				}
 				else {
-					service.files().update(prefsDriveFile.getId(), prefsDriveFile, contentPrefs);
+					service.files().update(prefsDriveFile.getId(), prefsDriveFile, contentPrefs).execute();
 				}
 			}
 
@@ -412,11 +450,12 @@ public class GoogleDriveService extends IntentService {
 					service.files().insert(fData, contentData).execute();
 				}
 				else {
-					service.files().update(dataDriveFile.getId(), dataDriveFile, contentData);
+					service.files().update(dataDriveFile.getId(), dataDriveFile, contentData).execute();
 				}				
 			}
 		}
 		catch (Exception e) {
+			uploadSuccess = false;
 			e.printStackTrace();
 		}
 		
@@ -428,7 +467,9 @@ public class GoogleDriveService extends IntentService {
 			stream = new DataOutputStream(new FileOutputStream(metaFile));
 			stream.writeInt(timeStamp);
 		}
-		catch (Exception e) {}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 		finally {
 			try {
 				if (stream != null)
@@ -438,6 +479,11 @@ public class GoogleDriveService extends IntentService {
 				e.printStackTrace();
 			}
 		}
+		
+		//Success?
+		Editor edit = prefs.edit();
+		edit.putBoolean(Application.PREF_BACKUP_SUCCESS, (prefSuccess && sqlSuccess && uploadSuccess));
+		edit.commit();
 		
 		//Clean up
 		try
@@ -498,15 +544,17 @@ public class GoogleDriveService extends IntentService {
 
 		BufferedReader reader = null;
 		BufferedWriter writer = null;
-		Cursor cursor = mDb.getCursor("SELECT _id, Title, Subtitle, Author, ImageUrl, 1 AS ItemType, 0 AS BookCount, IsBorrowed, PublishDate " +
-				"FROM tblBooks WHERE GroupId = 0 OR ifnull(GroupId, '') = '' " +
-				"UNION " +
-				"SELECT _id, Name AS Title, '' AS Subtitle, '' AS Author, ImageUrl, 2 AS ItemType, BookCount, 0 AS IsBorrowed, 0 AS PublishDate " +
-				"FROM tblGroups " +
-				"ORDER BY Title", null);
-
+		Cursor cursor = null;
+		
 		try 
 		{			
+			cursor = mDb.getCursor("SELECT _id, Title, Subtitle, Author, ImageUrl, 1 AS ItemType, 0 AS BookCount, IsBorrowed, PublishDate " +
+					"FROM tblBooks WHERE GroupId = 0 OR ifnull(GroupId, '') = '' " +
+					"UNION " +
+					"SELECT _id, Name AS Title, '' AS Subtitle, '' AS Author, ImageUrl, 2 AS ItemType, BookCount, 0 AS IsBorrowed, 0 AS PublishDate " +
+					"FROM tblGroups " +
+					"ORDER BY Title", null);
+			
 			String line;
 
 			//Read template
@@ -572,7 +620,8 @@ public class GoogleDriveService extends IntentService {
 				}
 			}
 		}
-		catch (IOException e) {
+		catch (Exception e) {
+			//Gotta catch'em all!
 			return;
 		}
 		finally {
@@ -619,6 +668,21 @@ public class GoogleDriveService extends IntentService {
 		}
 	}
 
+	@Override
+	public void onDestroy() {
+		//Just to make sure we release the wifi lock
+		if (mWifiLock != null)
+			mWifiLock.release();		
+		super.onDestroy();
+	}
+	
+	private void stopAndClean()
+	{
+		if (mWifiLock != null)
+			mWifiLock.release();
+		stopSelf();
+	}
+	
 	private String nullToEmpty(String val)
 	{
 		if (val == null)

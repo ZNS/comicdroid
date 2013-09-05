@@ -74,18 +74,23 @@
     <string name="comic_issues">Samlar följande</string>
     <string name="borrow_etBorrower">Utlånad till..</string>
     <string name="borrow_btnClear">Rensa</string>
-    <string name="borrow_notadded">Efterfrågad bok är inte tillagd</string>
+    <string name="borrow_notadded">Hittade inte efterfrågad bok i arkivet</string>
     <string name="borrow_added">Serien markerad som utlånad</string>
     <string name="dialog_group_create">Spara samling</string>
     <string name="borrowed_empty">Ingenting är utlånat! Passa på att läsa lite..</string>
+    <string name="settings_heading">Inställningar</string>
+    <string name="settings_actions">Aktiviteter</string>
     <string name="settings_drivelabel">Publicera på drive</string>
     <string name="settings_drivesub">Gör ditt arkiv publikt på nätet genom att publicera en HTML-sida på ditt google drive-konto.</string>
     <string name="settings_publishlabel">Publicera nu</string>
     <string name="settings_publishsub">Om google drive inte är uppdaterat så kan du publicera nu genom att trycka på knappen. Observera att publicering måste vara påslaget ovan.</string>
+	<string name="settings_backupwifilabel">Endast wifi</string>
+    <string name="settings_backupwifisub">Gör endast backup om ansluten via wifi</string>
     <string name="settings_btnPublish">Publicera nu</string>
     <string name="settings_readlabel">Markera som läst</string>
     <string name="settings_readsub">Tryck på knappen nedan för att markera alla serier som lästa.</string>
     <string name="settings_btnRead">Markera allt som läst</string>    
+    <string name="settings_readconfirm">Vill du verkligen markera alla serier som lästa?</string>
     <string name="settings_groupcountlabel">Uppdatera samlingar</string>
     <string name="settings_groupcountsub">Om antalet böcker som rapporteras för samlingar är felaktigt kan du rätta till det genom att trycka på knappen nedan.</string>
     <string name="settings_btnGroupCount">Uppdatera samlingsräknare</string>        
@@ -119,4 +124,7 @@
     <string name="error_driveappdataaccess">Kunde inte använda google drive</string>
     <string name="error_backupdisallowed">Du kan bara ha backup påslaget på en mobil/platta</string>
     <string name="error_webfolderexists">ComicDroid-mappen existerar redan på drive. Kanske publicerar du från en annan mobil/platta, annars radera "ComicDroid"-mappen från google drive</string>
+    <string name="progress_restorecomics">Återställer serier</string>
+    <string name="progress_restoreimages">Återställer bilder</string>
+    <string name="progress_init">Startar återställning</string>
 </resources>
