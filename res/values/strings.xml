@@ -9,14 +9,14 @@
     <string name="title_activity_comics"></string>
     <string name="title_activity_settings">Settings</string>
     <string name="title_activity_watched_groups"></string>
-    <string name="title_activity_borrow">Lend out</string>
+    <string name="title_activity_borrow">Lend Out</string>
     <string name="title_activity_borrowed">On loan</string>    
     <string name="menu_start">The Archive</string>
     <string name="menu_start_sub">Browse your comics</string>
     <string name="menu_add">Add</string>
     <string name="menu_add_sub">Scan and add new comics</string>
     <string name="menu_add_short">New</string>
-    <string name="menu_borrow">Lend out</string>
+    <string name="menu_borrow">Lend Out</string>
     <string name="menu_borrow_sub">Mark comics as on loan</string>
     <string name="menu_borrowed">On Loan</string>
     <string name="menu_borrowed_sub">See which comics are lent out</string>
@@ -24,7 +24,7 @@
     <string name="menu_settings_sub">Miscellaneous settings for ComicDroid</string>
     <string name="menu_watched">Watched</string>
     <string name="menu_watched_sub">See which collections are being watched</string>
-    <string name="menu_read">To read</string>
+    <string name="menu_read">To Read</string>
     <string name="menu_read_sub">Show all comics marked as not read</string>
     <string name="menu_returncomic">Returned</string>
     <string name="menu_editall">Edit all</string>
@@ -39,6 +39,8 @@
     <string name="common_sort">Sort</string>
     <string name="common_yes">Yes</string>
     <string name="common_no">No</string>
+    <string name="common_name">Name</string>
+    <string name="common_none">None</string>
     <string name="start_tab_aggregates">Comics</string>
     <string name="start_tab_comics">Titles</string>
     <string name="start_tab_authors">Authors</string>
@@ -118,7 +120,7 @@
     <string name="action_settings">Settings</string>
     <string name="watched_empty">You are not watching any collections for now</string>
     <string name="sort_rating">Rating</string>
-    <string name="comics_heading_read">To read</string>
+    <string name="comics_heading_read">To Read</string>
     <string name="watched_heading">Watched collections</string>
     <string name="archive_empty">You haven\'t added any comics yet. Pull in the menu from the left and choose "Add"</string>
     <string name="nUploaderrorheading">ComicDroid couldn\'t publish on google drive</string>

@@ -39,6 +39,8 @@
     <string name="common_sort">Sortera</string>
     <string name="common_yes">Ja</string>
     <string name="common_no">Nej</string>
+    <string name="common_name">Namn</string>
+    <string name="common_none">Ingen</string>
     <string name="start_tab_aggregates">Serier</string>
     <string name="start_tab_comics">Titlar</string>
     <string name="start_tab_authors">Författare</string>

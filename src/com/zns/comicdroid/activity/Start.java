@@ -126,8 +126,6 @@ ActionBar.TabListener {
 	private void handleIntent(Intent intent) {
 		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
 			String query = intent.getStringExtra(SearchManager.QUERY);
-			//if (menuSearch != null)
-			//	menuSearch.collapseActionView();
 			BaseListFragment fragment = getCurrentFragment();
 			if (fragment != null) {
 				fragment.setFilter(query);
@@ -225,8 +223,12 @@ ActionBar.TabListener {
 	//Tab Implementation
 	@Override
 	public void onTabSelected(Tab tab, FragmentTransaction ft) {
-		//Sorting
 		String tag = (String)tab.getTag();
+		
+		//Set current tab
+		mCurrentTab = tag;
+
+		//Sorting
 		if (mMenuSort != null) {
 			if (tag.equals(TAB_TITLES))
 				mMenuSort.setVisible(true);
@@ -234,6 +236,10 @@ ActionBar.TabListener {
 				mMenuSort.setVisible(false);
 		}
 
+		//Set current fragment for pager
+		if (!tag.equals(mCurrentTab))
+			mViewPager.setCurrentItem(tab.getPosition());
+		
 		//Searchview
 		BaseListFragment fragment = getCurrentFragment();
 		if (fragment != null)
@@ -247,12 +253,7 @@ ActionBar.TabListener {
 				mMenuSearch.collapseActionView();
 				mSearchView.setQuery(null, false);				
 			}
-		}
-
-		if (tag.equals(mCurrentTab))
-			return;
-		mViewPager.setCurrentItem(tab.getPosition());
-		mCurrentTab = tag;
+		}		
 	}
 
 	@Override

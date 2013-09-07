@@ -20,7 +20,7 @@ import com.zns.comicdroid.data.DBHelper;
 
 public abstract class BaseListFragment extends BaseFragment 
 implements	LoaderCallbacks<Cursor> {
-
+	
 	public interface OnListLoadedListener {
 		public void onListLoaded();
 	}

@@ -54,6 +54,8 @@ public class AuthorIllustratorDialogFragment extends DialogFragment {
 
 		final LinearLayout parent = new LinearLayout(getActivity());
 		parent.setOrientation(1);
+		final View viewHead = inflater.inflate(R.layout.dialog_author_illustrator_head, null);
+		parent.addView(viewHead);
 		for(String name : names)
 		{
 			final View view = inflater.inflate(R.layout.dialog_author_illustrator, null);
@@ -69,7 +71,7 @@ public class AuthorIllustratorDialogFragment extends DialogFragment {
 			public void onClick(DialogInterface dialog, int which) {
 				String authors = "";
 				String illustrators = "";
-				for (int i = 0; i < parent.getChildCount(); i++)
+				for (int i = 1; i < parent.getChildCount(); i++) //Start at 1 to skip header
 				{
 					View child = parent.getChildAt(i);
 					TextView tvName = (TextView)child.findViewById(R.id.tvName);

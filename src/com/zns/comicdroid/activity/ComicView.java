@@ -154,7 +154,9 @@ public class ComicView extends BaseFragmentActivity {
 		mTvAuthor.setText(comic.getAuthor());
 		mTvIllustrator.setText(comic.getIllustrator());
 		mTvPublisher.setText(comic.getPublisher());
-		mTvPublished.setText(new SimpleDateFormat("yyyy-MM-dd").format(comic.getPublishDate()));
+		if (comic.getPublishDateTimestamp() > 0) {
+			mTvPublished.setText(new SimpleDateFormat("yyyy-MM-dd").format(comic.getPublishDate()));
+		}
 		mTvAdded.setText(new SimpleDateFormat("yyyy-MM-dd").format(comic.getAddedDate()));
 		mTvPageCount.setText(Integer.toString(comic.getPageCount()));
 		mTvIssues.setText(comic.getIssues());

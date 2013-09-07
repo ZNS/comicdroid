@@ -25,7 +25,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.SlidingDrawer;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -39,6 +38,7 @@ import com.zns.comicdroid.data.Comic;
 import com.zns.comicdroid.data.Group;
 import com.zns.comicdroid.dialog.GroupDialogFragment;
 import com.zns.comicdroid.util.ImageHandler;
+import com.zns.comicdroid.widget.AndroidSlidingDrawer;
 
 public class Edit extends BaseFragmentActivity
 implements	OnClickListener, 
@@ -96,7 +96,7 @@ GroupDialogFragment.OnGroupAddDialogListener {
 		mRowAdded = (RelativeLayout)findViewById(R.id.comicEdit_added);
 		mRowPageCount = (RelativeLayout)findViewById(R.id.comicEdit_pageCount);
 		mRowIssues = (RelativeLayout)findViewById(R.id.comicEdit_issues);
-		SlidingDrawer drawer = (SlidingDrawer)findViewById(R.id.comicEdit_drawer);
+		AndroidSlidingDrawer drawer = (AndroidSlidingDrawer)findViewById(R.id.comicEdit_drawer);
 
 		Intent intent = getIntent();
 		int[] comicIds = intent.getIntArrayExtra(INTENT_COMIC_IDS);

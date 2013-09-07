@@ -93,7 +93,7 @@ implements ListView.OnItemClickListener {
 			((Application)getApplication()).isFirstUse = false;
 		}
 	}
-
+	
 	@Override
 	protected void onResume() {
 		super.onResume();

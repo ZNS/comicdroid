@@ -1,7 +1,13 @@
-<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.DrawerLayout
+     xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:comicdroid="http://schemas.android.com/apk/res/com.zns.comicdroid"
  android:id="@+id/drawer_layout"
  android:layout_width="match_parent"
  android:layout_height="match_parent">
+ 	<FrameLayout 
+ 	    android:layout_width="match_parent" 
+ 	    android:layout_height="match_parent" >
+    
 	<LinearLayout
 	    android:layout_width="match_parent"
 	    android:layout_height="match_parent"
@@ -250,53 +256,55 @@
 				</RelativeLayout>			
 			</LinearLayout>
 		</ScrollView>
-	        
-	    <SlidingDrawer 
-	        android:id="@+id/comicEdit_drawer" 
-	        android:content="@+id/comicEdit_drawerContent" 
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content" 
-	        android:orientation="vertical"
-	        android:handle="@+id/comicEdit_handle"
-	        android:layout_gravity="bottom" >
-	
-	        <LinearLayout 
-	            android:id="@id/comicEdit_drawerContent"
-	            android:layout_width="fill_parent"
-	            android:layout_height="fill_parent"
-	            android:orientation="vertical"
-	            android:background="#f0f0f0" 
-	            android:padding="5dp">
-	
-	            <ListView 
-	                android:layout_width="fill_parent"
-	                android:layout_height="wrap_content" 
-	                android:id="@+id/comicEdit_listView"
-	                android:divider="@android:color/transparent" 
-	                android:dividerHeight="5dp" />
-	
-	        </LinearLayout>
-	
-	        <RelativeLayout android:id="@id/comicEdit_handle" 
-	            android:paddingTop="10dp"
-	            android:paddingBottom="10dp" 
-	            android:layout_width="fill_parent" 
-	            android:layout_height="wrap_content" 
-	            android:background="@drawable/slidingdrawer_handle">            
-	
-				<TextView
-				    android:id="@+id/comicEdit_handleText"
-				    android:layout_width="wrap_content"
-				    android:layout_height="wrap_content"
-				    android:layout_centerInParent="true"
-				    android:text="@string/edit_listhandle"
-				    android:textColor="#ffffff" />
-	       
-				<ImageView android:layout_toLeftOf="@id/comicEdit_handleText" android:layout_width="23dp" android:layout_height="23dp" android:src="@drawable/collections"></ImageView>     
-	        </RelativeLayout>
-	    </SlidingDrawer>
-	    		
+	        	    		
 	</LinearLayout>
+	
+    <com.zns.comicdroid.widget.AndroidSlidingDrawer 
+        android:id="@+id/comicEdit_drawer" 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" 
+        android:layout_gravity="bottom"
+        comicdroid:content="@+id/comicEdit_drawerContent" 
+        comicdroid:orientation="1"
+        comicdroid:handle="@+id/comicEdit_handle" >
+
+        <LinearLayout 
+            android:id="@id/comicEdit_drawerContent"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical"
+            android:background="#f0f0f0" 
+            android:padding="5dp">
+
+            <ListView 
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" 
+                android:id="@+id/comicEdit_listView"
+                android:divider="@android:color/transparent" 
+                android:dividerHeight="5dp" />
+
+        </LinearLayout>
+
+        <RelativeLayout android:id="@id/comicEdit_handle" 
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp" 
+            android:layout_width="fill_parent" 
+            android:layout_height="wrap_content" 
+            android:background="@drawable/slidingdrawer_handle">            
+
+			<TextView
+			    android:id="@+id/comicEdit_handleText"
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:layout_centerInParent="true"
+			    android:text="@string/edit_listhandle"
+			    android:textColor="#ffffff" />
+       
+			<ImageView android:layout_toLeftOf="@id/comicEdit_handleText" android:layout_width="23dp" android:layout_height="23dp" android:src="@drawable/collections"></ImageView>     
+        </RelativeLayout>
+    </com.zns.comicdroid.widget.AndroidSlidingDrawer>
+	
+	</FrameLayout>
 	
 	<include layout="@layout/navigation_drawer_left" />
 </android.support.v4.widget.DrawerLayout>

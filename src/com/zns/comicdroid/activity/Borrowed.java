@@ -3,6 +3,7 @@ package com.zns.comicdroid.activity;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.SparseBooleanArray;
 import android.view.View;
@@ -26,6 +27,7 @@ implements OnItemClickListener {
 	private BorrowedAdapter mAdapter;
 	private ListView mLvComics;
 	private ActionMode mMode;
+	private final int mSdk = android.os.Build.VERSION.SDK_INT;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -45,12 +47,19 @@ implements OnItemClickListener {
 		}
 	}
 
+	@SuppressLint("NewApi")
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {		
 		if (parent == mLvComics)
 		{
 			if (((Checkable)view).isChecked()) {
-				view.setBackgroundDrawable(getResources().getDrawable(R.drawable.listitem_selected));
+				if(mSdk < 16) {
+					view.setBackgroundDrawable(getResources().getDrawable(R.drawable.listitem_selected));
+				}
+				else {
+					view.setBackground(getResources().getDrawable(R.drawable.listitem_selected));
+				}
 			}
 			else {
 				view.setBackgroundColor(getResources().getColor(R.color.contentBg));

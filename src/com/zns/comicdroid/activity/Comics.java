@@ -155,8 +155,8 @@ OnCheckedChangeListener {
 			menu.getItem(0).setVisible(false);
 		}
 		if (mViewType == VIEWTYPE_GROUP) {
-			//Show sub menu
-			menu.getItem(1).setVisible(true);
+			//Show edit all
+			menu.findItem(R.id.menu_editall).setVisible(true);
 		}
 		return true;
 	}	
