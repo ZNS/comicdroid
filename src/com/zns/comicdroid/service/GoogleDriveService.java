@@ -35,6 +35,7 @@ import android.net.wifi.WifiManager.WifiLock;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
+import android.util.Base64;
 
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.UserRecoverableAuthException;
@@ -55,6 +56,8 @@ import com.zns.comicdroid.R;
 import com.zns.comicdroid.activity.Settings;
 import com.zns.comicdroid.data.Comic;
 import com.zns.comicdroid.data.DBHelper;
+
+import de.greenrobot.event.EventBus;
 
 public class GoogleDriveService extends IntentService {
 
@@ -124,11 +127,13 @@ public class GoogleDriveService extends IntentService {
 			}
 		}
 
+		//Get database connections
+		mDb = DBHelper.getHelper(getApplicationContext());
+		
 		//If publishOnly is true then we do a publish no matter if it's needed or not
 		if (!publishOnly)
 		{		
 			//Has data changed and was last backup successful?
-			mDb = DBHelper.getHelper(getApplicationContext());
 			int lastModified = mDb.GetLastModifiedDate();
 			File metaFile = new File(getFilesDir(), BACKUP_META_FILENAME);
 			DataInputStream data = null;
@@ -178,7 +183,7 @@ public class GoogleDriveService extends IntentService {
 		//Publish  
 		if (publishEnabled || publishOnly) {
 			if (account != null && webFolderId != null) {
-				PublishComics(account, webFolderId);
+				PublishComics(account, webFolderId, publishOnly);
 			}
 			else {
 				//Webfolder id does not exist anymore.... try to recover				
@@ -322,7 +327,7 @@ public class GoogleDriveService extends IntentService {
 						String fileName = cb.getString(6);
 						String imgUrl = cb.getString(7);
 						if ((imgUrl == null || imgUrl.length() == 0) && (fileName != null && fileName.length() > 0))
-						{							
+						{
 							Bitmap bmp = BitmapFactory.decodeFile(imagePath.concat(fileName));
 							if (bmp != null)
 							{
@@ -496,7 +501,7 @@ public class GoogleDriveService extends IntentService {
 		}
 	}
 
-	private synchronized void PublishComics(String account, String webFolderId)
+	private synchronized void PublishComics(String account, String webFolderId, boolean force)
 	{
 		//Get Service
 		Drive service = null;
@@ -536,7 +541,8 @@ public class GoogleDriveService extends IntentService {
 
 		//Get some more stuff from context
 		String outPath = getApplicationContext().getExternalFilesDir(null).toString() + "/html";
-
+		String imagePath = ((Application)getApplication()).getImagePath(true);
+		
 		//Let's get started
 		File fileOut = new File(outPath);
 		fileOut.mkdirs();
@@ -548,13 +554,14 @@ public class GoogleDriveService extends IntentService {
 		
 		try 
 		{			
-			cursor = mDb.getCursor("SELECT _id, Title, Subtitle, Author, ImageUrl, 1 AS ItemType, 0 AS BookCount, IsBorrowed, PublishDate " +
+			cursor = mDb.getCursor("SELECT _id, Title, Subtitle, Author, Image, ImageUrl, 1 AS ItemType, 0 AS BookCount, IsBorrowed, AddedDate " +
 					"FROM tblBooks WHERE GroupId = 0 OR ifnull(GroupId, '') = '' " +
 					"UNION " +
-					"SELECT _id, Name AS Title, '' AS Subtitle, '' AS Author, ImageUrl, 2 AS ItemType, BookCount, 0 AS IsBorrowed, 0 AS PublishDate " +
+					"SELECT _id, Name AS Title, '' AS Subtitle, '' AS Author, (SELECT Image FROM tblBooks where GroupId = tblGroups._id) AS Image, ImageUrl, 2 AS ItemType, BookCount, 0 AS IsBorrowed, 0 AS PublishDate " +
 					"FROM tblGroups " +
 					"ORDER BY Title", null);
 			
+			int rowCount = cursor.getCount();
 			String line;
 
 			//Read template
@@ -568,7 +575,8 @@ public class GoogleDriveService extends IntentService {
 
 			//Write HTML
 			writer = new BufferedWriter(new FileWriter(fileOut));
-			reader = new BufferedReader(new InputStreamReader(getResources().openRawResource(R.raw.framework)));			
+			reader = new BufferedReader(new InputStreamReader(getResources().openRawResource(R.raw.framework)));
+			int i = 0;
 			while ((line = reader.readLine()) != null)
 			{
 				if (line.trim().equals("#LISTCOMICS#")) {
@@ -577,15 +585,17 @@ public class GoogleDriveService extends IntentService {
 						String title = nullToEmpty(cursor.getString(1));
 						String subTitle = nullToEmpty(cursor.getString(2));
 						String author = nullToEmpty(cursor.getString(3));
-						String imageUrl = nullToEmpty(cursor.getString(4));
-						int type = cursor.getInt(5);
-						int date = cursor.getInt(8);
+						String image = nullToEmpty(cursor.getString(4));
+						String imageUrl = nullToEmpty(cursor.getString(5));
+						int type = cursor.getInt(6);
+						int date = cursor.getInt(9);
+												
 						StringBuilder sbChildren = new StringBuilder();
 
 						String comicLine = sbTemplate.toString();
 						comicLine = comicLine.replace("#TITLE#", title + (type == 1 && !subTitle.equals("") ? " - " + subTitle : ""));
 						comicLine = comicLine.replace("#AUTHOR#", author);
-						comicLine = comicLine.replace("#IMAGEURL#", imageUrl);
+						comicLine = comicLine.replace("#IMAGEURL#", getImageSrc(imageUrl, image, imagePath));
 						comicLine = comicLine.replace("#ISSUE#", "");
 						comicLine = comicLine.replace("#ISAGGREGATE#", type == 2 ? " Aggregate" : "");
 						comicLine = comicLine.replace("#MARK#", type == 2 ? "<div class=\"Mark\"></div>" : "");
@@ -598,9 +608,9 @@ public class GoogleDriveService extends IntentService {
 								String childComic = sbTemplate.toString();
 								childComic = childComic.replace("#TITLE#", nullToEmpty(comic.getTitle()) + (!nullToEmpty(comic.getSubTitle()).equals("") ? " - " + comic.getSubTitle() : ""));
 								childComic = childComic.replace("#AUTHOR#", nullToEmpty(comic.getAuthor()));
-								childComic = childComic.replace("#IMAGEURL#", nullToEmpty(comic.getImageUrl()));
+								childComic = childComic.replace("#IMAGEURL#", getImageSrc(nullToEmpty(comic.getImageUrl()), nullToEmpty(comic.getImage()), imagePath));
 								childComic = childComic.replace("#ISSUE#", comic.getIssue() > 0 ? Integer.toString(comic.getIssue()) : "");
-								childComic = childComic.replace("#DATE#", Integer.toString(comic.getPublishDateTimestamp()));
+								childComic = childComic.replace("#DATE#", Integer.toString(comic.getAddedDateTimestamp()));
 								childComic = childComic.replace("#ISAGGREGATE#", "");
 								childComic = childComic.replace("#MARK#", "");
 								childComic = childComic.replace("#CHILDREN#", "");
@@ -613,6 +623,12 @@ public class GoogleDriveService extends IntentService {
 						}
 
 						writer.write(comicLine);
+						
+						if (force) {
+							Double part = (((double)i + 1) / (double)rowCount) * 100.0;
+							EventBus.getDefault().post(new ProgressResult(part.intValue(), getString(R.string.progress_publish)));
+							i++;							
+						}
 					}
 				}
 				else {
@@ -637,6 +653,10 @@ public class GoogleDriveService extends IntentService {
 		}
 
 		//Upload to google drive
+		if (force) {
+			EventBus.getDefault().post(new ProgressResult(20, getString(R.string.progress_publishupload)));
+		}
+		
 		try 
 		{						
 			//Get current index file
@@ -665,6 +685,10 @@ public class GoogleDriveService extends IntentService {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+		}
+		
+		if  (force) {
+			EventBus.getDefault().post(new ProgressResult(100, getString(R.string.progress_publishupload)));
 		}
 	}
 
@@ -708,5 +732,34 @@ public class GoogleDriveService extends IntentService {
 				service.revisions().delete(fileId, rev.getId()).execute();
 			}
 		}
+	}
+	
+	private String getImageSrc(String imageUrl, String image, String imagePath) {
+		String imgSrc = imageUrl;
+		if (!image.equals("") && imageUrl.equals(""))
+		{
+			ByteArrayOutputStream stream = null;
+			try
+			{
+				Bitmap bmp = BitmapFactory.decodeFile(imagePath.concat(image));
+				stream = new ByteArrayOutputStream();  
+				bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+				byte[] b = stream.toByteArray();
+				imgSrc = "data:image/jpeg;base64,".concat(Base64.encodeToString(b, Base64.DEFAULT));
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+			finally {
+				try
+				{
+					stream.close();
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}		
+		return imgSrc;
 	}
 }

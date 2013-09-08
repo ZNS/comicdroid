@@ -112,10 +112,11 @@ implements ListView.OnItemClickListener {
 		
 		if (mLLProgressService.getVisibility() == View.GONE) {
 			mPbService.setProgress(0);
-			mPbService.setMax(100);			
-			mTvProgressService.setText(progress.desc);
+			mPbService.setMax(100);
 			mLLProgressService.setVisibility(View.VISIBLE);
 		}
+		mTvProgressService.setText(progress.desc);
+		
 		if (progress.value < 100) {
 			mPbService.setProgress(progress.value);
 		}

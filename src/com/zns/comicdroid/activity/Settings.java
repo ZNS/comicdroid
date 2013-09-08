@@ -251,7 +251,7 @@ implements OnCheckedChangeListener {
 		Intent intent = new Intent(getApplicationContext(), GoogleDriveService.class);
 		intent.putExtra(GoogleDriveService.INTENT_PUBLISH_ONLY, true);
 		startService(intent);
-		showNotificationDialog(R.string.settings_publish_notification);
+		EventBus.getDefault().post(new ProgressResult(1, getString(R.string.progress_publishinit)));
 	}
 
 	public void updateGroupCountClick(View view) {

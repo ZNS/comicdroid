@@ -225,9 +225,6 @@ ActionBar.TabListener {
 	public void onTabSelected(Tab tab, FragmentTransaction ft) {
 		String tag = (String)tab.getTag();
 		
-		//Set current tab
-		mCurrentTab = tag;
-
 		//Sorting
 		if (mMenuSort != null) {
 			if (tag.equals(TAB_TITLES))
@@ -253,7 +250,11 @@ ActionBar.TabListener {
 				mMenuSearch.collapseActionView();
 				mSearchView.setQuery(null, false);				
 			}
-		}		
+		}	
+		
+		//Set current tab
+		mCurrentTab = tag;
+		
 	}
 
 	@Override

@@ -1,39 +1,65 @@
 <html>
 <head>
     <title>ComicDroid</title>
-    <script  type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/cupertino/jquery-ui.min.css" />
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
+            $("#tabs").tabs();
+
+            $(".Item")
+                .sort(function (a, b) { return parseInt($(a).attr("data-date")) < parseInt($(b).attr("data-date")); })
+                .slice(0, 25)
+                .each(function () { $(this).clone().appendTo("#tab-latest").wrap('<div class="ComicItem" />'); });
+
             $(".Aggregate").click(function () {
-                $(this).siblings(".Children").slideToggle();
+                $(this).parent().toggleClass("On").end().siblings(".Children").slideToggle();
             });
         });
-        
+
         function SortByDate() {
-$(".Item").sort(function(a,b){
-    return parseInt($(a).attr("data-date")) < parseInt($(b).attr("data-date"));
-}).each(function(){
-    $("#Content").prepend($(this).parent());
-});        
         }
     </script>
     <style type="text/css">
-        body {background-color:#f7f7f7;font-family:Arial;font-size:0.75em;}
-        #Content {max-width:800px;margin:0 auto;}
-        h1 {background-color:#333;color:#fff;margin:0px 0px 5px 0px;padding:20px;}
+        body {
+            background-color: #f7f7f7;
+            font-family: Arial;
+            font-size: 0.75em;
+        }
+
+        #Content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            background-color: #333;
+            color: #fff;
+            margin: 0px 0px 5px 0px;
+            padding: 20px;
+        }
+
         .ComicItem {
             background: #fff;
             margin-bottom: 5px;
             padding: 10px;
         }
+        
+        .ComicItem.On {
+            background-color: #f0f0f0;
+        }
+        
         .Aggregate {
             cursor: pointer;
         }
+
         .ComicItem > .Item {
             position: relative;
             clear: both;
-            overflow:hidden;
+            overflow: hidden;
         }
+
         .ComicItem b.Vol {
             position: absolute;
             right: 0;
@@ -41,25 +67,29 @@ $(".Item").sort(function(a,b){
             font-size: 140%;
             color: #666;
         }
+
         .ComicItem > .Item > img {
             float: left;
             height: 125px;
             margin-right: 10px;
         }
+
         .ComicItem > .Item > span {
             display: block;
-            float: left;    
+            float: left;
         }
+
         .ComicItem h3 {
             font-size: 150%;
             color: #0099CC;
-            margin:0px 0px 10px 0px;
+            margin: 0px 0px 10px 0px;
         }
+
         .ComicItem > .Children {
-             display: none; 
-             border-top: dotted 1px #ccc;
-             margin-top: 10px;
+            display: none;
+            margin-top: 10px;
         }
+        
         .Mark {
             position: absolute;
             right: 0;
@@ -75,7 +105,16 @@ $(".Item").sort(function(a,b){
 <body>
     <div id="Content">
     	<h1>ComicDroid</h1>
-#LISTCOMICS#		
+        <div id="tabs">
+            <ul>
+                <li><a href="#tab-all">The Archive</a></li>
+                <li><a href="#tab-latest">Latest added</a></li>
+            </ul>
+            <div id="tab-all">    	
+#LISTCOMICS#
+            </div>
+            <div id="tab-latest"></div>
+        </div>
     </div>
 </body>
 </html>

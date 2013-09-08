@@ -100,7 +100,6 @@
     <string name="settings_restoresub">Försöker återställa data från google backup. DETTA KOMMER RADERA ALLT!</string>
     <string name="settings_btnRestore">Återställ från google-backup</string>    
     <string name="settings_linktext">Visa arkiv på google drive</string>
-    <string name="settings_publish_notification">Arkivet har publicerats till google drive.</string>
     <string name="settings_updateGroupCount_notification">Räknare för samlingar har uppdaterats</string>
     <string name="settings_restoresuccess">Återställningen av data lyckades!</string>
     <string name="settings_restoreerror">Kunde inte återställa data!</string>    
@@ -129,4 +128,7 @@
     <string name="progress_restorecomics">Återställer serier</string>
     <string name="progress_restoreimages">Återställer bilder</string>
     <string name="progress_init">Startar återställning</string>
+    <string name="progress_publishinit">Startar publicering</string>
+    <string name="progress_publish">Formaterar serier</string>
+    <string name="progress_publishupload">Laddar upp till drive</string>    
 </resources>

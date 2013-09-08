@@ -23,5 +23,5 @@ public class BackupHelper extends BackupAgent {
 	@Override
 	public void onRestore(BackupDataInput data, int appVersionCode,
 			ParcelFileDescriptor newState) throws IOException {		
-	}	
+	}
 }
