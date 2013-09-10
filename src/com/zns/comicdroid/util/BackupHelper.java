@@ -10,7 +10,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import android.app.backup.BackupAgent;
@@ -74,12 +76,21 @@ public class BackupHelper extends BackupAgent {
 			out = new ObjectOutputStream(bufStream);
 			
 			Map<String,?> keyval = prefs.getAll();
-			out.writeInt(keyval.size());
+
+			//Get keys that are to be backed up
+			List<String> keys = new ArrayList<String>();
 			for (String key : keyval.keySet()) {
 				if (!Arrays.asList(PREFS_BLACKLIST).contains(key)) {
-					out.writeUTF(key);
-					out.writeObject(((Object)keyval.get(key)));
+					keys.add(key);
 				}
+			}
+			
+			//Write key size
+			out.writeInt(keys.size());			
+			//Backup values
+			for (String key : keys) {
+				out.writeUTF(key);
+				out.writeObject(((Object)keyval.get(key)));
 			}
 
 			//Write to backup manager
@@ -97,20 +108,16 @@ public class BackupHelper extends BackupAgent {
 		if (performBackup)
 		{
 			//Get file path
-			String outPath = getExternalFilesDir(null).toString() + "/backup";
+			File outPath = new File(getExternalFilesDir(null).toString() + "/backup");
+			//Make sure folder exists
+			outPath.mkdirs();
 			//Get image path
 			String imagePath = getExternalFilesDir(null).toString().replaceAll("/+$", "").concat("/");
 			//Create data file
 			File fileSql = new File(outPath, "data.dat");
 
 			//Backup data
-			int byteCount = 0;
-			try {
-			byteCount = BackupUtil.BackupDataToFile(db, fileSql, imagePath);
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
+			int byteCount = BackupUtil.BackupDataToFile(db, fileSql, imagePath);
 			
 			if (byteCount > 0)
 			{
@@ -143,7 +150,7 @@ public class BackupHelper extends BackupAgent {
 		try
 		{
 			stateOut = new DataOutputStream(new FileOutputStream(newState.getFileDescriptor()));
-			stateOut.writeInt(dataModifed);
+			stateOut.writeInt((int)(System.currentTimeMillis() / 1000L));
 		}
 		finally {
 			if (stateOut != null)
