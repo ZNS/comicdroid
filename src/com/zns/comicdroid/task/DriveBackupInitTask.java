@@ -45,12 +45,23 @@ public class DriveBackupInitTask  extends AsyncTask<com.zns.comicdroid.task.Driv
 				FileList files = service.files().list().setQ("'appdata' in parents and title = '" + GoogleDriveService.BACKUP_META_FILENAME + "'").execute();
 				if (files.getItems().size() > 0)
 				{
-					com.google.api.services.drive.model.File f = files.getItems().get(0);
-					HttpResponse response = service.getRequestFactory().buildGetRequest(new GenericUrl(f.getDownloadUrl())).execute();
-					BufferedReader reader = new BufferedReader(new InputStreamReader(response.getContent()));
-					String backupAppId = reader.readLine();					
-					reader.close();
-					response.disconnect();				
+					HttpResponse response = null;
+					BufferedReader reader = null;
+					String backupAppId = "";
+					try
+					{
+						com.google.api.services.drive.model.File f = files.getItems().get(0);
+						response = service.getRequestFactory().buildGetRequest(new GenericUrl(f.getDownloadUrl())).execute();
+						reader = new BufferedReader(new InputStreamReader(response.getContent()));
+						backupAppId = reader.readLine();					
+					}
+					finally {
+						if (reader != null)
+							reader.close();
+						if (response != null)
+							response.disconnect();
+					}
+					
 					if (!backupAppId.equals(args[0].appId)) {
 						result.success = false;
 						result.backupAllowed = false;

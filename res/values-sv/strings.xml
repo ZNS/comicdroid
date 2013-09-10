@@ -41,6 +41,7 @@
     <string name="common_no">Nej</string>
     <string name="common_name">Namn</string>
     <string name="common_none">Ingen</string>
+    <string name="common_close">Stäng</string>
     <string name="start_tab_aggregates">Serier</string>
     <string name="start_tab_comics">Titlar</string>
     <string name="start_tab_authors">Författare</string>
@@ -103,6 +104,7 @@
     <string name="settings_updateGroupCount_notification">Räknare för samlingar har uppdaterats</string>
     <string name="settings_restoresuccess">Återställningen av data lyckades!</string>
     <string name="settings_restoreerror">Kunde inte återställa data!</string>    
+    <string name="settings_forcebackup">Slå på backup</string>
     <string name="drawer_open">Öppna</string>
     <string name="drawer_close">Stäng</string>
     <string name="group_delete_title">Radera samling?</string>
@@ -123,7 +125,7 @@
     <string name="nUploaderrorheading">ComicDroid kunde inte publicera till google drive</string>
     <string name="nUploaderrorsub">Klicka här för att aktivera publiceringen igen</string>
     <string name="error_driveappdataaccess">Kunde inte använda google drive</string>
-    <string name="error_backupdisallowed">Du kan bara ha backup påslaget på en mobil/platta</string>
+    <string name="error_backupdisallowed">Hittade existerande backup. Om du bara har ComicDroid installerat på den här mobilen/plattan så kan du slå på backup. Stäng annars fönstret.</string>
     <string name="error_webfolderexists">ComicDroid-mappen existerar redan på drive. Kanske publicerar du från en annan mobil/platta, annars radera "ComicDroid"-mappen från google drive</string>
     <string name="progress_restorecomics">Återställer serier</string>
     <string name="progress_restoreimages">Återställer bilder</string>

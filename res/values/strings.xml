@@ -41,6 +41,7 @@
     <string name="common_no">No</string>
     <string name="common_name">Name</string>
     <string name="common_none">None</string>
+    <string name="common_close">Close</string>
     <string name="start_tab_aggregates">Comics</string>
     <string name="start_tab_comics">Titles</string>
     <string name="start_tab_authors">Authors</string>
@@ -105,6 +106,7 @@
     <string name="settings_restoreerror">Data could not be restored!</string>
     <string name="settings_drivebackuplabel">Backup to drive</string>
     <string name="settings_drivebackupsub">Enable this to backup ComicDroid to your google drive account</string>
+    <string name="settings_forcebackup">Enable backup</string>
     <string name="drawer_open">Open</string>
     <string name="drawer_close">Close</string>
     <string name="group_delete_title">Delete collection?</string>
@@ -125,7 +127,7 @@
     <string name="nUploaderrorheading">ComicDroid couldn\'t publish on google drive</string>
     <string name="nUploaderrorsub">Click here to enable publishing again</string>
     <string name="error_driveappdataaccess">Unable to access google drive</string>
-    <string name="error_backupdisallowed">Cannot enable backup on multiple devices</string>
+    <string name="error_backupdisallowed">Found existing backup. If this is the only device running ComicDroid you can safely enable backup, otherwise just close.</string>
     <string name="error_webfolderexists">ComicDroid-folder already exists on drive. Maybe another device is publishing, otherwise delete "ComicDroid"-folder from google drive</string>
     <string name="progress_restorecomics">Restoring comics</string>
     <string name="progress_restoreimages">Restoring images</string>
