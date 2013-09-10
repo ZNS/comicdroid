@@ -42,7 +42,13 @@ public class BackupUtil {
 				cb = db.getCursor("SELECT _id, GroupId, Title, Subtitle, Publisher, Author, Illustrator, Image, ImageUrl, PublishDate, AddedDate, PageCount, IsBorrowed, Borrower, BorrowedDate, ISBN, Issue, Issues, IsRead, Rating" +
 						" FROM tblBooks ORDER BY _id", null);
 				int count = cb.getCount();
-				writer.writeInt(count);					
+
+				if (count <= 0) {
+					//There is nothing to backup, return
+					return 0;
+				}
+				
+				writer.writeInt(count);
 				while (cb.moveToNext())
 				{
 					try //This is just to make sure one failed insert doesn't abort everything
@@ -132,9 +138,9 @@ public class BackupUtil {
 			if (writer != null) {
 				try {
 					writer.close();
+					byteCount = writer.size();
 				} 
 				catch (IOException e) {}
-				byteCount = writer.size();				
 			}
 		}		
 		return byteCount;

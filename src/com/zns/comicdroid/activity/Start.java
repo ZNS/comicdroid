@@ -212,8 +212,8 @@ ActionBar.TabListener {
 		}
 
 		mTvEmpty.setVisibility(View.GONE);
-		if (mViewPager != null && mViewPager.getCurrentItem() == 0) {
-			if (!getCurrentFragment().hasItems())
+		if (mViewPager != null && (mViewPager.getCurrentItem() == 0 || mViewPager.getCurrentItem() == 1)) {
+			if (!fragment.hasItems() && fragment.getFilter() == null)
 			{
 				mTvEmpty.setVisibility(View.VISIBLE);
 			}

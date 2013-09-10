@@ -1,6 +1,5 @@
 package com.zns.comicdroid.util;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -105,29 +104,38 @@ public class BackupHelper extends BackupAgent {
 			File fileSql = new File(outPath, "data.dat");
 
 			//Backup data
-			int byteCount = BackupUtil.BackupDataToFile(db, fileSql, imagePath);
+			int byteCount = 0;
+			try {
+			byteCount = BackupUtil.BackupDataToFile(db, fileSql, imagePath);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
 			
-			//Write file to backup manager
-			FileInputStream fileStreamData = null;
-			try
+			if (byteCount > 0)
 			{
-				data.writeEntityHeader(BACKUP_KEY_DB, byteCount);
-				byte[] buffer = new byte[1024];
-				fileStreamData = new FileInputStream(fileSql);
-				int chunk = 0;
-				while (chunk > -1) {
-					chunk = fileStreamData.read(buffer);
-					if (chunk > -1) {
-						data.writeEntityData(buffer, chunk);
+				//Write file to backup manager
+				FileInputStream fileStreamData = null;
+				try
+				{
+					data.writeEntityHeader(BACKUP_KEY_DB, byteCount);
+					byte[] buffer = new byte[1024];
+					fileStreamData = new FileInputStream(fileSql);
+					int chunk = 0;
+					while (chunk > -1) {
+						chunk = fileStreamData.read(buffer);
+						if (chunk > -1) {
+							data.writeEntityData(buffer, chunk);
+						}
 					}
 				}
+				finally {
+					fileStreamData.close();
+					//Upload to google drive (even if writing to manager fails)
+					Intent intent = new Intent(getApplicationContext(), GoogleDriveService.class);
+					startService(intent);							
+				}
 			}
-			finally {
-				fileStreamData.close();
-				//Upload to google drive (even if writing to manager fails)
-				Intent intent = new Intent(getApplicationContext(), GoogleDriveService.class);
-				startService(intent);							
-			}				
 		}
 		
 		//Write newstate
