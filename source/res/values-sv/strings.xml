@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright (c) 2013 Ulrik Andersson.
+  All rights reserved. This program and the accompanying materials
+  are made available under the terms of the GNU Public License v3.0
+  which accompanies this distribution, and is available at
+  http://www.gnu.org/licenses/gpl.html
+  
+  Contributors:
+      Ulrik Andersson - initial API and implementation
+-->
 <resources>
     <string name="app_name">ComicDroid</string>
     <string name="title_activity_start">ComicDroid</string>
@@ -132,5 +142,6 @@
     <string name="progress_init">Startar återställning</string>
     <string name="progress_publishinit">Startar publicering</string>
     <string name="progress_publish">Formaterar serier</string>
-    <string name="progress_publishupload">Laddar upp till drive</string>    
+    <string name="progress_publishupload">Laddar upp till drive</string>
+    <string name="list_name_na">[Inget namn]</string>    
 </resources>

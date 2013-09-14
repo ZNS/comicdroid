@@ -1,3 +1,13 @@
+<!--
+  Copyright (c) 2013 Ulrik Andersson.
+  All rights reserved. This program and the accompanying materials
+  are made available under the terms of the GNU Public License v3.0
+  which accompanies this distribution, and is available at
+  http://www.gnu.org/licenses/gpl.html
+  
+  Contributors:
+      Ulrik Andersson - initial API and implementation
+-->
 <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
  android:id="@+id/drawer_layout"
  android:layout_width="match_parent"
@@ -79,7 +89,8 @@
 				        android:layout_height="wrap_content"
 				        android:layout_weight="0"
 				        android:layout_marginRight="10dp"
-				        android:src="@drawable/ic_launcher" />				    
+				        android:src="@drawable/ic_launcher" />
+				    
 					<LinearLayout
 					    android:layout_width="0dip"
 					    android:layout_height="wrap_content"
@@ -156,7 +167,8 @@
 			    	android:background="@android:color/darker_gray"/>
 							
 				<!-- Publisher -->
-					    <TextView
+		
+			    <TextView
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
 			        android:layout_marginBottom="-2dp"
@@ -197,7 +209,8 @@
 			    	android:background="@android:color/darker_gray"/>
 												
 				<!-- Publishdate -->
-					    <TextView
+		
+			    <TextView
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
 			        android:layout_marginBottom="-2dp"
@@ -217,7 +230,8 @@
 			    	android:background="@android:color/darker_gray"/>
 				
 				<!-- Added -->
-					    <TextView
+		
+			    <TextView
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
 			        android:layout_marginBottom="-2dp"
@@ -237,7 +251,8 @@
 			    	android:background="@android:color/darker_gray"/>
 				
 				<!-- Pagecount -->
-					    <TextView
+		
+			    <TextView
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
 			        android:layout_marginBottom="-2dp"
@@ -257,7 +272,8 @@
 			    	android:background="@android:color/darker_gray"/>
 				
 				<!-- Borrowed -->
-					    <TextView
+		
+			    <TextView
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
 			        android:layout_marginBottom="-2dp"

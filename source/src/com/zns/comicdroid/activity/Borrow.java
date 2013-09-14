@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2013 Ulrik Andersson.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/gpl.html
+ * 
+ * Contributors:
+ *     Ulrik Andersson - initial API and implementation
+ ******************************************************************************/
 package com.zns.comicdroid.activity;
 
 import java.util.ArrayList;
@@ -85,7 +95,7 @@ public class Borrow extends BaseFragmentActivity {
 				if (comic != null) {
 					//Mark as borrowed and notify
 					getDBHelper().setComicBorrowed(comic.getId(), mEtBorrower.getText().toString());
-					Toast.makeText(this, getResources().getString(R.string.borrow_added), Toast.LENGTH_SHORT).show();
+					Toast.makeText(this, getResources().getString(R.string.borrow_added), Toast.LENGTH_LONG).show();
 					//Update adapter
 					mAdapter.insert(comic, 0);
 					mAdapter.notifyDataSetChanged();

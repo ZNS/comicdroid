@@ -1,8 +1,17 @@
+/*******************************************************************************
+ * Copyright (c) 2013 Ulrik Andersson.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/gpl.html
+ * 
+ * Contributors:
+ *     Ulrik Andersson - initial API and implementation
+ ******************************************************************************/
 package com.zns.comicdroid.activity;
 
-import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.backup.BackupManager;
 import android.content.Context;
@@ -29,12 +38,12 @@ import com.zns.comicdroid.BaseFragmentActivity;
 import com.zns.comicdroid.R;
 import com.zns.comicdroid.data.Comic;
 
-@SuppressLint("SimpleDateFormat")
 public class ComicView extends BaseFragmentActivity {
 
 	public final static String INTENT_COMIC_ID = "com.zns.comic.COMICID";
 	public final static int CODE_COMIC_EDITED = 100;
-
+	
+	private DateFormat mDateFormat;
 	private Comic mCurrentComic;
 	private TextView mTvTitle;
 	private TextView mTvSubtitle;
@@ -57,6 +66,7 @@ public class ComicView extends BaseFragmentActivity {
 		setContentView(R.layout.activity_comic_view);
 		super.onCreate(savedInstanceState);
 
+		mDateFormat = android.text.format.DateFormat.getDateFormat(this);
 		mTvTitle = (TextView)findViewById(R.id.comicView_txtTitle);
 		mTvSubtitle = (TextView)findViewById(R.id.comicView_txtSubtitle);
 		mTvSubtitleHeading = (TextView)findViewById(R.id.comicView_tvSubtitleHeading);
@@ -155,9 +165,9 @@ public class ComicView extends BaseFragmentActivity {
 		mTvIllustrator.setText(comic.getIllustrator());
 		mTvPublisher.setText(comic.getPublisher());
 		if (comic.getPublishDateTimestamp() > 0) {
-			mTvPublished.setText(new SimpleDateFormat("yyyy-MM-dd").format(comic.getPublishDate()));
+			mTvPublished.setText(mDateFormat.format(comic.getPublishDate()));
 		}
-		mTvAdded.setText(new SimpleDateFormat("yyyy-MM-dd").format(comic.getAddedDate()));
+		mTvAdded.setText(mDateFormat.format(comic.getAddedDate()));
 		mTvPageCount.setText(Integer.toString(comic.getPageCount()));
 		mTvIssues.setText(comic.getIssues());
 

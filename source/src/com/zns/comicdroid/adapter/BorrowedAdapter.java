@@ -1,6 +1,16 @@
+/*******************************************************************************
+ * Copyright (c) 2013 Ulrik Andersson.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/gpl.html
+ * 
+ * Contributors:
+ *     Ulrik Andersson - initial API and implementation
+ ******************************************************************************/
 package com.zns.comicdroid.adapter;
 
-import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 import java.util.List;
 
 import android.app.Activity;
@@ -20,12 +30,12 @@ public class BorrowedAdapter extends ArrayAdapter<Comic> {
 	private final ImageWorker mImageWorker = new ImageWorker();  
 	private final List<Comic> mValues;
 	private final String mImagePath;
-
+	private final DateFormat mDateFormat;
+	
 	static class ComicHolder
 	{
 		TextView tvTitle;
 		ImageView ivImage;
-		TextView tvIssue;
 		TextView tvBorrower;
 		TextView tvBorrowedDate;
 	}
@@ -35,6 +45,7 @@ public class BorrowedAdapter extends ArrayAdapter<Comic> {
 		super(context, R.layout.list_borrowedrow, values);
 		this.mValues = values;
 		this.mImagePath = imagePath;
+		this.mDateFormat = android.text.format.DateFormat.getDateFormat(context);
 	}
 
 	public Comic getComic(int position)
@@ -62,7 +73,6 @@ public class BorrowedAdapter extends ArrayAdapter<Comic> {
 			holder = new ComicHolder();
 			holder.tvTitle = (TextView)row.findViewById(R.id.tvTitle);
 			holder.ivImage = (ImageView)row.findViewById(R.id.ivImage);
-			holder.tvIssue = (TextView)row.findViewById(R.id.tvIssue);
 			holder.tvBorrower = (TextView)row.findViewById(R.id.tvBorrower);
 			holder.tvBorrowedDate = (TextView)row.findViewById(R.id.tvBorrowedDate);
 
@@ -74,20 +84,9 @@ public class BorrowedAdapter extends ArrayAdapter<Comic> {
 		}
 
 		Comic comic = mValues.get(position);
-		holder.tvTitle.setText(comic.getTitle() + (comic.getIssue() > 0 && comic.getSubTitle() != null ? " - " + comic.getSubTitle() : ""));
+		holder.tvTitle.setText(comic.getTitle() + (comic.getIssue() > 0 && comic.getSubTitle() != null ? " - " + comic.getSubTitle() : "") + (comic.getIssue() > 0 ? " - Vol. " + Integer.toString(comic.getIssue()) : ""));
 		holder.tvBorrower.setText(comic.getBorrower());
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		holder.tvBorrowedDate.setText(dateFormat.format(comic.getBorrowedDate()));
-		if (comic.getIssue() > 0)
-		{
-			holder.tvIssue.setText("Vol. " + Integer.toString(comic.getIssue()));
-			holder.tvIssue.setVisibility(View.VISIBLE);
-		}
-		else
-		{
-			holder.tvIssue.setVisibility(View.GONE);
-		}
-
+		holder.tvBorrowedDate.setText(mDateFormat.format(comic.getBorrowedDate()));
 		if (comic.getImage() != null && !comic.getImage().equals(""))
 		{
 			mImageWorker.load(mImagePath.concat(comic.getImage()), holder.ivImage);

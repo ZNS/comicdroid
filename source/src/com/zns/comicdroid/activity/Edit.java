@@ -1,9 +1,18 @@
-
+/*******************************************************************************
+ * Copyright (c) 2013 Ulrik Andersson.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/gpl.html
+ * 
+ * Contributors:
+ *     Ulrik Andersson - initial API and implementation
+ ******************************************************************************/
 package com.zns.comicdroid.activity;
 
 import java.io.File;
+import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -47,6 +56,7 @@ GroupDialogFragment.OnGroupAddDialogListener {
 	public static final String INTENT_COMIC_IDS = "com.zns.comic.COMICIDS";
 	private static final int CAMERA_REQUEST = 1888; 
 
+	private DateFormat mDateFormat;
 	private List<Comic> mComics = null;
 	private EditText mEtTitle;
 	private EditText mEtSubtitle;
@@ -78,6 +88,7 @@ GroupDialogFragment.OnGroupAddDialogListener {
 		setContentView(R.layout.activity_edit);
 		super.onCreate(savedInstanceState);
 
+		mDateFormat = android.text.format.DateFormat.getDateFormat(this);
 		mEtTitle = (EditText)findViewById(R.id.comicEdit_etTitle);
 		mEtSubtitle = (EditText)findViewById(R.id.comicEdit_etSubtitle);
 		mEtIssue = (EditText)findViewById(R.id.comicEdit_etIssue);
@@ -190,12 +201,12 @@ GroupDialogFragment.OnGroupAddDialogListener {
 			setTextField(mEtIssues, comic.getIssues(), false);
 
 			if (comic.getPublishDateTimestamp() > 0)
-				setTextField(mEtPublished, new SimpleDateFormat("yyyy-MM-dd").format(comic.getPublishDate()), false);
+				setTextField(mEtPublished, mDateFormat.format(comic.getPublishDate()), false);
 			else
 				setTextField(mEtPublished, "", false);
 
 			if (comic.getAddedDateTimestamp() > 0)
-				setTextField(mEtAdded, new SimpleDateFormat("yyyy-MM-dd").format(comic.getAddedDate()), false);
+				setTextField(mEtAdded, mDateFormat.format(comic.getAddedDate()), false);
 			else
 				setTextField(mEtAdded, "", false);
 

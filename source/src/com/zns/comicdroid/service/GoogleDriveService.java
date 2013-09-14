@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2013 Ulrik Andersson.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/gpl.html
+ * 
+ * Contributors:
+ *     Ulrik Andersson - initial API and implementation
+ ******************************************************************************/
 package com.zns.comicdroid.service;
 
 import java.io.BufferedReader;
@@ -21,10 +31,6 @@ import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.wifi.WifiManager;
-import android.net.wifi.WifiManager.WifiLock;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
@@ -49,6 +55,7 @@ import com.zns.comicdroid.R;
 import com.zns.comicdroid.activity.Settings;
 import com.zns.comicdroid.data.Comic;
 import com.zns.comicdroid.data.DBHelper;
+import com.zns.comicdroid.util.BackupHelper;
 
 import de.greenrobot.event.EventBus;
 
@@ -57,7 +64,6 @@ public class GoogleDriveService extends IntentService {
 	public static final String INTENT_PUBLISH_ONLY = "com.zns.comicdroid.PUBLISH_ONLY";
 	public static final String BACKUP_META_FILENAME = "backup.meta";
 	private DBHelper mDb;
-	private WifiLock mWifiLock = null;
 	
 	private NotificationManager notificationManager;
 
@@ -102,23 +108,6 @@ public class GoogleDriveService extends IntentService {
 
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 	
-		//Wifi?
-		if (prefs.getBoolean(Application.PREF_BACKUP_WIFIONLY, false))
-		{
-			//We only allow backup on wifi connection. Make sure we are connected and if so lock the wifi connection
-			ConnectivityManager connManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-			NetworkInfo wifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-			if (wifi.isConnected()) {
-		        WifiManager wm = (WifiManager) getSystemService(WIFI_SERVICE);
-		        mWifiLock = wm.createWifiLock(WifiManager.WIFI_MODE_FULL , "com.zns.comicdroid.wifilock");
-		        mWifiLock.acquire();				
-			}
-			else {
-				stopAndClean();
-				return;
-			}
-		}
-
 		//Get database connections
 		mDb = DBHelper.getHelper(getApplicationContext());
 				
@@ -456,15 +445,15 @@ public class GoogleDriveService extends IntentService {
 	@Override
 	public void onDestroy() {
 		//Just to make sure we release the wifi lock
-		if (mWifiLock != null)
-			mWifiLock.release();		
+		if (BackupHelper.wifiLock != null && BackupHelper.wifiLock.isHeld())
+			BackupHelper.wifiLock.release();
 		super.onDestroy();
 	}
 	
 	private void stopAndClean()
 	{
-		if (mWifiLock != null)
-			mWifiLock.release();
+		if (BackupHelper.wifiLock != null)
+			BackupHelper.wifiLock.release();
 		stopSelf();
 	}
 	
