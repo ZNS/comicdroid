@@ -380,13 +380,21 @@ GroupDialogFragment.OnGroupAddDialogListener {
 	}
 
 	@Override
-	public void onDialogPositiveClick(DialogFragment dialog) {
+	public void onGroupDialogPositiveClick(String groupAdded) {
 		List<Group> groups = getDBHelper().getGroups();
 		groups.add(0, new Group(0, getResources().getString(R.string.common_nogroup), null, 0, 0, 0, 0, 0));
 		mAdapterGroups.clear();
-		for (Group g : groups)
+		int i = 0;
+		int index = 0;
+		for (Group g : groups) {
 			mAdapterGroups.add(g);
+			if (g.getName().equals(groupAdded)) {
+				index = i;
+			}
+			i++;
+		}
 		mSpGroup.setEnabled(true);
+		mSpGroup.setSelection(index);
 	}
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {

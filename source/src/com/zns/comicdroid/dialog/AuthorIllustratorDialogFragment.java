@@ -27,7 +27,7 @@ import com.zns.comicdroid.R;
 public class AuthorIllustratorDialogFragment extends DialogFragment {
 
 	public interface OnAuthorIllustratorDialogListener {
-		public void onDialogPositiveClick(int comicId, String authors, String illustrators);
+		public void onAuthorIllustratorDialogPositiveClick(int comicId, String authors, String illustrators);
 	}
 
 	private OnAuthorIllustratorDialogListener mAuthorIllustratorCallback;
@@ -95,7 +95,7 @@ public class AuthorIllustratorDialogFragment extends DialogFragment {
 				authors = authors.replaceAll("[,]+$", "");
 				illustrators = illustrators.replaceAll("[,]+$", "");
 				if (mAuthorIllustratorCallback != null)
-					mAuthorIllustratorCallback.onDialogPositiveClick(comicId, authors, illustrators);
+					mAuthorIllustratorCallback.onAuthorIllustratorDialogPositiveClick(comicId, authors, illustrators);
 			}
 		})
 

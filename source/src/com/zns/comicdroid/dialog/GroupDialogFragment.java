@@ -27,7 +27,7 @@ import com.zns.comicdroid.R;
 public class GroupDialogFragment extends DialogFragment {
 
 	public interface OnGroupAddDialogListener {
-		public void onDialogPositiveClick(DialogFragment dialog);
+		public void onGroupDialogPositiveClick(String groupName);
 	}
 
 	private OnGroupAddDialogListener mGroupAddCallback;
@@ -90,7 +90,7 @@ public class GroupDialogFragment extends DialogFragment {
 				}
 
 				if (mGroupAddCallback != null)
-					mGroupAddCallback.onDialogPositiveClick(GroupDialogFragment.this);
+					mGroupAddCallback.onGroupDialogPositiveClick(etName.getText().toString());
 			}
 		})	
 		.setNegativeButton(getResources().getString(R.string.common_cancel), new DialogInterface.OnClickListener() {			

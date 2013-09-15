@@ -50,12 +50,12 @@ AuthorIllustratorDialogFragment.OnAuthorIllustratorDialogListener {
 
 	private final static String STATE_COMICS = "COMICS";
 
-	private EditText etISBN;
-	private ComicArrayAdapter adapter;
-	private Spinner spGroup;
-	private boolean isScanning = false;
-	private CheckBox cbIsRead;
-	private Button btnScan;
+	private EditText mEtISBN;
+	private ComicArrayAdapter mAdapter;
+	private Spinner mSpGroup;
+	private boolean mIsScanning = false;
+	private CheckBox mCbIsRead;
+	private Button mBtnScan;
 
 	private ArrayAdapter<Group> adapterGroups;
 
@@ -64,12 +64,12 @@ AuthorIllustratorDialogFragment.OnAuthorIllustratorDialogListener {
 		setContentView(R.layout.activity_add);
 		super.onCreate(savedInstanceState);               
 
-		etISBN = (EditText)findViewById(R.id.etISBN);        
-		spGroup = (Spinner)findViewById(R.id.add_spGroup);
-		cbIsRead = (CheckBox)findViewById(R.id.add_cbIsRead);
+		mEtISBN = (EditText)findViewById(R.id.etISBN);        
+		mSpGroup = (Spinner)findViewById(R.id.add_spGroup);
+		mCbIsRead = (CheckBox)findViewById(R.id.add_cbIsRead);
 		ListView lvComics = (ListView)findViewById(R.id.add_lvComics);
 		ImageView ivGroupAdd = (ImageView)findViewById(R.id.add_ivGroupAdd);
-		btnScan = (Button)findViewById(R.id.btnScan);
+		mBtnScan = (Button)findViewById(R.id.btnScan);
 
 		EventBus.getDefault().register(this, "onBookQueryComplete", BooksQueryResult.class);
 
@@ -80,7 +80,7 @@ AuthorIllustratorDialogFragment.OnAuthorIllustratorDialogListener {
 		groups.add(0, new Group(0, getResources().getString(R.string.common_nogroup), null, 0, 0, 0, 0, 0));
 		adapterGroups = new ArrayAdapter<Group>(this, android.R.layout.simple_spinner_item, groups);
 		adapterGroups.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		spGroup.setAdapter(adapterGroups);
+		mSpGroup.setAdapter(adapterGroups);
 
 		//Dialog
 		ivGroupAdd.setOnClickListener(new OnClickListener() {
@@ -95,30 +95,21 @@ AuthorIllustratorDialogFragment.OnAuthorIllustratorDialogListener {
 		if (savedInstanceState != null && savedInstanceState.containsKey(STATE_COMICS)) {
 			comics = savedInstanceState.getParcelableArrayList(STATE_COMICS);
 		}
-		adapter = new ComicArrayAdapter(this, comics, getImagePath(true));
-		lvComics.setAdapter(adapter);
+		mAdapter = new ComicArrayAdapter(this, comics, getImagePath(true));
+		lvComics.setAdapter(mAdapter);
 	}
 
 	@Override
 	protected void onSaveInstanceState(Bundle state) {
 		super.onSaveInstanceState(state);		
-		state.putParcelableArrayList(STATE_COMICS, new ArrayList<Comic>(adapter.getAll()));
+		state.putParcelableArrayList(STATE_COMICS, new ArrayList<Comic>(mAdapter.getAll()));
 	}   
 
 	@Override
-	public void onDialogPositiveClick(DialogFragment dialog) {
-		List<Group> groups = getDBHelper().getGroups();
-		groups.add(0, new Group(0, getResources().getString(R.string.common_nogroup), null, 0, 0, 0, 0, 0));
-		adapterGroups.clear();
-		for (Group g : groups)
-			adapterGroups.add(g);
-	}
-
-	@Override
 	public void onStop() {
-		if (!isScanning)
+		if (!mIsScanning)
 		{
-			if (adapter != null && adapter.getCount() > 0) {
+			if (mAdapter != null && mAdapter.getCount() > 0) {
 				//Backup
 				BackupManager m = new BackupManager(this);
 				m.dataChanged();
@@ -141,7 +132,7 @@ AuthorIllustratorDialogFragment.OnAuthorIllustratorDialogListener {
 
 	public void scanISBN(View view)
 	{
-		isScanning = true;
+		mIsScanning = true;
 		IntentIntegrator integrator = new IntentIntegrator(this);
 		integrator.initiateScan();
 	}
@@ -153,21 +144,21 @@ AuthorIllustratorDialogFragment.OnAuthorIllustratorDialogListener {
 			IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
 			if (scanResult != null) 
 			{
-				etISBN.setText(scanResult.getContents());
+				mEtISBN.setText(scanResult.getContents());
 				queryISBN(null);
 			}
-			isScanning = false;
+			mIsScanning = false;
 		}    	
 	}
 
 	public void onBookQueryCompleteMainThread(BooksQueryResult result) {
 		if (result.mSuccess)
 		{		
-			if (spGroup.getSelectedItemPosition() > 0) {
-				Group g = (Group)spGroup.getSelectedItem();
+			if (mSpGroup.getSelectedItemPosition() > 0) {
+				Group g = (Group)mSpGroup.getSelectedItem();
 				result.mComic.setGroupId(g.getId());
 			}
-			if (cbIsRead.isChecked()) {
+			if (mCbIsRead.isChecked()) {
 				result.mComic.setIsRead(true);
 			}
 			int comicId = getDBHelper().storeComic(result.mComic);			
@@ -188,15 +179,15 @@ AuthorIllustratorDialogFragment.OnAuthorIllustratorDialogListener {
 					dialog.show(getSupportFragmentManager(), "AUTHORILLUSTRATOR");
 				}
 			}			
-			adapter.insert(result.mComic, 0);
-			adapter.notifyDataSetChanged();
+			mAdapter.insert(result.mComic, 0);
+			mAdapter.notifyDataSetChanged();
 
 			Toast.makeText(Add.this, getResources().getString(R.string.add_success), Toast.LENGTH_SHORT).show();
 			return;
 		}
 
-		btnScan.setEnabled(true);
-		etISBN.setText("");
+		mBtnScan.setEnabled(true);
+		mEtISBN.setText("");
 		Toast
 		.makeText(Add.this, getResources().getString(R.string.add_search_notfound), Toast.LENGTH_LONG)
 		.show();		
@@ -204,7 +195,7 @@ AuthorIllustratorDialogFragment.OnAuthorIllustratorDialogListener {
 
 	public void queryISBN(View view)
 	{
-		String isbn = etISBN.getText().toString();
+		String isbn = mEtISBN.getText().toString();
 
 		//Validate ISBN
 		if (!isbn.contains(":"))
@@ -244,7 +235,7 @@ AuthorIllustratorDialogFragment.OnAuthorIllustratorDialogListener {
 		}
 
 		//Fire query
-		btnScan.setEnabled(false);    	
+		mBtnScan.setEnabled(false);    	
 		String q = "isbn:" + isbn;
 		if (isbn.contains(":"))
 			q = isbn;
@@ -252,7 +243,24 @@ AuthorIllustratorDialogFragment.OnAuthorIllustratorDialogListener {
 	}
 
 	@Override
-	public void onDialogPositiveClick(int comicId, String authors, String illustrators) {
+	public void onGroupDialogPositiveClick(String groupAdded) {
+		List<Group> groups = getDBHelper().getGroups();
+		groups.add(0, new Group(0, getResources().getString(R.string.common_nogroup), null, 0, 0, 0, 0, 0));
+		adapterGroups.clear();
+		int i = 0;
+		int index = 0;
+		for (Group g : groups) {
+			adapterGroups.add(g);
+			if (g.getName().equals(groupAdded)) {
+				index = i;
+			}
+			i++;
+		}
+		mSpGroup.setSelection(index);
+	}
+	
+	@Override
+	public void onAuthorIllustratorDialogPositiveClick(int comicId, String authors, String illustrators) {
 		if (comicId > -1 && (authors.length() > 0 || illustrators.length() > 0))
 		{
 			ContentValues values = new ContentValues();
