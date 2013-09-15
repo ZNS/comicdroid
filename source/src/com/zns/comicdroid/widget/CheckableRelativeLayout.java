@@ -8,7 +8,7 @@
  * Contributors:
  *     Ulrik Andersson - initial API and implementation
  ******************************************************************************/
-package com.zns.comicdroid.util;
+package com.zns.comicdroid.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;

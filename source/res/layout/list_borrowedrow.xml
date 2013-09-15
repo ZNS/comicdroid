@@ -8,7 +8,7 @@
   Contributors:
       Ulrik Andersson - initial API and implementation
 -->
-<com.zns.comicdroid.util.CheckableRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.zns.comicdroid.widget.CheckableRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/rlRow"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -47,4 +47,4 @@
 	    android:layout_alignParentBottom="true"
 	    android:textAppearance="?android:attr/textAppearanceSmall" />
 		
-</com.zns.comicdroid.util.CheckableRelativeLayout>
+</com.zns.comicdroid.widget.CheckableRelativeLayout>
