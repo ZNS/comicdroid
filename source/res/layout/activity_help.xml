@@ -1,5 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-</FrameLayout>
+<android.support.v4.widget.DrawerLayout 
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:comicdroid="http://schemas.android.com/apk/res/com.zns.comicdroid"
+	android:id="@+id/drawer_layout"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+	
+    <LinearLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="vertical"
+	    android:padding="5dp" >
+	       
+		<include layout="@layout/service_progress" />
+	    
+		<LinearLayout
+		    android:layout_width="match_parent"
+		    android:layout_height="match_parent"
+		    android:orientation="vertical">
+		    
+		<com.zns.comicdroid.widget.CollapsibleTextView
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        comicdroid:text="&lt;h2&gt;Lorem ipsum dolor&lt;/h2&gt; sit amet, possim laoreet perfecto mel et, vix sale doming cu. Aliquam deleniti salutandi pro eu, oratio civibus voluptatum cum at. Doming facilis philosophia ad usu, at consul nostrud reprehendunt per. Ius ne nonumy consul graeci, in eos odio nisl vero. Vis tritani antiopam ut, nam id esse eruditi equidem.
+
+Nusquam mnesarchum ius ne, ne sea senserit pericula disputando. Aeterno evertitur disputando mei no, in nam laudem mollis accommodare. Oblique offendit inciderint ea quo. Vero atqui cu pro, quo sumo suas cu. Ex mel verear verterem, in his alii nemore, cum ne lorem vocibus. Vel graece quaeque urbanitas no, ne mel diceret voluptatum.
+
+Sed dicunt inermis consulatu ne. Graeci latine commune duo eu. An vix ceteros appetere, recusabo tincidunt et sea, eam habemus vituperata posidonium eu. Vide habemus mea ea, sit ex latine interesset, sea prima pertinacia cu."
+		/>
+		  
+		<com.zns.comicdroid.widget.CollapsibleTextView
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        comicdroid:text="Lorem ipsum dolor sit amet, possim laoreet perfecto mel et, vix sale doming cu. Aliquam deleniti salutandi pro eu, oratio civibus voluptatum cum at. Doming facilis philosophia ad usu, at consul nostrud reprehendunt per. Ius ne nonumy consul graeci, in eos odio nisl vero. Vis tritani antiopam ut, nam id esse eruditi equidem.
+
+Nusquam mnesarchum ius ne, ne sea senserit pericula disputando. Aeterno evertitur disputando mei no, in nam laudem mollis accommodare. Oblique offendit inciderint ea quo. Vero atqui cu pro, quo sumo suas cu. Ex mel verear verterem, in his alii nemore, cum ne lorem vocibus. Vel graece quaeque urbanitas no, ne mel diceret voluptatum.
+
+Sed dicunt inermis consulatu ne. Graeci latine commune duo eu. An vix ceteros appetere, recusabo tincidunt et sea, eam habemus vituperata posidonium eu. Vide habemus mea ea, sit ex latine interesset, sea prima pertinacia cu.
+
+Sed dicunt inermis consulatu ne. Graeci latine commune duo eu. An vix ceteros appetere, recusabo tincidunt et sea, eam habemus vituperata posidonium eu. Vide habemus mea ea, sit ex latine interesset, sea prima pertinacia cu.
+
+Sed dicunt inermis consulatu ne. Graeci latine commune duo eu. An vix ceteros appetere, recusabo tincidunt et sea, eam habemus vituperata posidonium eu. Vide habemus mea ea, sit ex latine interesset, sea prima pertinacia cu."
+		/>
+				
+		</LinearLayout>
+	</LinearLayout>
+	
+	<include layout="@layout/navigation_drawer_left" />
+</android.support.v4.widget.DrawerLayout>		    

@@ -58,13 +58,11 @@
             android:launchMode="singleTop" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
-
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
@@ -112,8 +110,9 @@
             android:name="com.zns.comicdroid.activity.WatchedGroups"
             android:label="@string/title_activity_watched_groups" >
         </activity>
+        <activity
+            android:name="com.zns.comicdroid.activity.Help"
+            android:label="@string/title_activity_help" >
+        </activity>        
     </application>
-8
-
-
 </manifest>

@@ -10,6 +10,9 @@
       Ulrik Andersson - initial API and implementation
 -->
 <resources>
+	<declare-styleable name="CollapsibleTextView">
+	    <attr name="text" format="string" />
+	</declare-styleable>    
 	<declare-styleable name="AndroidSlidingDrawer">
 		<attr name="handle" format="reference" />
 		<attr name="content" format="reference" />

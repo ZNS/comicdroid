@@ -27,6 +27,7 @@ import com.zns.comicdroid.activity.Add;
 import com.zns.comicdroid.activity.Borrow;
 import com.zns.comicdroid.activity.Borrowed;
 import com.zns.comicdroid.activity.Comics;
+import com.zns.comicdroid.activity.Help;
 import com.zns.comicdroid.activity.Settings;
 import com.zns.comicdroid.activity.Start;
 import com.zns.comicdroid.activity.WatchedGroups;
@@ -70,22 +71,24 @@ implements ListView.OnItemClickListener {
 		mTvProgressService = (TextView)findViewById(R.id.tvProgressService);
 		mLLProgressService = (LinearLayout)findViewById(R.id.llProgressService);
 		
-		String[] titles = new String[] { 
+		final String[] titles = new String[] { 
 				getString(R.string.menu_start), 
 				getString(R.string.menu_borrowed),
 				getString(R.string.menu_watched),
 				getString(R.string.menu_read),
 				getString(R.string.menu_add), 
 				getString(R.string.menu_borrow), 
-				getString(R.string.menu_settings) };
-		String[] subTitles = new String[] { 
+				getString(R.string.menu_settings),
+				getString(R.string.menu_help) };
+		final String[] subTitles = new String[] { 
 				getString(R.string.menu_start_sub), 
 				getString(R.string.menu_borrowed_sub),
 				getString(R.string.menu_watched_sub),
 				getString(R.string.menu_read_sub),
 				getString(R.string.menu_add_sub), 
 				getString(R.string.menu_borrow_sub), 
-				getString(R.string.menu_settings_sub) };
+				getString(R.string.menu_settings_sub),
+				getString(R.string.menu_help_sub) };
 		mDrawerList.setAdapter(new DrawerMenuAdapter(this, titles, subTitles));
 		mDrawerList.setOnItemClickListener(this);		
 		mDrawerToggle = new ActionBarDrawerToggle(this, mDrawer, R.drawable.ic_launcher, R.string.drawer_open, R.string.drawer_close) {
@@ -191,6 +194,10 @@ implements ListView.OnItemClickListener {
 			break;
 		case 6:
 			intent = new Intent(this, Settings.class);
+			startActivity(intent);
+			break;
+		case 7:
+			intent = new Intent(this, Help.class);
 			startActivity(intent);
 			break;
 		}

@@ -21,6 +21,7 @@
     <string name="title_activity_watched_groups"></string>
     <string name="title_activity_borrow">Låna ut</string>
     <string name="title_activity_borrowed">Utlånat</string>    
+    <string name="title_activity_help">Hjälp</string>
     <string name="menu_start">Arkivet</string>
     <string name="menu_start_sub">Bläddra bland dina serier</string>
     <string name="menu_add">Lägg till</string>
@@ -38,6 +39,8 @@
     <string name="menu_read_sub">Visa alla serier markerade som olästa</string>
     <string name="menu_returncomic">Återlämnade</string>
     <string name="menu_editall">Redigera alla</string>
+    <string name="menu_help">Hjälp</string>
+    <string name="menu_help_sub">Hur man använder, om och stats</string>    
     <string name="common_addtogroup">Lägg tillagda serier till samling:</string>
     <string name="common_search">Sök</string>
     <string name="common_group">Samling</string>
