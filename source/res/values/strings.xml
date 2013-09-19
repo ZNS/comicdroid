@@ -70,6 +70,7 @@
     <string name="edit_listhandle">Comics being edited</string>
     <string name="edit_done">Saved and done!</string>
     <string name="edit_needtosave">You need to save before you can add an image.</string>
+    <string name="edit_dateerror">Dates need to be entered using the format:</string>
     <string name="comicview_issueshort">Vol.</string>
     <string name="comicview_borrowed">On loan</string>
     <string name="comicview_delete_title">Delete comic?</string>
@@ -149,4 +150,10 @@
     <string name="progress_publish">Formating comics</string>
     <string name="progress_publishupload">Uploading to drive</string>
     <string name="list_name_na">[No name]</string>
+    <string name="collection_useimage">Use image for collection</string>
+    <string name="help_adding"></string>
+    <string name="help_browsing"></string>
+    <string name="help_collections"></string>
+    <string name="help_lending"></string>
+    <string name="help_settings"></string> 
 </resources>

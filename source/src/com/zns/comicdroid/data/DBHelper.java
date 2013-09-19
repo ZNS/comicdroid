@@ -11,6 +11,7 @@
 package com.zns.comicdroid.data;
 
 import java.io.File;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -243,14 +245,20 @@ public class DBHelper extends SQLiteOpenHelper {
 		mDb.execSQL(sql);
 	}
 
+	@SuppressLint("SimpleDateFormat")
 	public int GetDateStamp(String strDate) 
 	throws ParseException
 	{
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		Date date = dateFormat.parse(strDate);
-		return (int)(date.getTime() / 1000L);
+		return GetDateStamp(strDate, new SimpleDateFormat("yyyy-MM-dd"));
 	}
 
+	public int GetDateStamp(String strDate, DateFormat format) 
+	throws ParseException
+	{
+		Date date = format.parse(strDate);
+		return (int)(date.getTime() / 1000L);
+	}
+	
 	public int GetCurrentTimeStamp() {
 		return (int)(System.currentTimeMillis() / 1000L);
 	}
@@ -594,6 +602,16 @@ public class DBHelper extends SQLiteOpenHelper {
 		mDb.execSQL("UPDATE tblGroups SET BookCount = (SELECT Count(*) FROM tblBooks WHERE GroupId = tblGroups._id)");
 	}
 
+	public void setGroupImage(int comicId) {
+		Comic comic = getComic(comicId);
+		if (comic != null && comic.getGroupId() > 0) {
+			ContentValues values = new ContentValues();
+			values.put("Image", comic.getImage());
+			values.put("ImageUrl", comic.getImageUrl());
+			mDb.update("tblGroups", values, "_id=?", new String[] { Integer.toString(comic.getGroupId()) });
+		}
+	}
+	
 	public boolean isDuplicateComic(String isbn) {
 		boolean duplicate = false;
 		Cursor cursor = mDb.rawQuery("SELECT COUNT(*) FROM tblBooks WHERE ISBN = ?", new String[] { isbn });

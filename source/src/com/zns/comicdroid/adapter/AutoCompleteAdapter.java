@@ -61,7 +61,7 @@ SimpleCursorAdapter.CursorToStringConverter {
 
 	@Override
 	public Cursor runQuery(CharSequence constraint) {
-		if (constraint.length() > 0)
+		if (constraint != null && constraint.length() > 0)
 		{
 			mStrPublisherQuery = constraint;
 			mHandlerAutoComplete.removeCallbacks(mRunPublisherAC);

@@ -18,10 +18,13 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
+import android.view.ContextMenu;
 import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -110,6 +113,7 @@ OnCheckedChangeListener {
 			mCbIsComplete.setOnCheckedChangeListener(this);
 			mAdapter.mRenderTitle = false;
 			findViewById(R.id.comics_group_alts).setVisibility(View.VISIBLE);
+			registerForContextMenu(mLvComics);
 		}
 
 		getSupportLoaderManager().initLoader(0, null, this);
@@ -248,6 +252,26 @@ OnCheckedChangeListener {
 		m.dataChanged();
 	}
 
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+		if (mViewType == VIEWTYPE_GROUP) {
+			getMenuInflater().inflate(R.menu.collection_context_menu, menu);
+		}
+	}
+	
+	@Override
+	public boolean onContextItemSelected(android.view.MenuItem item) {
+		if (item.getItemId() == R.id.menu_collection_setimage) {
+			AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+			if (info.position >= 0) {
+				int comicId = mAdapter.getComicId(info.position);
+				getDBHelper().setGroupImage(comicId);
+			}
+		}
+		return super.onContextItemSelected(item);
+	}
+	
 	@Override
 	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 		if (buttonView == mCbIsFinished)

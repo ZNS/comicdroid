@@ -186,6 +186,8 @@ public class ComicView extends BaseFragmentActivity {
 		super.onCreateOptionsMenu(menu);
 		com.actionbarsherlock.view.MenuInflater inflater = getSupportMenuInflater();
 		inflater.inflate(R.menu.actionbar_view, (com.actionbarsherlock.view.Menu) menu);
+		menu.findItem(R.id.submenu_view).setVisible(true);
+		menu.findItem(R.id.menu_editall).setVisible(false);
 		return true;
 	}		
 

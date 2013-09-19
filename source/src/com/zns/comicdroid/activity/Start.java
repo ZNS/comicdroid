@@ -332,7 +332,7 @@ ActionBar.TabListener {
 			return TAB_COUNT;
 		}
 
-		//We need to keep track of when fragments are restored via state. This is ripped from android source code...
+		//We need to keep track of when fragments are restored via state. This is ripped and modified from android source code...
 		@Override
 		public void restoreState(Parcelable state, ClassLoader loader) {
 			super.restoreState(state, loader);
