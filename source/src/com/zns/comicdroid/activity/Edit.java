@@ -262,51 +262,67 @@ GroupDialogFragment.OnGroupAddDialogListener {
 	{
 		final ContentValues values = new ContentValues();
 		final DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(this);		
-		try
-		{
-			String title = mEtTitle.getText().toString().trim();
-			if (title.toLowerCase(Locale.ENGLISH).startsWith("the ")) {
-				title = title.substring(4) + ", The";
-			}
+		String title = mEtTitle.getText().toString().trim();
+		if (title.toLowerCase(Locale.ENGLISH).startsWith("the ")) {
+			title = title.substring(4) + ", The";
+		}
 
-			if (mComics != null && mComics.size() > 1)
-			{
-				if (!isEmpty(mEtTitle))
-					values.put("Title", title);
-				if (!isEmpty(mEtSubtitle))
-					values.put("SubTitle", mEtSubtitle.getText().toString());
-				if (!isEmpty(mEtAuthor))
-					values.put("Author", mEtAuthor.getText().toString());
-				if (!isEmpty(mEtIllustrator))
-					values.put("Illustrator", mEtIllustrator.getText().toString());				
-				if (!isEmpty(mEtPublisher))
-					values.put("Publisher", mEtPublisher.getText().toString());
-				if (mSpGroup.getSelectedItemPosition() > 0) {
-					Group g = (Group)mSpGroup.getSelectedItem();
-					values.put("GroupId", g.getId());
-				}	
-			}
-			else
-			{
+		if (mComics != null && mComics.size() > 1)
+		{
+			if (!isEmpty(mEtTitle))
 				values.put("Title", title);
+			if (!isEmpty(mEtSubtitle))
 				values.put("SubTitle", mEtSubtitle.getText().toString());
+			if (!isEmpty(mEtAuthor))
 				values.put("Author", mEtAuthor.getText().toString());
-				values.put("Illustrator", mEtIllustrator.getText().toString());
+			if (!isEmpty(mEtIllustrator))
+				values.put("Illustrator", mEtIllustrator.getText().toString());				
+			if (!isEmpty(mEtPublisher))
 				values.put("Publisher", mEtPublisher.getText().toString());
-				values.put("Issues", mEtIssues.getText().toString());
-				if (!isEmpty(mEtIssue)) {
+			if (mSpGroup.getSelectedItemPosition() > 0) {
+				Group g = (Group)mSpGroup.getSelectedItem();
+				values.put("GroupId", g.getId());
+			}	
+		}
+		else
+		{
+			//Strings
+			values.put("Title", title);
+			values.put("SubTitle", mEtSubtitle.getText().toString());
+			values.put("Author", mEtAuthor.getText().toString());
+			values.put("Illustrator", mEtIllustrator.getText().toString());
+			values.put("Publisher", mEtPublisher.getText().toString());
+			values.put("Issues", mEtIssues.getText().toString());
+			//Integers
+			if (!isEmpty(mEtIssue)) {
+				if (isValidInt(mEtIssue.getText().toString())) {
 					values.put("Issue", Integer.parseInt(mEtIssue.getText().toString()));
 				}
 				else {
-					values.putNull("Issue");
-				}				
-				if (!isEmpty(mEtPageCount)) {
+					Toast.makeText(this, R.string.edit_issueerror, Toast.LENGTH_LONG);
+					return;
+				}
+			}
+			else {
+				values.putNull("Issue");
+			}				
+			if (!isEmpty(mEtPageCount)) {
+				if (isValidInt(mEtPageCount.getText().toString())) {
 					values.put("PageCount", Integer.parseInt(mEtPageCount.getText().toString()));
 				}
 				else {
-					values.putNull("PageCount");
-				}				
+					Toast.makeText(this, R.string.edit_pagecounterror, Toast.LENGTH_LONG);
+					return;					
+				}
+			}
+			else {
+				values.putNull("PageCount");
+			}
+			//Dates
+			try
+			{
 				if (!isEmpty(mEtPublished)) {
+					
 					values.put("PublishDate", getDBHelper().GetDateStamp(mEtPublished.getText().toString(), dateFormat));
 				}
 				else {
@@ -318,22 +334,24 @@ GroupDialogFragment.OnGroupAddDialogListener {
 				else {
 					values.putNull("AddedDate");
 				}
-				if (mSpGroup.getSelectedItemPosition() > 0) {
-					Group g = (Group)mSpGroup.getSelectedItem();
-					values.put("GroupId", g.getId());
-				}
-				else {
-					values.putNull("GroupId");
-				}
-				if (mNewImage != null) {
-					values.put("ImageUrl", "");
-					values.put("Image", new File(mNewImage).getName());
-				}
 			}
-		}
-		catch (ParseException e) {
-			Toast.makeText(this, getString(R.string.edit_dateerror) + " " + dateFormat.format(new Date()), Toast.LENGTH_LONG);
-			return;
+			catch (ParseException e) {
+				Toast.makeText(this, getString(R.string.edit_dateerror) + " " + dateFormat.format(new Date()), Toast.LENGTH_LONG);
+				return;
+			}
+			//Image
+			if (mNewImage != null) {
+				values.put("ImageUrl", "");
+				values.put("Image", new File(mNewImage).getName());
+			}			
+			//Group
+			if (mSpGroup.getSelectedItemPosition() > 0) {
+				Group g = (Group)mSpGroup.getSelectedItem();
+				values.put("GroupId", g.getId());
+			}
+			else {
+				values.putNull("GroupId");
+			}			
 		}
 
 		if (mComics != null)
@@ -463,6 +481,12 @@ GroupDialogFragment.OnGroupAddDialogListener {
 		return et.getText().toString().trim().length() == 0;
 	}
 
+	private boolean isValidInt(String val) {
+		if (val == null)
+			return false;
+		return val.matches("^\\d+$");
+	}
+	
 	private void setTextField(EditText view, String text, boolean asHint)
 	{
 		if (!asHint) {

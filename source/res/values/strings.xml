@@ -41,6 +41,8 @@
     <string name="menu_editall">Edit all</string>
     <string name="menu_help">Help</string>
     <string name="menu_help_sub">How to use, about and stats</string>
+    <string name="common_readmore">Read more..</string>
+    <string name="common_hide">Hide</string>
     <string name="common_addtogroup">Add added comics to collection:</string>
     <string name="common_search">Search</string>
     <string name="common_group">Collection</string>
@@ -71,6 +73,8 @@
     <string name="edit_done">Saved and done!</string>
     <string name="edit_needtosave">You need to save before you can add an image.</string>
     <string name="edit_dateerror">Dates need to be entered using the format:</string>
+    <string name="edit_issueerror">Issue must be a number</string>
+    <string name="edit_pagecounterror">Page count must be a number</string>
     <string name="comicview_issueshort">Vol.</string>
     <string name="comicview_borrowed">On loan</string>
     <string name="comicview_delete_title">Delete comic?</string>
@@ -151,9 +155,76 @@
     <string name="progress_publishupload">Uploading to drive</string>
     <string name="list_name_na">[No name]</string>
     <string name="collection_useimage">Use image for collection</string>
-    <string name="help_adding"></string>
-    <string name="help_browsing"></string>
-    <string name="help_collections"></string>
-    <string name="help_lending"></string>
-    <string name="help_settings"></string> 
+    <string name="help_tab_help">Help</string>
+    <string name="help_tab_donate">Help out</string>
+    <string name="help_tab_about">About</string>
+    <string name="help_getsource">Get source-code here</string>
+    <string name="help_about">ComicDroid is released as open source under GPLv3. License follows below.</string>
+	<string name="help_adding">
+	<![CDATA[
+	<h2>Adding comics</h2>
+	Comics can be added to the archive in two ways.<br/>
+	<strong>1.</strong> Searching by ISBN number. You can either type in the ISBN number into the search field or press the \"Scan ISBN\" button to scan the barcode on your comic using the camera. To be able to scan you first need to have \"Barcode scanner\" installed. ComicDroid will then search google books for your isbn and hopefully return a matching comic.<br/>
+	<strong>2.</strong> If we can\'t find your comic or if you\'d rather enter the information manually you can press the \"Create\" button to manually add a comic to the archive. You will be taken to a form where you can enter information and you can also add an image by pressing the camera image to the left. Note that you  must press the \"check\" icon in the top right to save your changes.<br/>
+	<br/>
+	<strong>Picking author/illustrator</strong><br/>
+	When you search by ISBN and get a match ComicDroid might open up a new dialog asking you to pick author and illustrator. This is done because google books doesn\'t differentiate between authors and illustrators. In the dialog you can simply choose who is the author and who is illustrator. You can also choose "none" if you do not want to store that name.	
+	]]>
+	</string>
+    <string name="help_browsing">
+	<![CDATA[
+	<h2>The Archive</h2>
+	This is separated into five tabs.<br/>
+	<strong>Comics</strong>: This shows all collections and also comics that don\'t belong to any collection. The blue triangle indicates that that it\'s a collection. You can search the list or click any item to view more information.<br/>
+	<strong>Titles</strong>: Here all your comics are shown wether they belong to collection or not. You can search your comics here and you can also sort them by name, date added and rating.<br/>
+	<strong>Authors</strong>: Lists all unique authors that you have added to your comics. Also indicates how many comics of each author you have. You can long press any author to change her/his name.<br/>
+	<strong>Illustrators</strong>: Same as authors but lists illustrators instead.<br/>
+	<strong>Publishers</strong>: Same as authors but lists publishers instead.<br/>
+	<br/>
+	<strong>View comic</strong><br/>
+	If you press any comic you\'ll get to the comic view. Here you can see all available information about a comic. You can also mark it as read and rate it. At the very bottom there\'s a field for \"On loan\", here you can enter who this comic is on loan to. You can press edit to edit this comic.<br/>
+	<br/>
+	<strong>View author/illustrator/publisher</strong><br/>
+	If you press any item you\'ll get to a new view that lists all the comics matching that author/illustrator/publisher. You can also press edit to change her/his name.	        
+	]]>
+    </string>
+    <string name="help_collections">
+    <![CDATA[
+	<h2>Collections</h2>
+	There are three attributes to a collection that might not be self-explanatory.<br/>
+	<strong>Watch</strong>: If you check this you can then see all your watched collections under \"Watched\" in the menu. This could for example be used for keeping track of which collections you are currently interested in buying.<br/>
+	<strong>Finished</strong>: This is meant to indicate if there are still comics being released in this collection or not.<br/>
+	<strong>Complete</strong>: This is meant to indicate if you have all the comics available in this collection.<br/>    
+    ]]>
+    </string>
+    <string name="help_organize">
+    <![CDATA[
+	<h2>Organizing your comics</h2>
+	<strong>Collections</strong><br/>
+	Once you\'ve added some comics you\'ll probably want to group them together. Let\'s say for example that you have added eighteen volumes of \"The walking dead\" you\'d want to group them together into a collection called \"The walking dead\". You can do this by creating collections and the assigning a comic to that collection. This is done either when adding new comics or editing/creating comics. By default the image used for a collection is the same image as the comic with volume set to \"1\" in that collection. You can change this by long pressing a comic in the collection view and choose \"Use image for  collection\".<br/>
+	<br/>
+	<strong>Editing</strong><br/>
+	If you press a collection the archive you\'ll get to the collections view. Here you can choose \"Edit all\" in the menu. This gives you the possibility to update information for all the comics in that collection at once. This makes it much easier to for example set an author for an entire collection of comics. If you need group for example different authors/illustrators/publishers together you can do this in the archive view by long pressing and choose \"Edit\". For example let\'s say you have both \"DC\" and \"DC Comics\" as publishers you can edit \"DC Comics\" and change it to \"DC\".    
+    ]]>
+    </string>
+    <string name="help_lending">
+	<![CDATA[
+	<h2>Lending</h2>
+	Have you ever wondered where that comic book your looking for has gone? You\'ve probably lent it out to someone but who? ComicDroid can help you keep track of this. Under \"Lend out\" in the menu you can first enter the name of the borrower and then scan the isbn of the comic being lent out. Another way is to view the comic and enter a name at the bottom.<br/>
+	<br/>
+	You can then check which comics are lent out, who lent it and when they lent it under \"On loan\" in the menu. To mark comics as returned you simple click them and then click the trash-can.	
+	]]>        
+    </string>
+    <string name="help_settings">
+    <![CDATA[
+	<h2>Settings</h2>
+	There are four main settings that you can switch on and off:<br/>
+	<strong>Publish to drive</strong>: If you enable this ComicDroid will create a new folder on your google drive account called \"ComicDroid\" here it will publish a HTML-page containing your archive. This means anyone can surf and watch your archive from anywhere using the link you\'ll see when you enable this setting.<br/>
+	<strong>Backup to drive</strong>: Enabling this allows ComicDroid to backup your archive to google drive. It will do this using a special appdata folder which isn\'t visible to you but you can manage it under settings on http://drive.google.com Backing up to google drive also gives you the possibility to restore your archive on another device.<br/>
+	<strong>Wifi only</strong>:With this enabled ComicDroid will only backup your archive when you are connected via wifi. Note that enabling this might result in stale backups if you are not frequently connected via wifi.<br/>
+	<br/>
+	<strong>Multiple devices</strong><br/>
+	If you install ComicDroid on multiple devices you will only be able to enable backup and publishing on one of them. This is to make sure data isn\'t overwritten.    
+    ]]>    
+    </string> 
 </resources>

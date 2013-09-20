@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v4.widget.DrawerLayout 
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:comicdroid="http://schemas.android.com/apk/res/com.zns.comicdroid"
 	android:id="@+id/drawer_layout"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent">
@@ -14,37 +13,11 @@
 	       
 		<include layout="@layout/service_progress" />
 	    
-		<LinearLayout
-		    android:layout_width="match_parent"
-		    android:layout_height="match_parent"
-		    android:orientation="vertical">
-		    
-		<com.zns.comicdroid.widget.CollapsibleTextView
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        comicdroid:text="@string/help_adding" />
-		  
-		<com.zns.comicdroid.widget.CollapsibleTextView
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        comicdroid:text="@string/help_browsing" />
-				
-		<com.zns.comicdroid.widget.CollapsibleTextView
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        comicdroid:text="@string/help_collections" />
-				
-		<com.zns.comicdroid.widget.CollapsibleTextView
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        comicdroid:text="@string/help_lending" />
-				
-		<com.zns.comicdroid.widget.CollapsibleTextView
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        comicdroid:text="@string/help_settings" />
-				
-		</LinearLayout>
+	    <android.support.v4.view.ViewPager
+	     android:id="@+id/help_viewPager"
+	     android:layout_width="fill_parent"
+	     android:layout_height="fill_parent" />    
+	     		
 	</LinearLayout>
 	
 	<include layout="@layout/navigation_drawer_left" />

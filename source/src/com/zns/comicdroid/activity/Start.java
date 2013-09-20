@@ -67,9 +67,19 @@ ActionBar.TabListener {
 		setContentView(R.layout.activity_start);
 		super.onCreate(savedInstanceState);
 
-		Resources res = getResources();
-
+		//View pager
+		mFragmentAdapter = new TabFragmentAdapter(getSupportFragmentManager());
+		mViewPager = (ViewPager)findViewById(R.id.start_viewPager);		
+		mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+			@Override
+			public void onPageSelected(int position) {
+				getSupportActionBar().setSelectedNavigationItem(position);
+			}
+		});	
+		mViewPager.setAdapter(mFragmentAdapter);
+		
 		//Tabs
+		Resources res = getResources();
 		getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
 		ActionBar.Tab tab0 = getSupportActionBar().newTab();
@@ -104,17 +114,6 @@ ActionBar.TabListener {
 
 		//Layout elements
 		mTvEmpty = (TextView)findViewById(R.id.start_tvEmpty);
-
-		//View pager
-		mFragmentAdapter = new TabFragmentAdapter(getSupportFragmentManager());
-		mViewPager = (ViewPager)findViewById(R.id.start_viewPager);		
-		mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-			@Override
-			public void onPageSelected(int position) {
-				getSupportActionBar().setSelectedNavigationItem(position);
-			}
-		});	
-		mViewPager.setAdapter(mFragmentAdapter);
 	}	
 	
 	@Override

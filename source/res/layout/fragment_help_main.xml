@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+ 	xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:comicdroid="http://schemas.android.com/apk/res/com.zns.comicdroid"    
+    android:id="@+id/scrollView1"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+	<LinearLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:background="#ffffff"
+	    android:padding="7dp"
+	    android:orientation="vertical" >
+	    
+		<com.zns.comicdroid.widget.CollapsibleTextView
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_marginBottom="10dp"
+	        comicdroid:text="@string/help_adding" />
+		  
+		<com.zns.comicdroid.widget.CollapsibleTextView
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_marginBottom="10dp"
+	        comicdroid:text="@string/help_browsing" />
+				
+		<com.zns.comicdroid.widget.CollapsibleTextView
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_marginBottom="10dp"
+	        comicdroid:text="@string/help_collections" />
+				
+		<com.zns.comicdroid.widget.CollapsibleTextView
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_marginBottom="10dp"
+	        comicdroid:text="@string/help_organize" />
+			
+		<com.zns.comicdroid.widget.CollapsibleTextView
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_marginBottom="10dp"
+	        comicdroid:text="@string/help_lending" />
+				
+		<com.zns.comicdroid.widget.CollapsibleTextView
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        comicdroid:text="@string/help_settings" />
+			    
+	</LinearLayout>
+</ScrollView>

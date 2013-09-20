@@ -168,16 +168,18 @@ public class ComicView extends BaseFragmentActivity {
 			mTvPublished.setText(mDateFormat.format(comic.getPublishDate()));
 		}
 		mTvAdded.setText(mDateFormat.format(comic.getAddedDate()));
-		mTvPageCount.setText(Integer.toString(comic.getPageCount()));
+		if (comic.getPageCount() > 0) {
+			mTvPageCount.setText(Integer.toString(comic.getPageCount()));
+		}
 		mTvIssues.setText(comic.getIssues());
-
 		mCbIsRead.setChecked(comic.getIsRead());
-		if (comic.getRating() > 0)
+		if (comic.getRating() > 0) {
 			mRbRating.setRating(comic.getRating());
-
+		}
 		mEtBorrower.setText(comic.getBorrower());
-		if (comic.getImage() != null)
-			mIvImage.setImageBitmap(BitmapFactory.decodeFile(getImagePath(comic.getImage())));		
+		if (comic.getImage() != null) {
+			mIvImage.setImageBitmap(BitmapFactory.decodeFile(getImagePath(comic.getImage())));
+		}
 	}	
 
 	//Menu

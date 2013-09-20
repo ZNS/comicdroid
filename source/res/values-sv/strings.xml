@@ -41,6 +41,8 @@
     <string name="menu_editall">Redigera alla</string>
     <string name="menu_help">Hjälp</string>
     <string name="menu_help_sub">Hur man använder, om och stats</string>    
+    <string name="common_readmore">Läs mer..</string>
+    <string name="common_hide">Dölj</string>    
     <string name="common_addtogroup">Lägg tillagda serier till samling:</string>
     <string name="common_search">Sök</string>
     <string name="common_group">Samling</string>
@@ -71,6 +73,8 @@
     <string name="edit_done">Sparat och klart!</string>
     <string name="edit_needtosave">Du måste spara innan du kan lägga till en bild.</string>
     <string name="edit_dateerror">Datum måste anges enligt formatet:</string>
+    <string name="edit_issueerror">Volym måste vara ett tal</string>
+    <string name="edit_pagecounterror">Antal sidor måste vara ett tal</string>    
     <string name="comicview_issueshort">Vol.</string>
     <string name="comicview_borrowed">Utlånad</string>
     <string name="comicview_delete_title">Radera serie?</string>
@@ -149,6 +153,11 @@
     <string name="progress_publishupload">Laddar upp till drive</string>
     <string name="list_name_na">[Inget namn]</string>    
     <string name="collection_useimage">Använd bild för samling</string>
+    <string name="help_tab_help">Hjälp</string>
+    <string name="help_tab_stats">Hjälp till</string>
+    <string name="help_tab_about">Om</string>
+    <string name="help_getsource">Hämta källkoden här</string>
+    <string name="help_about">ComicDroid är öppen källkod och licensierat under GPLv3. Licensen följer nedan.</string>
     <string name="help_adding"></string>
     <string name="help_browsing"></string>
     <string name="help_collections"></string>

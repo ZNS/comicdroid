@@ -7,13 +7,14 @@
     <TextView
         android:id="@+id/tvCollapsible"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:paddingBottom="30dp" />
 
     <View android:layout_width="match_parent"
         android:id="@+id/tvCollapsibleGradient" 
         android:layout_marginBottom="25dp" 
-        android:layout_height="60dp" 
-        android:background="@drawable/textview_bottom_fadeout" 
+        android:layout_height="80dp" 
+        android:background="@drawable/textview_collapsible_fadeout" 
         android:layout_gravity="bottom"  />
 
     <TextView
@@ -21,8 +22,8 @@
         android:layout_width="match_parent"
         android:layout_height="25dp"
         android:layout_gravity="bottom"
-        android:background="#FFFFFF"
+        android:background="@drawable/textview_collapsible_handle"
         android:gravity="center"
-        android:text="Läs mer" />
+        android:text="@string/common_readmore" />
 
 </FrameLayout>
