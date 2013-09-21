@@ -10,13 +10,6 @@
       Ulrik Andersson - initial API and implementation
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
-	<item
-	    android:id="@+id/menu_item_share"
-	    android:actionProviderClass="com.actionbarsherlock.widget.ShareActionProvider"
-	    android:enabled="true"
-	    android:showAsAction="ifRoom"
-	    android:visible="false" android:title="@string/common_share">
-	</item>    
     <item 
         android:id="@+id/menu_edit" 
         android:showAsAction="always" 

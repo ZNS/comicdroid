@@ -34,7 +34,6 @@ import android.widget.TextView;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.widget.ShareActionProvider;
 import com.zns.comicdroid.BaseFragmentActivity;
 import com.zns.comicdroid.R;
 import com.zns.comicdroid.data.Comic;
@@ -61,7 +60,6 @@ public class ComicView extends BaseFragmentActivity {
 	private TextView mTvIssues;
 	private CheckBox mCbIsRead;
 	private RatingBar mRbRating;
-	private ShareActionProvider mShareProvider;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -181,16 +179,7 @@ public class ComicView extends BaseFragmentActivity {
 		mEtBorrower.setText(comic.getBorrower());
 		if (comic.getImage() != null) {
 			mIvImage.setImageBitmap(BitmapFactory.decodeFile(getImagePath(comic.getImage())));
-		}
-		
-		//Share provider
-		if (mShareProvider != null) {
-			Intent shareIntent = new Intent(Intent.ACTION_SEND);
-			shareIntent.setType("text/plain");
-			shareIntent.putExtra(Intent.EXTRA_SUBJECT, comic.getTitle());
-			shareIntent.putExtra(Intent.EXTRA_TEXT, "Read this");
-			mShareProvider.setShareIntent(shareIntent);
-		}
+		}		
 	}	
 
 	//Menu
@@ -201,9 +190,6 @@ public class ComicView extends BaseFragmentActivity {
 		inflater.inflate(R.menu.actionbar_view, (com.actionbarsherlock.view.Menu) menu);
 		menu.findItem(R.id.submenu_view).setVisible(true);
 		menu.findItem(R.id.menu_editall).setVisible(false);
-		MenuItem share = menu.findItem(R.id.menu_item_share);
-		share.setVisible(true);
-		mShareProvider = (ShareActionProvider)share.getActionProvider();
 		return true;
 	}		
 
