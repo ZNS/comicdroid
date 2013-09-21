@@ -17,10 +17,8 @@
 
     <ImageView
         android:id="@+id/ivImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_marginRight="10dp" />
+        style="@style/ComicListImage"
+        android:layout_alignParentLeft="true" />
     
 	<LinearLayout 
 	    android:layout_width="wrap_content"
@@ -32,10 +30,7 @@
 	        android:id="@+id/tvTitle"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:shadowRadius="0"
-	        android:textColor="@color/altFg1"
-	        android:textSize="20sp"
-	        android:textStyle="bold" />
+			style="@style/ComicListTitle" />
 		
 	    <TextView
 	    	android:id="@+id/tvAuthor"

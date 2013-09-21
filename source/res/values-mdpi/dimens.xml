@@ -9,11 +9,11 @@
       Ulrik Andersson - initial API and implementation
 -->
 <resources>
-
-    <!--
-         Customize dimensions originally defined in res/values/dimens.xml (such as
-         screen margins) for sw720dp devices (e.g. 10" tablets) in landscape here.
-    -->
-    <dimen name="activity_horizontal_margin">128dp</dimen>
-
+    <dimen name="padding_m">6dp</dimen>
+    <dimen name="padding_s">2dp</dimen>
+    <dimen name="text_heading">20sp</dimen>
+    <dimen name="text_list_heading">15sp</dimen>
+    <dimen name="text_nav_heading">15sp</dimen>
+    <dimen name="text_nav_sub">11sp</dimen>
+    <dimen name="comic_list_separator">2dp</dimen>
 </resources>

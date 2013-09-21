@@ -256,27 +256,28 @@ public class ImageWorker {
     // Hard cache, with a fixed maximum capacity and a life duration
     private final HashMap<String, Bitmap> sHardBitmapCache =
         new LinkedHashMap<String, Bitmap>(HARD_CACHE_CAPACITY / 2, 0.75f, true) {
-        @Override
-        protected boolean removeEldestEntry(LinkedHashMap.Entry<String, Bitmap> eldest) {
-            if (size() > HARD_CACHE_CAPACITY) {
-                // Entries push-out of hard reference cache are transferred to soft reference cache
-                sSoftBitmapCache.put(eldest.getKey(), new SoftReference<Bitmap>(eldest.getValue()));
-                return true;
-            } else
-                return false;
-        }
-    };
+			private static final long serialVersionUID = -5160322655642700880L;
+			@Override
+	        protected boolean removeEldestEntry(LinkedHashMap.Entry<String, Bitmap> eldest) {
+	            if (size() > HARD_CACHE_CAPACITY) {
+	                // Entries push-out of hard reference cache are transferred to soft reference cache
+	                sSoftBitmapCache.put(eldest.getKey(), new SoftReference<Bitmap>(eldest.getValue()));
+	                return true;
+	            } else
+	                return false;
+	        }
+	    };
 
-    // Soft cache for bitmaps kicked out of hard cache
-    private final static ConcurrentHashMap<String, SoftReference<Bitmap>> sSoftBitmapCache =
-        new ConcurrentHashMap<String, SoftReference<Bitmap>>(HARD_CACHE_CAPACITY / 2);
-
-    private final Handler purgeHandler = new Handler();
-
-    private final Runnable purger = new Runnable() {
-        public void run() {
-            clearCache();
-        }
+	    // Soft cache for bitmaps kicked out of hard cache
+	    private final static ConcurrentHashMap<String, SoftReference<Bitmap>> sSoftBitmapCache =
+	        new ConcurrentHashMap<String, SoftReference<Bitmap>>(HARD_CACHE_CAPACITY / 2);
+	
+	    private final Handler purgeHandler = new Handler();
+	
+	    private final Runnable purger = new Runnable() {
+	        public void run() {
+	            clearCache();
+	        }
     };
 
     /**

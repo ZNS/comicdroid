@@ -30,22 +30,16 @@
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
 	        android:text=""
-			android:padding="10dp"
-	        android:paddingTop="5dp"
-	        android:layout_marginBottom="2dp"
-	        android:textColor="@color/altFg1"
-	        android:background="@color/contentBg"
-	        android:textSize="25sp"
-	        android:textStyle="bold" />
+			style="@style/TextViewLargeHeading" />
 		    	    		    
 		    <RelativeLayout
 		        android:layout_width="match_parent"
 		        android:layout_height="wrap_content"
 		        android:layout_marginBottom="2dp"
 		        android:background="@color/contentBg"	 
-		        android:padding="5dp"
-		        android:paddingLeft="10dp"
-		        android:paddingRight="10dp"       
+		        android:padding="@dimen/padding_s"
+		        android:paddingLeft="@dimen/padding_m"
+		        android:paddingRight="@dimen/padding_m"       
 		        android:orientation="horizontal" >
 		        
 		        <CheckBox
@@ -73,7 +67,7 @@
 		        			    	    
 			<LinearLayout
 			    android:layout_width="match_parent"
-			    android:layout_height="match_parent"
+			    android:layout_height="wrap_content"
 			    android:orientation="vertical"
 			    android:background="@color/contentBg"
 			    android:padding="5dp" >

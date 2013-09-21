@@ -20,9 +20,8 @@
         android:layout_height="wrap_content"
         android:shadowRadius="0"
         android:textColor="@color/altFg1"
-        android:textSize="20sp" />
+        android:textSize="@dimen/text_list_heading" />
 		
-
 	<TextView
 	    android:id="@+id/list_groupedrow_tvCount"
 	    android:layout_width="wrap_content"

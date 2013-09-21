@@ -9,10 +9,11 @@
       Ulrik Andersson - initial API and implementation
 -->
 <resources>
-
-    <!--
-         Customize dimensions originally defined in res/values/dimens.xml (such as
-         screen margins) for sw600dp devices (e.g. 7" tablets) here.
-    -->
-
+    <dimen name="padding_m">10dp</dimen>
+    <dimen name="padding_s">5dp</dimen>
+    <dimen name="text_heading">25sp</dimen>
+    <dimen name="text_list_heading">20sp</dimen>
+    <dimen name="text_nav_heading">18sp</dimen>
+    <dimen name="text_nav_sub">12sp</dimen>    
+    <dimen name="comic_list_separator">5dp</dimen>
 </resources>

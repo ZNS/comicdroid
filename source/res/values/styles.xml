@@ -27,6 +27,31 @@
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
 
+    <!-- Texts -->
+    <style name="TextViewLargeHeading">
+		<item name="android:padding">@dimen/padding_m</item>
+	    <item name="android:paddingTop">@dimen/padding_s</item>
+	    <item name="android:layout_marginBottom">2dp</item>
+	    <item name="android:textColor">@color/altFg1</item>
+	    <item name="android:background">@color/contentBg</item>
+	    <item name="android:textSize">@dimen/text_heading</item>
+	    <item name="android:textStyle">bold</item>        
+    </style>
+    
+    <style name="ComicListTitle">
+		<item name="android:shadowRadius">0</item>
+	    <item name="android:textColor">@color/altFg1</item>
+	    <item name="android:textSize">@dimen/text_list_heading</item>
+	    <item name="android:textStyle">bold</item>   
+    </style>
+        
+    <!-- Images -->
+    <style name="ComicListImage">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginRight">10dp</item>
+    </style>
+        
     <!-- Button -->
     <style name="ButtonText">
 	    <item name="android:textColor">#333</item>

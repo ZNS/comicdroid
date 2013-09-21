@@ -57,6 +57,7 @@
     <string name="common_name">Name</string>
     <string name="common_none">None</string>
     <string name="common_close">Close</string>
+    <string name="common_share">Share</string>
     <string name="start_tab_aggregates">Comics</string>
     <string name="start_tab_comics">Titles</string>
     <string name="start_tab_authors">Authors</string>

@@ -9,9 +9,11 @@
       Ulrik Andersson - initial API and implementation
 -->
 <resources>
-
-    <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
-
+    <dimen name="padding_m">6dp</dimen>
+    <dimen name="padding_s">3dp</dimen>
+    <dimen name="text_heading">23sp</dimen>
+    <dimen name="text_list_heading">17sp</dimen>
+    <dimen name="text_nav_heading">16sp</dimen>
+    <dimen name="text_nav_sub">11sp</dimen>
+    <dimen name="comic_list_separator">3dp</dimen>
 </resources>
