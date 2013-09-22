@@ -23,8 +23,9 @@ import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpResponse;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.model.FileList;
+import com.google.api.services.drive.model.File;
 import com.zns.comicdroid.service.GoogleDriveService;
+import com.zns.comicdroid.util.DriveUtil;
 
 public class DriveBackupInitTask  extends AsyncTask<com.zns.comicdroid.task.DriveBackupInitTask.DriveBackupInitTaskArg, Void, com.zns.comicdroid.task.DriveBackupInitTask.DriveBackupInitTaskResult> {
 
@@ -53,15 +54,14 @@ public class DriveBackupInitTask  extends AsyncTask<com.zns.comicdroid.task.Driv
 			if (args[0].appId != null) {
 				Drive service = new Drive.Builder(AndroidHttp.newCompatibleTransport(), new JacksonFactory(), args[0].credentials).build();
 				//Get backup meta file
-				FileList files = service.files().list().setQ("'appdata' in parents and title = '" + GoogleDriveService.BACKUP_META_FILENAME + "'").execute();
-				if (files.getItems().size() > 0)
+				File f = DriveUtil.getFile(service, "appdata", GoogleDriveService.BACKUP_META_FILENAME);
+				if (f != null)
 				{
 					HttpResponse response = null;
 					BufferedReader reader = null;
 					String backupAppId = "";
 					try
 					{
-						com.google.api.services.drive.model.File f = files.getItems().get(0);
 						response = service.getRequestFactory().buildGetRequest(new GenericUrl(f.getDownloadUrl())).execute();
 						reader = new BufferedReader(new InputStreamReader(response.getContent()));
 						backupAppId = reader.readLine();					

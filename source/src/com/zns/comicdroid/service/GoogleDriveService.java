@@ -18,7 +18,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -48,14 +47,13 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.FileList;
 import com.google.api.services.drive.model.ParentReference;
-import com.google.api.services.drive.model.Revision;
-import com.google.api.services.drive.model.RevisionList;
 import com.zns.comicdroid.Application;
 import com.zns.comicdroid.R;
 import com.zns.comicdroid.activity.Settings;
 import com.zns.comicdroid.data.Comic;
 import com.zns.comicdroid.data.DBHelper;
 import com.zns.comicdroid.util.BackupHelper;
+import com.zns.comicdroid.util.DriveUtil;
 
 import de.greenrobot.event.EventBus;
 
@@ -170,10 +168,9 @@ public class GoogleDriveService extends IntentService {
 
 		//Make sure the current backup is made from the same device
 		try {		
-			FileList files = service.files().list().setQ("'appdata' in parents and title = '" + BACKUP_META_FILENAME + "'").execute();
-			if (files.getItems().size() > 0)
+			com.google.api.services.drive.model.File f = DriveUtil.getFile(service, "appdata", BACKUP_META_FILENAME);
+			if (f != null)
 			{
-				com.google.api.services.drive.model.File f = files.getItems().get(0);
 				HttpResponse response = service.getRequestFactory().buildGetRequest(new GenericUrl(f.getDownloadUrl())).execute();
 				BufferedReader reader = new BufferedReader(new InputStreamReader(response.getContent()));
 				String backupAppId = reader.readLine();					
@@ -210,7 +207,7 @@ public class GoogleDriveService extends IntentService {
 				else if (f.getTitle().toLowerCase(Locale.ENGLISH).equals("data.dat")) {
 					dataDriveFile = f;
 					try {
-						trimDriveFileRevisions(service, f.getId(), 1);
+						DriveUtil.trimDriveFileRevisions(service, f.getId(), 1);
 					}
 					catch (IOException e) {
 						e.printStackTrace();
@@ -410,12 +407,10 @@ public class GoogleDriveService extends IntentService {
 		try 
 		{						
 			//Get current index file
-			com.google.api.services.drive.model.File fileIndex = null;
-			FileList list = service.files().list().setQ("'" + webFolderId + "' in parents and title = 'index.html'").execute();
-			if (list.getItems().size() > 0)
+			com.google.api.services.drive.model.File fileIndex = DriveUtil.getFile(service, webFolderId, "index.html");
+			if (fileIndex != null)
 			{
-				fileIndex = list.getItems().get(0);
-				trimDriveFileRevisions(service, fileIndex.getId(), 1);
+				DriveUtil.trimDriveFileRevisions(service, fileIndex.getId(), 1);
 			}
 			
 			//Set content of file
@@ -462,18 +457,6 @@ public class GoogleDriveService extends IntentService {
 		if (val == null)
 			return "";
 		return val;
-	}
-
-	private void trimDriveFileRevisions(Drive service, String fileId, int revisionCount) throws IOException {
-		RevisionList revisions = service.revisions().list(fileId).execute();
-		if (revisions.getItems().size() > revisionCount)
-		{
-			List<Revision> items = revisions.getItems();
-			Collections.sort(items, new RevisionsByDateComparer());
-			for (Revision rev : items.subList(revisionCount, items.size())) {
-				service.revisions().delete(fileId, rev.getId()).execute();
-			}
-		}
 	}
 	
 	private String getImageSrc(String imageUrl, String image, String imagePath) {
