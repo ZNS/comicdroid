@@ -63,7 +63,7 @@
 					        android:layout_height="wrap_content"
 					        android:layout_marginBottom="-2dp"
 					        android:text="@string/common_group"
-					        android:textAppearance="?android:attr/textAppearanceSmall" />
+					        android:textSize="@dimen/text_small" />
 					    	    
 					    <RelativeLayout
 					        android:layout_width="fill_parent"
@@ -91,7 +91,7 @@
 					        android:layout_height="wrap_content"
 					        android:layout_marginBottom="-2dp"
 					        android:text="@string/comic_title"
-					        android:textAppearance="?android:attr/textAppearanceSmall" />
+					        android:textSize="@dimen/text_small" />
 					
 					    <EditText
 					        android:id="@+id/comicEdit_etTitle"
@@ -99,7 +99,7 @@
 					        android:layout_height="wrap_content"
 					        android:paddingBottom="5dp"
 					        android:textColorHint="#cccccc"
-					        android:textAppearance="?android:attr/textAppearanceMedium" />
+					        android:textSize="@dimen/text_medium" />
 							
 						<!-- Subtitle -->
 						<RelativeLayout android:id="@+id/comicEdit_subtitle" android:layout_width="fill_parent" android:layout_height="wrap_content">					
@@ -108,7 +108,7 @@
 					        android:layout_width="wrap_content"
 					        android:layout_height="wrap_content"
 					        android:text="@string/comic_subtitle"
-					        android:textAppearance="?android:attr/textAppearanceSmall" />
+					        android:textSize="@dimen/text_small" />
 					
 					    <EditText
 					        android:id="@+id/comicEdit_etSubtitle"
@@ -117,7 +117,7 @@
 					        android:text=""
 					        android:layout_marginTop="19dp"
 					        android:textColorHint="#cccccc"
-					        android:textAppearance="?android:attr/textAppearanceMedium" />			
+					        android:textSize="@dimen/text_medium" />			
 						</RelativeLayout>
 					</LinearLayout>
 			
@@ -130,7 +130,7 @@
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
 			        android:text="@string/comic_issue"
-			        android:textAppearance="?android:attr/textAppearanceSmall" />
+			        android:textSize="@dimen/text_small" />
 			
 			    <EditText
 			        android:id="@+id/comicEdit_etIssue"
@@ -139,7 +139,7 @@
 			        android:text=""
 			        android:layout_marginTop="19dp"
 			        android:inputType="number"
-			        android:textAppearance="?android:attr/textAppearanceMedium" />				    		
+			        android:textSize="@dimen/text_medium" />				    		
 			    </RelativeLayout>
 			    
 				<!-- AUTHOR -->
@@ -149,7 +149,7 @@
 			        android:layout_height="wrap_content"
 			        android:layout_marginBottom="-2dp"
 			        android:text="@string/comic_author"
-			        android:textAppearance="?android:attr/textAppearanceSmall" />
+			        android:textSize="@dimen/text_small" />
 			
 			    <AutoCompleteTextView
 			        android:id="@+id/comicEdit_actAuthor"
@@ -158,7 +158,7 @@
 			        android:text=""
 			        android:paddingBottom="5dp"
 			        android:textColorHint="#cccccc"
-			        android:textAppearance="?android:attr/textAppearanceMedium" >
+			        android:textSize="@dimen/text_medium" >
 			    </AutoCompleteTextView>        
 				    	
 				<!-- ILLUSTRATOR -->
@@ -168,7 +168,7 @@
 			        android:layout_height="wrap_content"
 			        android:layout_marginBottom="-2dp"
 			        android:text="@string/comic_illustrator"
-			        android:textAppearance="?android:attr/textAppearanceSmall" />
+			        android:textSize="@dimen/text_small" />
 			
 			    <AutoCompleteTextView
 			        android:id="@+id/comicEdit_actIllustrator"
@@ -177,7 +177,7 @@
 			        android:text=""
 			        android:paddingBottom="5dp"
 			        android:textColorHint="#cccccc"
-			        android:textAppearance="?android:attr/textAppearanceMedium" >
+			        android:textSize="@dimen/text_medium" >
 			    </AutoCompleteTextView>
 			    			    
 				<!-- Publisher -->
@@ -187,7 +187,7 @@
 			        android:layout_height="wrap_content"
 			        android:layout_marginBottom="-2dp"
 			        android:text="@string/comic_publisher"
-			        android:textAppearance="?android:attr/textAppearanceSmall" />
+			        android:textSize="@dimen/text_small" />
 			
 			    <AutoCompleteTextView
 			        android:id="@+id/comicEdit_actPublisher"
@@ -196,7 +196,7 @@
 			        android:text=""
 			        android:paddingBottom="5dp"
 			        android:textColorHint="#cccccc"
-			        android:textAppearance="?android:attr/textAppearanceMedium" >
+			        android:textSize="@dimen/text_medium" >
 			    </AutoCompleteTextView>
 			        
 				<!-- ISSUES -->
@@ -206,7 +206,7 @@
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
 			        android:text="@string/comic_issues"
-			        android:textAppearance="?android:attr/textAppearanceSmall" />
+			        android:textSize="@dimen/text_small" />
 			
 			    <EditText
 			        android:id="@+id/comicEdit_etIssues"
@@ -215,7 +215,7 @@
 			        android:text=""
 			        android:layout_marginTop="19dp"
 			        android:inputType="number"
-			        android:textAppearance="?android:attr/textAppearanceMedium" />				    		
+			        android:textSize="@dimen/text_medium" />				    		
 			    </RelativeLayout>
 			    			    
 				<!-- Publishdate -->
@@ -225,7 +225,7 @@
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
 			        android:text="@string/comic_datepublished"
-			        android:textAppearance="?android:attr/textAppearanceSmall" />
+			        android:textSize="@dimen/text_small" />
 			
 			    <EditText
 			        android:id="@+id/comicEdit_etPublished"
@@ -233,7 +233,7 @@
 			        android:layout_height="wrap_content"
 					android:layout_marginTop="19dp"
 			        android:inputType="date"
-			        android:textAppearance="?android:attr/textAppearanceMedium" />
+			        android:textSize="@dimen/text_medium" />
 				</RelativeLayout>
 				
 				<RelativeLayout android:id="@+id/comicEdit_added" android:layout_width="fill_parent" android:layout_height="wrap_content">
@@ -243,7 +243,7 @@
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
 			        android:text="@string/comic_dateadded"
-			        android:textAppearance="?android:attr/textAppearanceSmall" />
+			        android:textSize="@dimen/text_small" />
 			
 			    <EditText
 			        android:id="@+id/comicEdit_etAdded"
@@ -251,7 +251,7 @@
 			        android:layout_height="wrap_content"
 					android:layout_marginTop="19dp"
 			        android:inputType="date"
-			        android:textAppearance="?android:attr/textAppearanceMedium" />
+			        android:textSize="@dimen/text_medium" />
 				</RelativeLayout>
 				
 				<!-- Pagecount -->
@@ -261,7 +261,7 @@
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
 			        android:text="@string/comic_pagecount"
-			        android:textAppearance="?android:attr/textAppearanceSmall" />
+			        android:textSize="@dimen/text_small" />
 			
 			    <EditText
 			        android:id="@+id/comicEdit_etPageCount"
@@ -269,7 +269,7 @@
 			        android:layout_height="wrap_content"
 					android:layout_marginTop="19dp"
 			        android:inputType="number"
-			        android:textAppearance="?android:attr/textAppearanceMedium" />
+			        android:textSize="@dimen/text_medium" />
 				</RelativeLayout>			
 			</LinearLayout>
 		</ScrollView>

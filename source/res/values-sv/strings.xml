@@ -160,6 +160,7 @@
     <string name="help_tab_about">Om</string>
     <string name="help_getsource">Hämta källkoden här</string>
     <string name="help_about">ComicDroid är öppen källkod och licensierat under GPLv3. Licensen följer nedan.</string>
+	<string name="error_playservices">Kunde inte logga in på google drive. Google play services kanske inte är installerat.</string>    
     <string name="help_adding">
     <![CDATA[
 	<h2>Lägga till serier</h2>

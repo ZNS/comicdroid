@@ -64,7 +64,7 @@
 		            android:layout_alignParentLeft="true"
 		            android:layout_toLeftOf="@id/settings_tbDropbox"
 		            android:text="@string/settings_drivelabel"
-		            android:textAppearance="?android:attr/textAppearanceMedium" />
+		            android:textSize="@dimen/text_medium" />
 		
 		        <TextView
 		            android:id="@+id/settings_tvDriveSub"
@@ -74,7 +74,7 @@
 		            android:layout_below="@id/settings_tvDriveHeading"
 		            android:layout_toLeftOf="@id/settings_tbDropbox"		            
 		            android:text="@string/settings_drivesub"
-		            android:textAppearance="?android:attr/textAppearanceSmall" />		        		        
+		            android:textSize="@dimen/text_small" />		        		        
 		    </RelativeLayout>
 	
 		    <TextView
@@ -110,7 +110,7 @@
 		            android:layout_alignParentLeft="true"
 		            android:layout_toLeftOf="@id/settings_tbDriveBackup"
 		            android:text="@string/settings_drivebackuplabel"
-		            android:textAppearance="?android:attr/textAppearanceMedium" />
+		            android:textSize="@dimen/text_medium" />
 		
 		        <TextView
 		            android:id="@+id/settings_tvDriveBackupSub"
@@ -120,7 +120,7 @@
 		            android:layout_below="@id/settings_tvDriveBackupHeading"
 		            android:layout_toLeftOf="@id/settings_tbDriveBackup"		            
 		            android:text="@string/settings_drivebackupsub"
-		            android:textAppearance="?android:attr/textAppearanceSmall" />		        		        
+		            android:textSize="@dimen/text_small" />		        		        
 		    </RelativeLayout>
 		    			
 			<View
@@ -149,7 +149,7 @@
 		            android:layout_alignParentLeft="true"
 		            android:layout_toLeftOf="@id/settings_tbBackupWifi"
 		            android:text="@string/settings_backupwifilabel"
-		            android:textAppearance="?android:attr/textAppearanceMedium" />
+		            android:textSize="@dimen/text_medium" />
 		
 		        <TextView
 		            android:id="@+id/settings_tvBackupWifiSub"
@@ -159,7 +159,7 @@
 		            android:layout_below="@id/settings_tvBackupWifiHeading"
 		            android:layout_toLeftOf="@id/settings_tbBackupWifi"		            
 		            android:text="@string/settings_backupwifisub"
-		            android:textAppearance="?android:attr/textAppearanceSmall" />		        		        
+		            android:textSize="@dimen/text_small" />		        		        
 		    </RelativeLayout>
 		    		    
 		    <!--  ACTIONS  -->
@@ -183,14 +183,14 @@
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:text="@string/settings_publishlabel"
-	            android:textAppearance="?android:attr/textAppearanceMedium" />
+	            android:textSize="@dimen/text_medium" />
 	
 	        <TextView
 	            android:id="@+id/settings_tvPublishSub"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:text="@string/settings_publishsub"
-	            android:textAppearance="?android:attr/textAppearanceSmall" />
+	            android:textSize="@dimen/text_small" />
 	        		        
 	        <Button
 	            android:id="@+id/settings_btnPublish"
@@ -214,13 +214,13 @@
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:text="@string/settings_readlabel"
-	            android:textAppearance="?android:attr/textAppearanceMedium" />
+	            android:textSize="@dimen/text_medium" />
 	
 	        <TextView
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:text="@string/settings_readsub"
-	            android:textAppearance="?android:attr/textAppearanceSmall" />
+	            android:textSize="@dimen/text_small" />
 	        		        
 	        <Button
 	            android:id="@+id/settings_btnSetRead"
@@ -244,13 +244,13 @@
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:text="@string/settings_groupcountlabel"
-	            android:textAppearance="?android:attr/textAppearanceMedium" />
+	            android:textSize="@dimen/text_medium" />
 	
 	        <TextView
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:text="@string/settings_groupcountsub"
-	            android:textAppearance="?android:attr/textAppearanceSmall" />
+	            android:textSize="@dimen/text_small" />
 	        		        
 	        <Button
 	            android:id="@+id/settings_btnGroupCount"
@@ -274,13 +274,13 @@
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:text="@string/settings_restorelabel"
-	            android:textAppearance="?android:attr/textAppearanceMedium" />
+	            android:textSize="@dimen/text_medium" />
 	
 	        <TextView
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:text="@string/settings_restoresub"
-	            android:textAppearance="?android:attr/textAppearanceSmall" />
+	            android:textSize="@dimen/text_small" />
 	        		        
 	        <Button
 	            android:id="@+id/settings_btnRestore"

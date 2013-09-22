@@ -56,6 +56,7 @@ AuthorIllustratorDialogFragment.OnAuthorIllustratorDialogListener {
 	private boolean mIsScanning = false;
 	private CheckBox mCbIsRead;
 	private Button mBtnScan;
+	private Button mBtnSearch;
 
 	private ArrayAdapter<Group> adapterGroups;
 
@@ -70,7 +71,7 @@ AuthorIllustratorDialogFragment.OnAuthorIllustratorDialogListener {
 		ListView lvComics = (ListView)findViewById(R.id.add_lvComics);
 		ImageView ivGroupAdd = (ImageView)findViewById(R.id.add_ivGroupAdd);
 		mBtnScan = (Button)findViewById(R.id.btnScan);
-
+		mBtnSearch = (Button)findViewById(R.id.btnSearch);
 		EventBus.getDefault().register(this, "onBookQueryComplete", BooksQueryResult.class);
 
 		//Spinner groups
@@ -182,12 +183,14 @@ AuthorIllustratorDialogFragment.OnAuthorIllustratorDialogListener {
 			mAdapter.insert(result.mComic, 0);
 			mAdapter.notifyDataSetChanged();
 
+			mBtnScan.setEnabled(true);
+			mBtnSearch.setEnabled(true);			
 			Toast.makeText(Add.this, getResources().getString(R.string.add_success), Toast.LENGTH_SHORT).show();
 			return;
 		}
 
 		mBtnScan.setEnabled(true);
-		mEtISBN.setText("");
+		mBtnSearch.setEnabled(true);	
 		Toast
 		.makeText(Add.this, getResources().getString(R.string.add_search_notfound), Toast.LENGTH_LONG)
 		.show();		
@@ -235,7 +238,8 @@ AuthorIllustratorDialogFragment.OnAuthorIllustratorDialogListener {
 		}
 
 		//Fire query
-		mBtnScan.setEnabled(false);    	
+		mBtnScan.setEnabled(false);
+		mBtnSearch.setEnabled(false);
 		String q = "isbn:" + isbn;
 		if (isbn.contains(":"))
 			q = isbn;

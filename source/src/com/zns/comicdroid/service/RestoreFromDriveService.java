@@ -32,6 +32,8 @@ import com.zns.comicdroid.Application;
 import com.zns.comicdroid.data.DBHelper;
 import com.zns.comicdroid.util.BackupUtil;
 
+import de.greenrobot.event.EventBus;
+
 public class RestoreFromDriveService extends IntentService {
 	
 	public RestoreFromDriveService() {
@@ -91,6 +93,9 @@ public class RestoreFromDriveService extends IntentService {
 					catch (IOException e) {}
 				}
 			}
+		}
+		else {
+			EventBus.getDefault().post(new ProgressResult(100, ""));
 		}
 		
 		stopSelf();

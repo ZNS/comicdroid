@@ -16,6 +16,6 @@
     <dimen name="text_nav_heading">18sp</dimen>
     <dimen name="text_nav_sub">12sp</dimen>    
     <dimen name="comic_list_separator">5dp</dimen>
-    <dimen name="text_small"></dimen>
-    <dimen name="text_medium"></dimen>
+    <dimen name="text_small">13sp</dimen>
+    <dimen name="text_medium">17sp</dimen>
 </resources>

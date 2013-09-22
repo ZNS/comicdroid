@@ -37,6 +37,7 @@ public class DriveBackupInitTask  extends AsyncTask<com.zns.comicdroid.task.Driv
 		public boolean success = true;
 		public boolean backupAllowed = true;
 		public Intent intent;
+		public String errorMessage;
 	}
 
 	public DriveBackupInitTask()
@@ -84,6 +85,7 @@ public class DriveBackupInitTask  extends AsyncTask<com.zns.comicdroid.task.Driv
 			result.success = false;
 		}		
 		catch (Exception e) {
+			result.errorMessage = e.getMessage();
 			result.success = false;
 		}
 		return result;

@@ -99,7 +99,7 @@
 					        android:layout_height="wrap_content"
 					        android:layout_marginBottom="-2dp"
 					        android:text="@string/comic_subtitle"
-					        android:textAppearance="?android:attr/textAppearanceSmall" />
+					        android:textSize="@dimen/text_small" />
 					
 					    <TextView
 					        android:id="@+id/comicView_txtSubtitle"
@@ -107,7 +107,7 @@
 					        android:layout_height="wrap_content"
 					        android:text=""
 					        android:paddingBottom="5dp"
-					        android:textAppearance="?android:attr/textAppearanceMedium" />
+					        android:textSize="@dimen/text_medium" />
 					
 						<View
 						    android:id="@+id/comicView_vSubtitleDivider"
@@ -122,7 +122,7 @@
 					        android:layout_height="wrap_content"
 					        android:layout_marginBottom="-2dp"
 					        android:text="@string/comic_author"
-					        android:textAppearance="?android:attr/textAppearanceSmall" />
+					        android:textSize="@dimen/text_small" />
 					
 					    <TextView
 					        android:id="@+id/comicView_txtAuthor"
@@ -130,7 +130,7 @@
 					        android:layout_height="wrap_content"
 					        android:text=""
 					        android:paddingBottom="5dp"
-					        android:textAppearance="?android:attr/textAppearanceMedium" />
+					        android:textSize="@dimen/text_medium" />
 					
 						<View
 					    	android:layout_width="fill_parent"
@@ -146,14 +146,14 @@
 			        android:layout_height="wrap_content"
 			        android:layout_marginBottom="-2dp"
 			        android:text="@string/comic_illustrator"
-			        android:textAppearance="?android:attr/textAppearanceSmall" />
+			        android:textSize="@dimen/text_small" />
 			
 			    <TextView
 			        android:id="@+id/comicView_txtIllustrator"
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
 			        android:paddingBottom="5dp"
-			        android:textAppearance="?android:attr/textAppearanceMedium" />
+			        android:textSize="@dimen/text_medium" />
 			
 				<View
 			    	android:layout_width="fill_parent"
@@ -167,14 +167,14 @@
 			        android:layout_height="wrap_content"
 			        android:layout_marginBottom="-2dp"
 			        android:text="@string/comic_publisher"
-			        android:textAppearance="?android:attr/textAppearanceSmall" />
+			        android:textSize="@dimen/text_small" />
 			
 			    <TextView
 			        android:id="@+id/comicView_txtPublisher"
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
 			        android:paddingBottom="5dp"
-			        android:textAppearance="?android:attr/textAppearanceMedium" />
+			        android:textSize="@dimen/text_medium" />
 			
 				<View
 			    	android:layout_width="fill_parent"
@@ -188,14 +188,14 @@
 			        android:layout_height="wrap_content"
 			        android:layout_marginBottom="-2dp"
 			        android:text="@string/comic_issues"
-			        android:textAppearance="?android:attr/textAppearanceSmall" />
+			        android:textSize="@dimen/text_small" />
 			
 			    <TextView
 			        android:id="@+id/comicView_txtIssues"
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
 			        android:paddingBottom="5dp"
-			        android:textAppearance="?android:attr/textAppearanceMedium" />
+			        android:textSize="@dimen/text_medium" />
 			
 				<View
 			    	android:layout_width="fill_parent"
@@ -209,14 +209,14 @@
 			        android:layout_height="wrap_content"
 			        android:layout_marginBottom="-2dp"
 			        android:text="@string/comic_datepublished"
-			        android:textAppearance="?android:attr/textAppearanceSmall" />
+			        android:textSize="@dimen/text_small" />
 			
 			    <TextView
 			        android:id="@+id/comicView_txtPublished"
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
 			        android:paddingBottom="5dp"
-			        android:textAppearance="?android:attr/textAppearanceMedium" />
+			        android:textSize="@dimen/text_medium" />
 			
 				<View
 			    	android:layout_width="fill_parent"
@@ -230,14 +230,14 @@
 			        android:layout_height="wrap_content"
 			        android:layout_marginBottom="-2dp"
 			        android:text="@string/comic_dateadded"
-			        android:textAppearance="?android:attr/textAppearanceSmall" />
+			        android:textSize="@dimen/text_small" />
 			
 			    <TextView
 			        android:id="@+id/comicView_txtAdded"
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
 			        android:paddingBottom="5dp"
-			        android:textAppearance="?android:attr/textAppearanceMedium" />
+			        android:textSize="@dimen/text_medium" />
 			
 				<View
 			    	android:layout_width="fill_parent"
@@ -251,14 +251,14 @@
 			        android:layout_height="wrap_content"
 			        android:layout_marginBottom="-2dp"
 			        android:text="@string/comic_pagecount"
-			        android:textAppearance="?android:attr/textAppearanceSmall" />
+			        android:textSize="@dimen/text_small" />
 			
 			    <TextView
 			        android:id="@+id/comicView_txtPageCount"
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
 			        android:paddingBottom="5dp"
-			        android:textAppearance="?android:attr/textAppearanceMedium" />
+			        android:textSize="@dimen/text_medium" />
 			
 				<View
 			    	android:layout_width="fill_parent"
@@ -272,7 +272,7 @@
 			        android:layout_height="wrap_content"
 			        android:layout_marginBottom="-2dp"
 			        android:text="@string/comicview_borrowed"
-			        android:textAppearance="?android:attr/textAppearanceSmall" />
+			        android:textSize="@dimen/text_small" />
 			
 				<EditText
 				    android:id="@+id/comicView_etBorrower"

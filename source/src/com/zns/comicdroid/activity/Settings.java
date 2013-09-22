@@ -30,6 +30,8 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.google.android.gms.common.AccountPicker;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.zns.comicdroid.Application;
 import com.zns.comicdroid.BaseFragmentActivity;
@@ -55,11 +57,24 @@ implements OnCheckedChangeListener {
 	private TextView mTvLink;
 	private String mAccount;
 	private SharedPreferences mPrefs;
-
+	
 	private void pickAccount(int code) {
-		Intent intent = AccountPicker.newChooseAccountIntent(null, null, new String[]{"com.google"},
-				false, null, null, null, null);
-		startActivityForResult(intent, code);
+		//Google play services check
+		int serviceStatus = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+		if (serviceStatus == ConnectionResult.SUCCESS) {
+			Intent intent = AccountPicker.newChooseAccountIntent(null, null, new String[]{"com.google"},
+					false, null, null, null, null);
+			startActivityForResult(intent, code);
+			return;
+		}
+		else if (serviceStatus == ConnectionResult.SERVICE_MISSING || serviceStatus == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED || serviceStatus == ConnectionResult.SERVICE_DISABLED) {
+			GooglePlayServicesUtil.getErrorDialog(serviceStatus, this, 404).show();
+		}
+		else {
+			Toast.makeText(this, R.string.error_playservices, Toast.LENGTH_LONG).show();
+		}
+		setToggleButtonPref(mTbDriveBackup, false, null);
+		setToggleButtonPref(mTbDrivePublish, false, null);
 	}
 
 	@Override
@@ -202,7 +217,7 @@ implements OnCheckedChangeListener {
 						}
 						else
 						{
-							Toast.makeText(Settings.this, R.string.error_driveappdataaccess, Toast.LENGTH_SHORT).show();
+							Toast.makeText(Settings.this, getString(R.string.error_driveappdataaccess) + ": " + result.errorMessage, Toast.LENGTH_SHORT).show();
 							setToggleButtonPref(mTbDriveBackup, false, Application.PREF_DRIVE_BACKUP);
 						}						
 					}
