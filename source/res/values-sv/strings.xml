@@ -76,7 +76,7 @@
     <string name="edit_issueerror">Volym måste vara ett tal</string>
     <string name="edit_pagecounterror">Antal sidor måste vara ett tal</string>    
     <string name="comicview_issueshort">Vol.</string>
-    <string name="comicview_borrowed">Utlånad</string>
+    <string name="comicview_borrowed">Utlånad till</string>
     <string name="comicview_delete_title">Radera serie?</string>
     <string name="comicview_delete_body">Vill du verkligen radera serien?</string>
     <string name="dialog_groupadd_label">Ange namn för samling:</string>
@@ -92,7 +92,7 @@
     <string name="comic_pagecount">Antal sidor</string>
     <string name="comic_issue">Volym</string>
     <string name="comic_isread">Läst</string>
-    <string name="comic_issues">Samlar följande</string>
+    <string name="comic_issues">Samlar följande nummer</string>
     <string name="borrow_etBorrower">Utlånad till..</string>
     <string name="borrow_btnClear">Rensa</string>
     <string name="borrow_notadded">Hittade inte efterfrågad bok i arkivet</string>
@@ -122,6 +122,8 @@
     <string name="settings_updateGroupCount_notification">Räknare för samlingar har uppdaterats</string>
     <string name="settings_restoresuccess">Återställningen av data lyckades!</string>
     <string name="settings_restoreerror">Kunde inte återställa data!</string>    
+    <string name="settings_drivebackuplabel">Gör backup till drive</string>
+    <string name="settings_drivebackupsub">Slå på för att göra backup till ditt google drive konto</string>    
     <string name="settings_forcebackup">Slå på backup</string>
     <string name="drawer_open">Öppna</string>
     <string name="drawer_close">Stäng</string>
@@ -158,9 +160,94 @@
     <string name="help_tab_about">Om</string>
     <string name="help_getsource">Hämta källkoden här</string>
     <string name="help_about">ComicDroid är öppen källkod och licensierat under GPLv3. Licensen följer nedan.</string>
-    <string name="help_adding"></string>
-    <string name="help_browsing"></string>
-    <string name="help_collections"></string>
-    <string name="help_lending"></string>
-    <string name="help_settings"></string>    
+    <string name="help_adding">
+    <![CDATA[
+	<h2>Lägga till serier</h2>
+	<strong>Hur fungerar skanna isbn?</strong><br/>
+	De flesta serier har isbn-nummret angett i form av en streckkod. Du kan scanna denna streckkod så du inte behöver skriva in det manuellt. För att kunna göra detta så måste din telefon ha en kamera och du måste ha \"Barcode Scanner\" 
+	<br/>
+	<strong>Kan jag lägga in en serie manuellt?</strong><br/>
+	Ja, genom att trycka på \"Skapa\"-knappen. När du redigerar så kan du även lägga till en bild genom att trycka på kameraknappen. Glöm inte att trycka på \"bock\"-ikonen i toppen för att spara.<br/>
+	<br/>
+	<strong>Hur fungerar väl författare/illustratör?</strong><br/>
+	De flesta serier har information om vem/vilka som skapat den. Namnen skiljs dock inte åt på författare och illustratör därför behöver du ange detta själv. Välj helt enkelt vilket/vilka namn som har vilken roll. Du kan även ange \"ingen\" för att ignorera namnet.    
+    ]]>    
+    </string>
+    <string name="help_browsing">
+    <![CDATA[
+	<h2>Arkivet</h2>
+	<strong>Vad betyder den blå triangeln?</strong><br/>
+	Den anger att detta är en samling och inte en serie.<br/>
+	<br/>
+	<strong>Hur kan jag byta namn på författare/illustratörer/förlag?</strong><br/>
+	Du kan trycka och hålla inne på ett namn för att få upp ett alternativ att byta namn.    
+    ]]>
+    </string>
+    <string name="help_comic">
+    <![CDATA[
+	<h2>Serie</h2>
+	<strong>Vad betyder \"Volym\"?</strong><br/>
+	Det är är numret på serien. Vi använder inte \"nummer\" eftersom ComicDroid är mer till för att spara samlade volymer.<br/>
+	<br/>
+	<strong>Vad betyder \"Samlar följande nummer\"?</strong><br/>
+	Har kan du ange vilka nummer som ingår i volymen. T.ex. #1-6,#8-9<br/>
+	<br/>
+	<strong>Vad innebär \"Utlånad till\"?</strong><br/>
+	Här kan du se eller ange vem serien är utlånad till    
+    ]]>
+    </string>
+    <string name="help_collections">
+    <![CDATA[
+	<h2>Samling</h2>
+	<strong>Hur använder jag samlingar?</strong><br/>
+	Du skapar en samling antingen när du lägger till serier eller när du redigerar en serie. Samlingar är till för att gruppera flera serier. Säg t.ex. att du lagt till arton volymer av \"The walking dead\". Då kan du gruppera dom i ny samling som heter \"The walking dead\".<br/>
+	<br/>
+	<strong>Vilken bild är det som används för en samling?</strong><br/>
+	Standarden är att samma bild används som för serien med volym ett i samlingen. Du kan ändra detta genom att trycka och hålla inne på en serie i en samling och välja \"Använd bild för samling\".<br/>
+	<br/>
+	<strong>Vad betyder bevaka, avslutad och komplett?</strong><br/>
+	Bevaka: Om du klickar i de här så kan du sen se alla bevakde serier under \"Bevakas\" i menyn. Kan t.ex. vara användbart för att hålla reda vilka samlingar du köper för tillfället<br/>
+	Avslutad: Anger om det ges ut serier i samlingen fortfarande.<br/>
+	Komplett: Anger att du har alla serier som finns i samlingen.<br/>
+	<br/>
+	<strong>Vad innebär \"Redigera alla\"?</strong><br/>
+	Här kan du redigera samtliga serier i samlingen på en gång. Observera att fält som lämnas tomma inte kommer att sparas.    
+    ]]>
+    </string>
+    <string name="help_editing">
+    <![CDATA[
+	<h2>Redigering</h2>
+	<strong>Kan jag redigera flera serier samtidigt?</strong><br/>
+	Ja, genom att välja \"Redigera alla\" i topp-menyn när du visar en samling. Se mer under samlingar.<br/>
+	<br/>
+	<strong>Kan jag byta namn på författare/illustratörer/förlag?</strong><br/>
+	Ja du kan antingen trycka och hålla inne på att namn i arkivet eller välja redigera i toppen när du visar serier för ett namn.
+	]]>        
+    </string>
+    <string name="help_lending">
+    <![CDATA[
+	<h2>Utlåning</h2>
+	<strong>Hur fungerar låna ut?</strong><br/>
+	Ange först namnet på personen du vill låna ut till och skanna sedan streckkoden med isbn-nummret på serien.<br/>
+	<br/>
+	<strong>Vad betyder \"Utlånad till\" i serievyn?</strong><br/>
+	Här kan du se och ange vem serien är utlånad till.<br/>
+	<br/>
+	<strong>Hur markerar jag en serie som återlämnad?</strong><br/>
+	Under \"Utlånat\" i menyn kan du klicka på en eller flera serier och sen klicka på soptunnan för att markera dom som återlämnade.    
+    ]]>
+    </string>
+    <string name="help_settings">
+    <![CDATA[
+	<h2>Inställningar</h2>
+	<strong>Vad innebär \"Publicera till drive\"?</strong><br>
+	Om du slår på det här så kommer ComicDroid skapa en mapp vid namn \"ComicDroid\" på ditt google drive konto. Där kommer den publicera en html-sida innehållandes ditt arkiv. Detta innebär att vem som helst kan surfa in och se ditt arkiv användandes länken som visas.<br/>
+	<br/>
+	<strong>Vad innebär \"Gör backup till drive\"?</strong><br/>
+	Slå på det här för att göra göra backup av ComicDroid till ditt google drive konto. Detta görs genom att använda en särskild \"appdata\"-mapp som inte visas på google drive, men den går att hantera under inställningar på http://drive.google.com Göra backup till google drive innebär också att du kan återställa arkivet till en annan telefon/platta.<br/>
+	<br/>
+	<strong>Vad innebär \"Endast wifi\"?</strong><br/>
+	Med det här påslaget kommer ComicDroid endast göra backup när du är ansluten via wifi. Observera att detta kan resultera i inaktuella backuper om du inte frekvent är ansluten till wifi.    
+    ]]>
+    </string>    
 </resources>

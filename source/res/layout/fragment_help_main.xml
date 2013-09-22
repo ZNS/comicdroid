@@ -20,10 +20,17 @@
 	        comicdroid:text="@string/help_adding" />
 		  
 		<com.zns.comicdroid.widget.CollapsibleTextView
+		    android:id="@+id/help_tvBrowsing"
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
 	        android:layout_marginBottom="10dp"
 	        comicdroid:text="@string/help_browsing" />
+				
+		<com.zns.comicdroid.widget.CollapsibleTextView
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_marginBottom="10dp"
+	        comicdroid:text="@string/help_comic" />
 				
 		<com.zns.comicdroid.widget.CollapsibleTextView
 	        android:layout_width="fill_parent"
@@ -35,7 +42,7 @@
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
 	        android:layout_marginBottom="10dp"
-	        comicdroid:text="@string/help_organize" />
+	        comicdroid:text="@string/help_editing" />
 			
 		<com.zns.comicdroid.widget.CollapsibleTextView
 	        android:layout_width="fill_parent"
