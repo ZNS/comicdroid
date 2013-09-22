@@ -13,31 +13,33 @@
   "documentationLink": "https://developers.google.com/drive/", 
   "id": "drive:v2", 
   "name": "drive", 
+  "packagePath": null, 
+  "canonicalName": null, 
   "files": [
     {
-      "downloadUrl": "/downloads/drive/v2/86/java/1.15.0-rc/google-api-services-drive-v2-rev86-1.15.0-rc.jar", 
-      "path": "google-api-services-drive-v2-rev86-1.15.0-rc.jar", 
+      "downloadUrl": "/downloads/drive/v2/100/java/1.15.0-rc/google-api-services-drive-v2-rev100-1.15.0-rc.jar", 
+      "path": "google-api-services-drive-v2-rev100-1.15.0-rc.jar", 
       "type": "binary", 
-      "timestamp": "2013-07-12 07:50"
+      "timestamp": "2013-09-19 01:43"
     }, 
     {
-      "downloadUrl": "/downloads/drive/v2/86/java/1.15.0-rc/google-api-services-drive-v2-rev86-1.15.0-rc-javadoc.jar", 
-      "path": "google-api-services-drive-v2-rev86-1.15.0-rc-javadoc.jar", 
+      "downloadUrl": "/downloads/drive/v2/100/java/1.15.0-rc/google-api-services-drive-v2-rev100-1.15.0-rc-javadoc.jar", 
+      "path": "google-api-services-drive-v2-rev100-1.15.0-rc-javadoc.jar", 
       "type": "documentation", 
-      "timestamp": "2013-07-12 07:50"
+      "timestamp": "2013-09-19 01:43"
     }, 
     {
-      "downloadUrl": "/downloads/drive/v2/86/java/1.15.0-rc/google-api-services-drive-v2-rev86-1.15.0-rc-sources.jar", 
-      "path": "google-api-services-drive-v2-rev86-1.15.0-rc-sources.jar", 
+      "downloadUrl": "/downloads/drive/v2/100/java/1.15.0-rc/google-api-services-drive-v2-rev100-1.15.0-rc-sources.jar", 
+      "path": "google-api-services-drive-v2-rev100-1.15.0-rc-sources.jar", 
       "type": "source", 
-      "timestamp": "2013-07-12 07:50"
+      "timestamp": "2013-09-19 01:37"
     }, 
     {
-      "path": "google-api-services-drive-v2-rev86-1.15.0-rc.jar.properties", 
+      "path": "google-api-services-drive-v2-rev100-1.15.0-rc.jar.properties", 
       "type": "android.properties"
     }
   ], 
-  "revision": 86, 
+  "revision": 100, 
   "language": "java", 
   "language_version": "1.15.0-rc", 
   "dependencies": [

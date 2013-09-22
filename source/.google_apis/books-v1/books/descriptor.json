@@ -13,31 +13,33 @@
   "documentationLink": "https://developers.google.com/books/docs/v1/getting_started", 
   "id": "books:v1", 
   "name": "books", 
+  "packagePath": null, 
+  "canonicalName": null, 
   "files": [
     {
-      "downloadUrl": "/downloads/books/v1/32/java/1.15.0-rc/google-api-services-books-v1-rev32-1.15.0-rc.jar", 
-      "path": "google-api-services-books-v1-rev32-1.15.0-rc.jar", 
+      "downloadUrl": "/downloads/books/v1/36/java/1.15.0-rc/google-api-services-books-v1-rev36-1.15.0-rc.jar", 
+      "path": "google-api-services-books-v1-rev36-1.15.0-rc.jar", 
       "type": "binary", 
-      "timestamp": "2013-07-18 01:29"
+      "timestamp": "2013-09-19 01:33"
     }, 
     {
-      "downloadUrl": "/downloads/books/v1/32/java/1.15.0-rc/google-api-services-books-v1-rev32-1.15.0-rc-javadoc.jar", 
-      "path": "google-api-services-books-v1-rev32-1.15.0-rc-javadoc.jar", 
+      "downloadUrl": "/downloads/books/v1/36/java/1.15.0-rc/google-api-services-books-v1-rev36-1.15.0-rc-javadoc.jar", 
+      "path": "google-api-services-books-v1-rev36-1.15.0-rc-javadoc.jar", 
       "type": "documentation", 
-      "timestamp": "2013-07-18 01:29"
+      "timestamp": "2013-09-19 01:34"
     }, 
     {
-      "downloadUrl": "/downloads/books/v1/32/java/1.15.0-rc/google-api-services-books-v1-rev32-1.15.0-rc-sources.jar", 
-      "path": "google-api-services-books-v1-rev32-1.15.0-rc-sources.jar", 
+      "downloadUrl": "/downloads/books/v1/36/java/1.15.0-rc/google-api-services-books-v1-rev36-1.15.0-rc-sources.jar", 
+      "path": "google-api-services-books-v1-rev36-1.15.0-rc-sources.jar", 
       "type": "source", 
-      "timestamp": "2013-07-18 01:29"
+      "timestamp": "2013-09-19 01:33"
     }, 
     {
-      "path": "google-api-services-books-v1-rev32-1.15.0-rc.jar.properties", 
+      "path": "google-api-services-books-v1-rev36-1.15.0-rc.jar.properties", 
       "type": "android.properties"
     }
   ], 
-  "revision": 32, 
+  "revision": 36, 
   "language": "java", 
   "language_version": "1.15.0-rc", 
   "dependencies": [
