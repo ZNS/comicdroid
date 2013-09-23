@@ -35,7 +35,7 @@ public class BooksQueryTask extends AsyncTask<String, Void, Void> {
 		try 
 		{
 			Books books = new Books.Builder(httpTransport, jsonFactory, null)
-			.setApplicationName("ComicsDroid/1.0")
+			.setApplicationName("ComicDroid/1.0")
 			.setGoogleClientRequestInitializer(new BooksRequestInitializer())
 			.build();
 

@@ -162,6 +162,7 @@
     <string name="help_getsource">Get source-code here</string>
     <string name="help_about">ComicDroid is released as open source under GPLv3. License follows below.</string>
     <string name="error_playservices">Unable to login to google drive. Google play services may not be installed.</string>
+    <string name="read_empty">Seems you\'ve alread read everything..</string>
 	<string name="help_adding">
 	<![CDATA[
 	<h2>Adding comics</h2>

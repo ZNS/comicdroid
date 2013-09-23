@@ -50,7 +50,8 @@ public class BackupHelper extends BackupAgent {
 		Application.PREF_BACKUP_WIFIONLY, 
 		Application.PREF_DRIVE_BACKUP, 
 		Application.PREF_DRIVE_PUBLISH, 
-		Application.PREF_FIRST_TIME_USE 
+		Application.PREF_FIRST_TIME_USE,
+		Application.PREF_BACKUP_LAST
 	};	
 	public static WifiLock wifiLock = null;
 	
@@ -146,7 +147,7 @@ public class BackupHelper extends BackupAgent {
 			//Get image path
 			String imagePath = getExternalFilesDir(null).toString().replaceAll("/+$", "").concat("/");
 			//Create data file
-			File fileSql = new File(outPath, "data.dat");
+			File fileSql = new File(outPath, GoogleDriveService.BACKUP_DATA_FILENAME);
 
 			//Backup data
 			int byteCount = BackupUtil.BackupDataToFile(db, fileSql, imagePath);

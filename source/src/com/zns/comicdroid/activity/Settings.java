@@ -188,7 +188,8 @@ implements OnCheckedChangeListener {
 							editor.commit();
 							//Backup
 							BackupManager m = new BackupManager(Settings.this);
-							m.dataChanged();							//Check checkbox
+							m.dataChanged();							
+							//Check checkbox
 							setToggleButtonPref(mTbDriveBackup, true, null);
 						}
 						else if (!result.backupAllowed)

@@ -124,20 +124,21 @@ public class BackupUtil {
 
 			try
 			{
-				cb = db.getCursor("SELECT _id, Name, BookCount, TotalBookCount, IsWatched, IsFinished, IsComplete" +
+				cb = db.getCursor("SELECT _id, Name, BookCount, TotalBookCount, IsWatched, IsFinished, IsComplete, ImageComicId" +
 						" FROM tblGroups ORDER BY _id", null);
 				writer.writeInt(cb.getCount());
 				while (cb.moveToNext())
 				{
-					writer.writeUTF(String.format("INSERT OR REPLACE INTO tblGroups(_id, Name, BookCount, TotalBookCount, IsWatched, IsFinished, IsComplete)" +
-							" VALUES(%d, %s, %d, %d, %d, %d, %d);", 
+					writer.writeUTF(String.format("INSERT OR REPLACE INTO tblGroups(_id, Name, BookCount, TotalBookCount, IsWatched, IsFinished, IsComplete, ImageComicId)" +
+							" VALUES(%d, %s, %d, %d, %d, %d, %d, %d);", 
 							cb.getInt(0),
 							dbString(cb.getString(1)),
 							cb.getInt(2),
 							cb.getInt(3),
 							cb.getInt(4),
 							cb.getInt(5),
-							cb.getInt(6)));
+							cb.getInt(6),
+							cb.getInt(7)));
 				}
 			}
 			finally {
@@ -285,7 +286,7 @@ public class BackupUtil {
 		}
 
 		//Fix group images
-		db.execSQL("UPDATE tblGroups SET Image = (SELECT Image FROM tblBooks WHERE GroupId = tblGroups._id AND Issue = 1 LIMIT 1), ImageUrl = (SELECT ImageUrl FROM tblBooks WHERE GroupId = tblGroups._id AND Issue = 1 LIMIT 1)");		
+		db.execSQL("UPDATE tblGroups SET Image = (SELECT Image FROM tblBooks WHERE _id = tblGroups.ImageComicId), ImageUrl = (SELECT ImageUrl FROM tblBooks WHERE _id = tblGroups.ImageComicId)");		
 	}
 	
 	private static String dbString(String val) {

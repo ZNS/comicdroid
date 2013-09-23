@@ -13,7 +13,6 @@ package com.zns.comicdroid.service;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Locale;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -26,11 +25,10 @@ import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpResponse;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.model.ChildList;
-import com.google.api.services.drive.model.ChildReference;
 import com.zns.comicdroid.Application;
 import com.zns.comicdroid.data.DBHelper;
 import com.zns.comicdroid.util.BackupUtil;
+import com.zns.comicdroid.util.DriveUtil;
 
 import de.greenrobot.event.EventBus;
 
@@ -55,14 +53,7 @@ public class RestoreFromDriveService extends IntentService {
 			credential.setSelectedAccountName(account);
 			credential.getToken();					
 			service = new Drive.Builder(AndroidHttp.newCompatibleTransport(), new JacksonFactory(), credential).build();
-
-			ChildList list = service.children().list("appdata").execute();
-			for (ChildReference c : list.getItems()) {
-				com.google.api.services.drive.model.File f = service.files().get(c.getId()).execute();
-				if (f.getTitle().toLowerCase(Locale.ENGLISH).equals("data.dat")) {
-					gFileData = f;
-				}				
-			}			
+			gFileData = DriveUtil.getFile(service, "appdata", GoogleDriveService.BACKUP_DATA_FILENAME);
 		}
 		catch (Exception e) {
 			//Failed to get data from google drive

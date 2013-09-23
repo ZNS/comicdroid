@@ -1,8 +1,6 @@
 package com.zns.comicdroid.util;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
 
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.api.services.drive.Drive;
@@ -10,9 +8,6 @@ import com.google.api.services.drive.model.ChildList;
 import com.google.api.services.drive.model.ChildReference;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
-import com.google.api.services.drive.model.Revision;
-import com.google.api.services.drive.model.RevisionList;
-import com.zns.comicdroid.service.RevisionsByDateComparer;
 
 public class DriveUtil {
 	
@@ -37,7 +32,7 @@ public class DriveUtil {
 		return null;
 	}
 	
-	public static void trimDriveFileRevisions(Drive service, String fileId, int revisionCount) throws IOException {
+	/*public static void trimDriveFileRevisions(Drive service, String fileId, int revisionCount) throws IOException {
 		RevisionList revisions = service.revisions().list(fileId).execute();
 		if (revisions.getItems().size() > revisionCount)
 		{
@@ -47,5 +42,5 @@ public class DriveUtil {
 				service.revisions().delete(fileId, rev.getId()).execute();
 			}
 		}
-	}	
+	}*/	
 }

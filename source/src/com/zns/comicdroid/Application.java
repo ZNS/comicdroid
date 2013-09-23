@@ -17,6 +17,7 @@ import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
 
 import com.google.api.services.drive.DriveScopes;
+import com.zns.comicdroid.task.BackupCheckTask;
 
 public class Application extends android.app.Application {
 	public final static String PREF_DRIVE_ACCOUNT = "DRIVE_ACCOUNT";
@@ -27,6 +28,7 @@ public class Application extends android.app.Application {
 	public final static String PREF_APP_ID = "PREF_APP_ID";
 	public final static String PREF_BACKUP_SUCCESS = "PREF_BACKUP_SUCCESS";
 	public final static String PREF_BACKUP_WIFIONLY = "PREF_BACKUP_WIFIONLY";
+	public final static String PREF_BACKUP_LAST = "PREF_BACKUP_LAST";
 	public final static String DRIVE_SCOPE_PUBLISH = DriveScopes.DRIVE_FILE;
 	public final static String DRIVE_SCOPE_BACKUP = DriveScopes.DRIVE_APPDATA;
 	public final static String DRIVE_WEBFOLDER_NAME = "ComicDroid";
@@ -73,6 +75,13 @@ public class Application extends android.app.Application {
 		
 		if (prefsEdit != null)
 			prefsEdit.commit();
+		
+		//Backup check
+		if (prefs.getBoolean(PREF_DRIVE_BACKUP, false)) {
+			int lastBackup = prefs.getInt(PREF_BACKUP_LAST, -1);
+			//Fire and forget
+			new BackupCheckTask(getApplicationContext()).execute(lastBackup);
+		}
 		
 		super.onCreate();
 	}
