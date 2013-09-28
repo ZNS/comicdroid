@@ -159,9 +159,11 @@
     <string name="help_tab_help">Help</string>
     <string name="help_tab_donate">Help out</string>
     <string name="help_tab_about">About</string>
+    <string name="help_tab_stats">Stats</string>
     <string name="help_getsource">Get source-code here</string>
     <string name="help_about">ComicDroid is released as open source under GPLv3. License follows below.</string>
     <string name="error_playservices">Unable to login to google drive. Google play services may not be installed.</string>
+    <string name="read_empty">Seems you\'ve alread read everything..</string>
 	<string name="help_adding">
 	<![CDATA[
 	<h2>Adding comics</h2>
@@ -252,4 +254,9 @@
 	With this enabled ComicDroid will only backup your archive when you are connected via wifi. Note that enabling this might result in stale backups if you are not frequently connected via wifi.
     ]]>    
     </string> 
+    <string-array name="donation_google_catalog_values">
+        <item>1 Euro</item>
+        <item>3 Euros</item>
+        <item>5 Euros</item>
+    </string-array>
 </resources>

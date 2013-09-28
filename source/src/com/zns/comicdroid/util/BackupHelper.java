@@ -50,7 +50,8 @@ public class BackupHelper extends BackupAgent {
 		Application.PREF_BACKUP_WIFIONLY, 
 		Application.PREF_DRIVE_BACKUP, 
 		Application.PREF_DRIVE_PUBLISH, 
-		Application.PREF_FIRST_TIME_USE 
+		Application.PREF_FIRST_TIME_USE,
+		Application.PREF_BACKUP_LAST
 	};	
 	public static WifiLock wifiLock = null;
 	
@@ -58,8 +59,11 @@ public class BackupHelper extends BackupAgent {
 	public void onBackup(ParcelFileDescriptor oldState, BackupDataOutput data,
 			ParcelFileDescriptor newState) throws IOException {
 		
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-
+		Logger log = new Logger(getExternalFilesDir(null).toString() + "/log");
+		log.appendLog("Starting backup via backup agent", Logger.TAG_BACKUP);
+		
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());		
+		
 		//Wifi check
 		if (prefs.getBoolean(Application.PREF_BACKUP_WIFIONLY, false))
 		{
@@ -73,6 +77,7 @@ public class BackupHelper extends BackupAgent {
 		        wifiLock.acquire();
 			}
 			else {
+				log.appendLog("Backup stopped, no wifi connection", Logger.TAG_BACKUP);
 				return;
 			}
 		}
@@ -146,7 +151,7 @@ public class BackupHelper extends BackupAgent {
 			//Get image path
 			String imagePath = getExternalFilesDir(null).toString().replaceAll("/+$", "").concat("/");
 			//Create data file
-			File fileSql = new File(outPath, "data.dat");
+			File fileSql = new File(outPath, GoogleDriveService.BACKUP_DATA_FILENAME);
 
 			//Backup data
 			int byteCount = BackupUtil.BackupDataToFile(db, fileSql, imagePath);
@@ -175,10 +180,14 @@ public class BackupHelper extends BackupAgent {
 						//Acquire again for service, will be released by service
 						wifiLock.acquire();
 					}
+					log.appendLog("Backup manager done, starting google drive service", Logger.TAG_BACKUP);
 					Intent intent = new Intent(getApplicationContext(), GoogleDriveService.class);
 					startService(intent);
 				}
 			}
+		}
+		else {
+			log.appendLog("Backup not needed, no changes", Logger.TAG_BACKUP);
 		}
 		
 		//Write newstate

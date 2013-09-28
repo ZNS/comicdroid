@@ -299,7 +299,7 @@ GroupDialogFragment.OnGroupAddDialogListener {
 					values.put("Issue", Integer.parseInt(mEtIssue.getText().toString()));
 				}
 				else {
-					Toast.makeText(this, R.string.edit_issueerror, Toast.LENGTH_LONG);
+					Toast.makeText(this, R.string.edit_issueerror, Toast.LENGTH_LONG).show();
 					return;
 				}
 			}
@@ -311,7 +311,7 @@ GroupDialogFragment.OnGroupAddDialogListener {
 					values.put("PageCount", Integer.parseInt(mEtPageCount.getText().toString()));
 				}
 				else {
-					Toast.makeText(this, R.string.edit_pagecounterror, Toast.LENGTH_LONG);
+					Toast.makeText(this, R.string.edit_pagecounterror, Toast.LENGTH_LONG).show();
 					return;					
 				}
 			}
@@ -336,7 +336,7 @@ GroupDialogFragment.OnGroupAddDialogListener {
 				}
 			}
 			catch (ParseException e) {
-				Toast.makeText(this, getString(R.string.edit_dateerror) + " " + dateFormat.format(new Date()), Toast.LENGTH_LONG);
+				Toast.makeText(this, getString(R.string.edit_dateerror) + " " + dateFormat.format(new Date()), Toast.LENGTH_LONG).show();
 				return;
 			}
 			//Image

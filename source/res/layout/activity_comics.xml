@@ -59,6 +59,16 @@
 	        	        
 	    </LinearLayout>
 	    
+	    <TextView 
+	        android:id="@+id/comics_tvEmpty"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:textColor="#999999"
+	        android:textSize="18sp"
+	        android:padding="20dp"
+	        android:text=""
+	        android:visibility="gone" /> 
+	        
 	    <ListView
 	        android:id="@+id/comics_lvComics"
 	        android:layout_width="match_parent"

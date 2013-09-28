@@ -45,6 +45,7 @@ import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpResponse;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.Drive.Files.Update;
 import com.google.api.services.drive.model.FileList;
 import com.google.api.services.drive.model.ParentReference;
 import com.zns.comicdroid.Application;
@@ -54,6 +55,7 @@ import com.zns.comicdroid.data.Comic;
 import com.zns.comicdroid.data.DBHelper;
 import com.zns.comicdroid.util.BackupHelper;
 import com.zns.comicdroid.util.DriveUtil;
+import com.zns.comicdroid.util.Logger;
 
 import de.greenrobot.event.EventBus;
 
@@ -61,7 +63,10 @@ public class GoogleDriveService extends IntentService {
 
 	public static final String INTENT_PUBLISH_ONLY = "com.zns.comicdroid.PUBLISH_ONLY";
 	public static final String BACKUP_META_FILENAME = "backup.meta";
+	public static final String BACKUP_DATA_FILENAME = "data.dat";
+	public static final String PUBLISH_INDEX_FILENAME = "index.html";	
 	private DBHelper mDb;
+	private Logger mLogger;
 	
 	private NotificationManager notificationManager;
 
@@ -104,6 +109,7 @@ public class GoogleDriveService extends IntentService {
 	protected void onHandleIntent(Intent intent) {
 		boolean publishOnly = intent.getBooleanExtra(INTENT_PUBLISH_ONLY, false);
 
+		mLogger = new Logger(getExternalFilesDir(null).toString() + "/log");		
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 	
 		//Get database connections
@@ -178,6 +184,7 @@ public class GoogleDriveService extends IntentService {
 				response.disconnect();
 				
 				if (!backupAppId.equals(appId)) {
+					mLogger.appendLog("Unable to backup to drive, appid does not match", Logger.TAG_BACKUP);
 					return;
 				}
 			}
@@ -189,29 +196,23 @@ public class GoogleDriveService extends IntentService {
 		//------------------Upload current backup to google drive---------------------------
 		//Get file path
 		String outPath = getApplicationContext().getExternalFilesDir(null).toString() + "/backup";		
-		File fileData = new File(outPath, "data.dat");
+		File fileData = new File(outPath, BACKUP_DATA_FILENAME);
 
 		//Upload to google drive
 		int timeStamp = (int)(System.currentTimeMillis() / 1000L);		
 		boolean uploadSuccess = true;
 		try 
-		{						
+		{									
+			//Get files to update/insert
 			com.google.api.services.drive.model.File dataDriveFile = null;
-			
-			//Manage revisions
+			com.google.api.services.drive.model.File metaDriveFile = null;			
 			FileList list = service.files().list().setQ("'appdata' in parents").execute();
 			for (com.google.api.services.drive.model.File f : list.getItems()) {
 				if (f.getTitle().toLowerCase(Locale.ENGLISH).equals(BACKUP_META_FILENAME)) {
-					service.files().delete(f.getId()).execute();
+					metaDriveFile = f;
 				}
-				else if (f.getTitle().toLowerCase(Locale.ENGLISH).equals("data.dat")) {
+				else if (f.getTitle().toLowerCase(Locale.ENGLISH).equals(BACKUP_DATA_FILENAME)) {
 					dataDriveFile = f;
-					try {
-						DriveUtil.trimDriveFileRevisions(service, f.getId(), 1);
-					}
-					catch (IOException e) {
-						e.printStackTrace();
-					}
 				}
 			}
 
@@ -221,19 +222,28 @@ public class GoogleDriveService extends IntentService {
 			fMeta.setTitle(BACKUP_META_FILENAME);
 			fMeta.setMimeType("text/plain");
 			fMeta.setParents(Arrays.asList(new ParentReference().setId("appdata")));
-			service.files().insert(fMeta, contentMeta).execute();
+			if (metaDriveFile == null) {
+				service.files().insert(fMeta, contentMeta).execute();
+			}
+			else {
+				Update update = service.files().update(metaDriveFile.getId(), null, contentMeta);
+				update.setNewRevision(false);
+				update.execute();
+			}
 			
 			//Insert/Update data
 			FileContent contentData = new FileContent("application/octet-stream", fileData);			
 			com.google.api.services.drive.model.File fData = new com.google.api.services.drive.model.File();			
-			fData.setTitle("data.dat");
+			fData.setTitle(BACKUP_DATA_FILENAME);
 			fData.setMimeType("application/octet-stream");
 			fData.setParents(Arrays.asList(new ParentReference().setId("appdata")));
 			if (dataDriveFile == null) {
 				service.files().insert(fData, contentData).execute();
 			}
 			else {
-				service.files().update(dataDriveFile.getId(), dataDriveFile, contentData).execute();
+				Update update = service.files().update(dataDriveFile.getId(), null, contentData);
+				update.setNewRevision(false);
+				update.execute();
 			}				
 		}
 		catch (Exception e) {
@@ -243,8 +253,15 @@ public class GoogleDriveService extends IntentService {
 		
 		//Success?
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-		Editor edit = prefs.edit();
+		Editor edit = prefs.edit();		
 		edit.putBoolean(Application.PREF_BACKUP_SUCCESS, uploadSuccess);
+		if (uploadSuccess) {
+			mLogger.appendLog("Backup to drive success", Logger.TAG_BACKUP);
+			edit.putInt(Application.PREF_BACKUP_LAST, timeStamp);
+		}
+		else {
+			mLogger.appendLog("Backup to drive failed", Logger.TAG_BACKUP);
+		}
 		edit.commit();
 	}
 
@@ -293,7 +310,7 @@ public class GoogleDriveService extends IntentService {
 		//Let's get started
 		File fileOut = new File(outPath);
 		fileOut.mkdirs();
-		fileOut = new File(outPath, "index.html");		
+		fileOut = new File(outPath, PUBLISH_INDEX_FILENAME);		
 
 		BufferedReader reader = null;
 		BufferedWriter writer = null;
@@ -407,11 +424,7 @@ public class GoogleDriveService extends IntentService {
 		try 
 		{						
 			//Get current index file
-			com.google.api.services.drive.model.File fileIndex = DriveUtil.getFile(service, webFolderId, "index.html");
-			if (fileIndex != null)
-			{
-				DriveUtil.trimDriveFileRevisions(service, fileIndex.getId(), 1);
-			}
+			com.google.api.services.drive.model.File fileIndex = DriveUtil.getFile(service, webFolderId, PUBLISH_INDEX_FILENAME);
 			
 			//Set content of file
 			FileContent content = new FileContent("text/html", fileOut);
@@ -419,16 +432,21 @@ public class GoogleDriveService extends IntentService {
 			//Insert / Update
 			if (fileIndex == null) {
 				com.google.api.services.drive.model.File driveFile = new com.google.api.services.drive.model.File();			
-				driveFile.setTitle("index.html");
+				driveFile.setTitle(PUBLISH_INDEX_FILENAME);
 				driveFile.setMimeType("text/html");
 				driveFile.setParents(Arrays.asList(new ParentReference().setId(webFolderId)));								
 				service.files().insert(driveFile, content).execute();
 			}
 			else {
-				service.files().update(fileIndex.getId(), fileIndex, content).execute();
+				Update update = service.files().update(fileIndex.getId(), null, content);
+				update.setNewRevision(false);
+				update.execute();
 			}
+			
+			mLogger.appendLog("Published to google drive", Logger.TAG_BACKUP);
 		}
 		catch (Exception e) {
+			mLogger.appendLog("Failed to publish to google drive", Logger.TAG_BACKUP);
 			e.printStackTrace();
 		}
 		

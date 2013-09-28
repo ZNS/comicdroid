@@ -31,7 +31,7 @@ import com.google.common.primitives.Ints;
 
 public class DBHelper extends SQLiteOpenHelper {
 
-	private static final int DB_VERSION = 	14;
+	private static final int DB_VERSION = 	15;
 	private static final String DB_NAME = 	"ComicDroid.db";
 
 	private static DBHelper mInstance;
@@ -86,6 +86,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				"Name TEXT," +
 				"Image TEXT," +
 				"ImageUrl TEXT," +
+				"ImageComicId INTEGER," +
 				"BookCount INTEGER DEFAULT 0, " +
 				"TotalBookCount INTEGER DEFAULT 0, " +
 				"IsWatched INTEGER DEFAULT 0, " +
@@ -107,7 +108,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		String triggerGroupId = "CREATE TRIGGER update_boook_groupid_image AFTER UPDATE OF GroupId ON tblBooks " +
 				"WHEN new.Issue = 1 " +
 				"BEGIN " +
-				"UPDATE tblGroups SET Image = new.Image, ImageUrl = new.ImageUrl WHERE new.GroupId <> 0 AND _id = new.GroupId; " +
+				"UPDATE tblGroups SET Image = new.Image, ImageUrl = new.ImageUrl, ImageComicId = new._id WHERE new.GroupId <> 0 AND _id = new.GroupId; " +
 				"END;";
 
 		String triggerGroupId4 = "CREATE TRIGGER insert_boook_groupid_image AFTER INSERT ON tblBooks " +
@@ -206,6 +207,9 @@ public class DBHelper extends SQLiteOpenHelper {
 			//Update tblGroups
 			db.execSQL("UPDATE tblGroups SET Image = (SELECT Image FROM tblBooks WHERE GroupId = tblGroups._id AND Issue = 1 LIMIT 1)");
 		}		
+		if (oldVersion < 15) {			
+			db.execSQL("ALTER TABLE tblGroups ADD COLUMN ImageComicId INTEGER");
+		}
 	}
 
 	@Override
@@ -605,7 +609,9 @@ public class DBHelper extends SQLiteOpenHelper {
 	public void setGroupImage(int comicId) {
 		Comic comic = getComic(comicId);
 		if (comic != null && comic.getGroupId() > 0) {
+			//Update groups
 			ContentValues values = new ContentValues();
+			values.put("ImageComicId", comicId);
 			values.put("Image", comic.getImage());
 			values.put("ImageUrl", comic.getImageUrl());
 			mDb.update("tblGroups", values, "_id=?", new String[] { Integer.toString(comic.getGroupId()) });

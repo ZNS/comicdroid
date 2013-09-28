@@ -68,6 +68,7 @@ OnCheckedChangeListener {
 	private CheckBox mCbIsWatched;
 	private CheckBox mCbIsFinished;
 	private CheckBox mCbIsComplete;
+	private TextView mTvEmpty;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +77,7 @@ OnCheckedChangeListener {
 
 		mLvComics = (ListView)findViewById(R.id.comics_lvComics);
 		mTvHeading = (TextView)findViewById(R.id.comics_txtHeading);
+		mTvEmpty = (TextView)findViewById(R.id.comics_tvEmpty);
 
 		mAdapter = new ComicAdapter(this, getImagePath(true));
 		mLvComics.setAdapter(mAdapter);
@@ -156,6 +158,15 @@ OnCheckedChangeListener {
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 		mAdapter.changeCursor(cursor);
+		if (cursor != null && cursor.getCount() <= 0) {
+			if (mViewType == VIEWTYPE_READ) {
+				mTvEmpty.setText(R.string.read_empty);
+				mTvEmpty.setVisibility(View.VISIBLE);
+			}
+		}
+		else {
+			mTvEmpty.setVisibility(View.GONE);
+		}
 	}
 
 	@Override

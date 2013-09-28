@@ -71,8 +71,7 @@ AuthorIllustratorDialogFragment.OnAuthorIllustratorDialogListener {
 		ListView lvComics = (ListView)findViewById(R.id.add_lvComics);
 		ImageView ivGroupAdd = (ImageView)findViewById(R.id.add_ivGroupAdd);
 		mBtnScan = (Button)findViewById(R.id.btnScan);
-		mBtnSearch = (Button)findViewById(R.id.btnSearch);
-		EventBus.getDefault().register(this, "onBookQueryComplete", BooksQueryResult.class);
+		mBtnSearch = (Button)findViewById(R.id.btnSearch);		
 
 		//Spinner groups
 		List<Group> groups = getDBHelper().getGroups();
@@ -105,7 +104,19 @@ AuthorIllustratorDialogFragment.OnAuthorIllustratorDialogListener {
 		super.onSaveInstanceState(state);		
 		state.putParcelableArrayList(STATE_COMICS, new ArrayList<Comic>(mAdapter.getAll()));
 	}   
+	
+	@Override 
+	protected void onResume() {
+		EventBus.getDefault().register(this, "onBookQueryComplete", BooksQueryResult.class);
+		super.onResume();		
+	}
 
+	@Override 
+	protected void onPause() {
+		EventBus.getDefault().unregister(this, BooksQueryResult.class);
+		super.onPause();
+	}
+	
 	@Override
 	public void onStop() {
 		if (!mIsScanning)
@@ -117,12 +128,6 @@ AuthorIllustratorDialogFragment.OnAuthorIllustratorDialogListener {
 			}
 		}
 		super.onStop();
-	}
-
-	@Override
-	public void onDestroy() {		
-		EventBus.getDefault().unregister(this);
-		super.onDestroy();
 	}
 
 	public void create(View view)
