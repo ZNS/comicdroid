@@ -9,6 +9,7 @@ import java.util.Date;
 import com.zns.comicdroid.data.DBHelper;
 import com.zns.comicdroid.service.GoogleDriveService;
 import com.zns.comicdroid.util.BackupUtil;
+import com.zns.comicdroid.util.Logger;
 
 import android.content.Context;
 import android.content.Intent;
@@ -26,7 +27,7 @@ public class BackupCheckTask extends AsyncTask<Integer, Void, Void> {
 		int timestamp = arg0[0];
 
 		//Add a week to last date
-		Date dateLast = new Date((long)(timestamp * 1000));
+		Date dateLast = new Date((long)timestamp * 1000L);
 		Calendar c = Calendar.getInstance();
 		c.setTime(dateLast);
 		c.add(Calendar.DATE, 3);
@@ -34,11 +35,13 @@ public class BackupCheckTask extends AsyncTask<Integer, Void, Void> {
 		Date now = new Date();
 		
 		//If todays date is later than last date + a week, check if backup should have been done
-		if (timestamp < 0 || c.getTime().after(now)) {
-			Context context = mContext.get();
+		if (timestamp < 0 || now.after(c.getTime())) {
+			Context context = mContext.get();			
 			if (context != null) {
+				Logger log = new Logger(context.getExternalFilesDir(null).toString() + "/log");
 				int lastModStamp = DBHelper.getHelper(context).GetLastModifiedDate();
 				if (lastModStamp > timestamp) {
+					log.appendLog("Backup check task is running", Logger.TAG_BACKUP);
 					//Backup should have been made, perhaps backup manager is disabled or just unreliable!
 					//Do backup
 					
@@ -63,6 +66,7 @@ public class BackupCheckTask extends AsyncTask<Integer, Void, Void> {
 					}
 					catch (IOException e) {
 						//Too bad
+						log.appendLog("Backup check task failed to complete backup", Logger.TAG_BACKUP);
 						e.printStackTrace();
 					}
 				}

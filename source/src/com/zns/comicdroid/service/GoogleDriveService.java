@@ -55,6 +55,7 @@ import com.zns.comicdroid.data.Comic;
 import com.zns.comicdroid.data.DBHelper;
 import com.zns.comicdroid.util.BackupHelper;
 import com.zns.comicdroid.util.DriveUtil;
+import com.zns.comicdroid.util.Logger;
 
 import de.greenrobot.event.EventBus;
 
@@ -65,6 +66,7 @@ public class GoogleDriveService extends IntentService {
 	public static final String BACKUP_DATA_FILENAME = "data.dat";
 	public static final String PUBLISH_INDEX_FILENAME = "index.html";	
 	private DBHelper mDb;
+	private Logger mLogger;
 	
 	private NotificationManager notificationManager;
 
@@ -107,6 +109,7 @@ public class GoogleDriveService extends IntentService {
 	protected void onHandleIntent(Intent intent) {
 		boolean publishOnly = intent.getBooleanExtra(INTENT_PUBLISH_ONLY, false);
 
+		mLogger = new Logger(getExternalFilesDir(null).toString() + "/log");		
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 	
 		//Get database connections
@@ -181,6 +184,7 @@ public class GoogleDriveService extends IntentService {
 				response.disconnect();
 				
 				if (!backupAppId.equals(appId)) {
+					mLogger.appendLog("Unable to backup to drive, appid does not match", Logger.TAG_BACKUP);
 					return;
 				}
 			}
@@ -252,7 +256,11 @@ public class GoogleDriveService extends IntentService {
 		Editor edit = prefs.edit();		
 		edit.putBoolean(Application.PREF_BACKUP_SUCCESS, uploadSuccess);
 		if (uploadSuccess) {
+			mLogger.appendLog("Backup to drive success", Logger.TAG_BACKUP);
 			edit.putInt(Application.PREF_BACKUP_LAST, timeStamp);
+		}
+		else {
+			mLogger.appendLog("Backup to drive failed", Logger.TAG_BACKUP);
 		}
 		edit.commit();
 	}
@@ -434,8 +442,11 @@ public class GoogleDriveService extends IntentService {
 				update.setNewRevision(false);
 				update.execute();
 			}
+			
+			mLogger.appendLog("Published to google drive", Logger.TAG_BACKUP);
 		}
 		catch (Exception e) {
+			mLogger.appendLog("Failed to publish to google drive", Logger.TAG_BACKUP);
 			e.printStackTrace();
 		}
 		

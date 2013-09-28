@@ -18,6 +18,7 @@ import android.preference.PreferenceManager;
 
 import com.google.api.services.drive.DriveScopes;
 import com.zns.comicdroid.task.BackupCheckTask;
+import com.zns.comicdroid.util.Logger;
 
 public class Application extends android.app.Application {
 	public final static String PREF_DRIVE_ACCOUNT = "DRIVE_ACCOUNT";
@@ -32,6 +33,8 @@ public class Application extends android.app.Application {
 	public final static String DRIVE_SCOPE_PUBLISH = DriveScopes.DRIVE_FILE;
 	public final static String DRIVE_SCOPE_BACKUP = DriveScopes.DRIVE_APPDATA;
 	public final static String DRIVE_WEBFOLDER_NAME = "ComicDroid";
+	public final static boolean DEBUG = true;
+	
 	public boolean isFirstUse;
 	private String mImagePath = null;
 	
@@ -82,6 +85,9 @@ public class Application extends android.app.Application {
 			//Fire and forget
 			new BackupCheckTask(getApplicationContext()).execute(lastBackup);
 		}
+		
+		Logger log = new Logger(getExternalFilesDir(null).toString() + "/log");
+		log.appendLog("Starting comicdroid", "LIFECYCLE");
 		
 		super.onCreate();
 	}

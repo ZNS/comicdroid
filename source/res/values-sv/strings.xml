@@ -251,5 +251,10 @@
 	<strong>Vad innebär \"Endast wifi\"?</strong><br/>
 	Med det här påslaget kommer ComicDroid endast göra backup när du är ansluten via wifi. Observera att detta kan resultera i inaktuella backuper om du inte frekvent är ansluten till wifi.    
     ]]>
-    </string>    
+    </string>
+	<string-array name="donation_google_catalog_values">
+        <item>10 SEK</item>
+        <item>30 SEK</item>
+        <item>50 SEK</item>
+    </string-array>
 </resources>
