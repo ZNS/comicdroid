@@ -6,6 +6,7 @@ import java.lang.ref.WeakReference;
 import java.util.Calendar;
 import java.util.Date;
 
+import com.zns.comicdroid.Application;
 import com.zns.comicdroid.data.DBHelper;
 import com.zns.comicdroid.service.GoogleDriveService;
 import com.zns.comicdroid.util.BackupUtil;
@@ -13,7 +14,9 @@ import com.zns.comicdroid.util.Logger;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 
 public class BackupCheckTask extends AsyncTask<Integer, Void, Void> {
 	private final WeakReference<Context> mContext;
@@ -43,7 +46,18 @@ public class BackupCheckTask extends AsyncTask<Integer, Void, Void> {
 				if (lastModStamp > timestamp) {
 					log.appendLog("Backup check task is running", Logger.TAG_BACKUP);
 					//Backup should have been made, perhaps backup manager is disabled or just unreliable!
-					//Do backup
+					
+					SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+					//Wifi check
+					if (prefs.getBoolean(Application.PREF_BACKUP_WIFIONLY, false))
+					{
+						if (!BackupUtil.acquireWifiLock(context))
+						{
+							log.appendLog("Backup stopped, no wifi connection", Logger.TAG_BACKUP);
+							mContext.clear();
+							return null;							
+						}
+					}
 					
 					//Get file path
 					File outPath = new File(context.getExternalFilesDir(null).toString() + "/backup");

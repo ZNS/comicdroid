@@ -53,7 +53,7 @@ import com.zns.comicdroid.R;
 import com.zns.comicdroid.activity.Settings;
 import com.zns.comicdroid.data.Comic;
 import com.zns.comicdroid.data.DBHelper;
-import com.zns.comicdroid.util.BackupHelper;
+import com.zns.comicdroid.util.BackupUtil;
 import com.zns.comicdroid.util.DriveUtil;
 import com.zns.comicdroid.util.Logger;
 
@@ -458,15 +458,13 @@ public class GoogleDriveService extends IntentService {
 	@Override
 	public void onDestroy() {
 		//Just to make sure we release the wifi lock
-		if (BackupHelper.wifiLock != null && BackupHelper.wifiLock.isHeld())
-			BackupHelper.wifiLock.release();
+		BackupUtil.releaseWifiLock();
 		super.onDestroy();
 	}
 	
 	private void stopAndClean()
 	{
-		if (BackupHelper.wifiLock != null)
-			BackupHelper.wifiLock.release();
+		BackupUtil.releaseWifiLock();
 		stopSelf();
 	}
 	

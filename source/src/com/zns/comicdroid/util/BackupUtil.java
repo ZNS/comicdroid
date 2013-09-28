@@ -22,12 +22,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
+import android.net.wifi.WifiManager.WifiLock;
 
 import com.google.common.base.Joiner;
 import com.zns.comicdroid.R;
@@ -37,7 +42,41 @@ import com.zns.comicdroid.service.ProgressResult;
 import de.greenrobot.event.EventBus;
 
 public class BackupUtil {
-
+	private static WifiLock wifiLock = null;
+	
+	public static void extendWifiLock() {
+		if (wifiLock != null) {
+			wifiLock.acquire();
+		}
+	}
+	
+	public static void releaseWifiLock() {
+		if (wifiLock != null && wifiLock.isHeld()) {
+			wifiLock.release();
+		}
+	}
+	
+	public static boolean acquireWifiLock(Context context)
+	{
+		//We only allow backup on wifi connection. Make sure we are connected and if so lock the wifi connection
+		ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo wifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+		if (wifi.isConnected()) {
+			if (wifiLock == null)
+			{
+		        WifiManager wm = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+		        wifiLock = wm.createWifiLock(WifiManager.WIFI_MODE_FULL , "com.zns.comicdroid.wifilock");
+		        wifiLock.setReferenceCounted(true);
+		        wifiLock.acquire();
+			}
+			else {
+				wifiLock.acquire();
+			}
+	        return true;
+		}
+		return false;
+	}
+	
 	public static int BackupDataToFile(DBHelper db, File fileSql, String imagePath)
 	throws IOException {
 		DataOutputStream writer = null;

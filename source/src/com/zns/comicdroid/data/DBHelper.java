@@ -31,7 +31,7 @@ import com.google.common.primitives.Ints;
 
 public class DBHelper extends SQLiteOpenHelper {
 
-	private static final int DB_VERSION = 	15;
+	private static final int DB_VERSION = 	16;
 	private static final String DB_NAME = 	"ComicDroid.db";
 
 	private static DBHelper mInstance;
@@ -114,7 +114,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		String triggerGroupId4 = "CREATE TRIGGER insert_boook_groupid_image AFTER INSERT ON tblBooks " +
 				"WHEN new.Issue = 1 " +
 				"BEGIN " +
-				"UPDATE tblGroups SET Image = new.Image, ImageUrl = new.ImageUrl WHERE new.GroupId <> 0 AND _id = new.GroupId; " +
+				"UPDATE tblGroups SET Image = new.Image, ImageUrl = new.ImageUrl, ImageComicId = new._id WHERE new.GroupId <> 0 AND _id = new.GroupId; " +
 				"END;";
 
 		//Track count of books for groups
@@ -160,55 +160,22 @@ public class DBHelper extends SQLiteOpenHelper {
 		//Just to make sure
 		if (oldVersion >= newVersion)
 			return;
-
-		if (oldVersion < 10) {
-			db.execSQL("ALTER TABLE tblGroups ADD COLUMN IsWatched INTEGER DEFAULT 0");
-			db.execSQL("ALTER TABLE tblGroups ADD COLUMN IsComplete INTEGER DEFAULT 0");			
-			db.execSQL("DROP TRIGGER IF EXISTS delete_book; " +
-					"CREATE TRIGGER delete_book AFTER DELETE ON tblBooks " +
-					"BEGIN " +
-					"UPDATE tblGroups SET BookCount=BookCount-1 WHERE BookCount > 0 AND _id = old.GroupId; " +
-					"UPDATE tblMeta SET LastModified = strftime('%s','now'); " +
-					"END;");
-		}
-		if (oldVersion < 11) {
-			db.execSQL("ALTER TABLE tblGroups ADD COLUMN IsFinished INTEGER DEFAULT 0");
-		}
-		if (oldVersion < 12) {
-			db.execSQL("ALTER TABLE tblGroups ADD COLUMN TotalBookCount INTEGER DEFAULT 0");
-		}
-		if (oldVersion < 13) {
-			db.execSQL("ALTER TABLE tblBooks ADD COLUMN IsRead INTEGER DEFAULT 0");
-			db.execSQL("ALTER TABLE tblBooks ADD COLUMN Rating INTEGER DEFAULT 0");
-			db.execSQL("ALTER TABLE tblBooks ADD COLUMN Issues TEXT");
-		}
-		if (oldVersion < 14) {
-			//Remove path from image field
-			Cursor cursor = null;
-			try
-			{
-				cursor = db.rawQuery("SELECT _id, Image FROM tblBooks", null);
-				while (cursor.moveToNext()) {
-					String imgPath = cursor.getString(1);
-					if (imgPath != null && !imgPath.equals("")) {
-						int id = cursor.getInt(0);
-						File img = new File(imgPath);
-						String fileName = img.getName();						
-						ContentValues values = new ContentValues();
-						values.put("Image", fileName);
-						db.update("tblBooks", values, "_id=?", new String[] { Integer.toString(id) });
-					}
-				}
-			}
-			finally {
-				if (cursor != null)
-					cursor.close();
-			}
-			//Update tblGroups
-			db.execSQL("UPDATE tblGroups SET Image = (SELECT Image FROM tblBooks WHERE GroupId = tblGroups._id AND Issue = 1 LIMIT 1)");
-		}		
 		if (oldVersion < 15) {			
 			db.execSQL("ALTER TABLE tblGroups ADD COLUMN ImageComicId INTEGER");
+		}
+		if (oldVersion < 16) {
+			db.execSQL("DROP TRIGGER IF EXISTS update_boook_groupid_image;" +
+					"CREATE TRIGGER update_boook_groupid_image AFTER UPDATE OF GroupId ON tblBooks " +
+					"WHEN new.Issue = 1 " +
+					"BEGIN " +
+					"UPDATE tblGroups SET Image = new.Image, ImageUrl = new.ImageUrl, ImageComicId = new._id WHERE new.GroupId <> 0 AND _id = new.GroupId; " +
+					"END;");
+			db.execSQL("DROP TRIGGER IF EXISTS insert_boook_groupid_image;" + 
+					"CREATE TRIGGER insert_boook_groupid_image AFTER INSERT ON tblBooks " +
+					"WHEN new.Issue = 1 " +
+					"BEGIN " +
+					"UPDATE tblGroups SET Image = new.Image, ImageUrl = new.ImageUrl, ImageComicId = new._id WHERE new.GroupId <> 0 AND _id = new.GroupId; " +
+					"END;");		
 		}
 	}
 

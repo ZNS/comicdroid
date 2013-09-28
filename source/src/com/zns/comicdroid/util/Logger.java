@@ -18,12 +18,13 @@ public class Logger {
 	private final SimpleDateFormat mFormat;
 
 	public Logger(String path) {
+		mFormat = new SimpleDateFormat("y-MM-d HH:mm:ss");		
+		mFile = new File(path, LOG_FILENAME);
+		
 		if (!Application.DEBUG) {
 			return;
 		}
-
-		mFormat = new SimpleDateFormat("y-MM-d HH:mm:ss");		
-		mFile = new File(path, LOG_FILENAME);
+		
 		if (!mFile.exists())
 		{
 			try {

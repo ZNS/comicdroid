@@ -33,7 +33,7 @@ public class Application extends android.app.Application {
 	public final static String DRIVE_SCOPE_PUBLISH = DriveScopes.DRIVE_FILE;
 	public final static String DRIVE_SCOPE_BACKUP = DriveScopes.DRIVE_APPDATA;
 	public final static String DRIVE_WEBFOLDER_NAME = "ComicDroid";
-	public final static boolean DEBUG = true;
+	public final static boolean DEBUG = false;
 	
 	public boolean isFirstUse;
 	private String mImagePath = null;

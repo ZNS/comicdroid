@@ -336,9 +336,20 @@ implements OnCheckedChangeListener {
 	}
 	
 	public void restoreClick(View view) {
-		EventBus.getDefault().post(new ProgressResult(1, getString(R.string.progress_init)));
-		//Restore
-		pickAccount(301);
+		new AlertDialog.Builder(this)
+		.setMessage(getString(R.string.settings_restoreconfirm))
+		.setPositiveButton(R.string.common_yes, new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {		
+				EventBus.getDefault().post(new ProgressResult(1, getString(R.string.progress_init)));
+				//Restore
+				pickAccount(301);
+			}
+		})
+		.setNegativeButton(R.string.common_cancel, new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				dialog.cancel();
+			}
+		}).show();				
 	}
 	
 	private void setToggleButtonPref(ToggleButton button, boolean checked, String pref) {

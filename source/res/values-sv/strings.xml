@@ -116,7 +116,7 @@
     <string name="settings_groupcountsub">Om antalet böcker som rapporteras för samlingar är felaktigt kan du rätta till det genom att trycka på knappen nedan.</string>
     <string name="settings_btnGroupCount">Uppdatera samlingsräknare</string>        
     <string name="settings_restorelabel">Återställ data</string>
-    <string name="settings_restoresub">Försöker återställa data från google backup. DETTA KOMMER RADERA ALLT!</string>
+    <string name="settings_restoresub">Försöker återställa data från google backup. ALLT KOMMER ATT ERSÄTTAS!</string>
     <string name="settings_btnRestore">Återställ från google-backup</string>    
     <string name="settings_linktext">Visa arkiv på google drive</string>
     <string name="settings_updateGroupCount_notification">Räknare för samlingar har uppdaterats</string>
@@ -125,6 +125,7 @@
     <string name="settings_drivebackuplabel">Gör backup till drive</string>
     <string name="settings_drivebackupsub">Slå på för att göra backup till ditt google drive konto</string>    
     <string name="settings_forcebackup">Slå på backup</string>
+    <string name="settings_restoreconfirm"><string name="settings_restoreconfirm">Är du säker på att du vill återställa från google drive? Alla nuvarande serier kommer ersättas.</string></string>
     <string name="drawer_open">Öppna</string>
     <string name="drawer_close">Stäng</string>
     <string name="group_delete_title">Radera samling?</string>
@@ -253,8 +254,8 @@
     ]]>
     </string>
 	<string-array name="donation_google_catalog_values">
-        <item>10 SEK</item>
-        <item>30 SEK</item>
-        <item>50 SEK</item>
+        <item>2 Euro</item>
+        <item>3 Euro</item>
+        <item>5 Euro</item>
     </string-array>
 </resources>

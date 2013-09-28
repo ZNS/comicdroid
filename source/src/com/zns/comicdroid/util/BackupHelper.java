@@ -30,10 +30,6 @@ import android.app.backup.BackupDataInput;
 import android.app.backup.BackupDataOutput;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.wifi.WifiManager;
-import android.net.wifi.WifiManager.WifiLock;
 import android.os.ParcelFileDescriptor;
 import android.preference.PreferenceManager;
 
@@ -53,35 +49,16 @@ public class BackupHelper extends BackupAgent {
 		Application.PREF_FIRST_TIME_USE,
 		Application.PREF_BACKUP_LAST
 	};	
-	public static WifiLock wifiLock = null;
 	
 	@Override
 	public void onBackup(ParcelFileDescriptor oldState, BackupDataOutput data,
 			ParcelFileDescriptor newState) throws IOException {
 		
+		boolean wifiLocked = false;
 		Logger log = new Logger(getExternalFilesDir(null).toString() + "/log");
 		log.appendLog("Starting backup via backup agent", Logger.TAG_BACKUP);
 		
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());		
-		
-		//Wifi check
-		if (prefs.getBoolean(Application.PREF_BACKUP_WIFIONLY, false))
-		{
-			//We only allow backup on wifi connection. Make sure we are connected and if so lock the wifi connection
-			ConnectivityManager connManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-			NetworkInfo wifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-			if (wifi.isConnected()) {
-		        WifiManager wm = (WifiManager) getSystemService(WIFI_SERVICE);
-		        wifiLock = wm.createWifiLock(WifiManager.WIFI_MODE_FULL , "com.zns.comicdroid.wifilock");
-		        wifiLock.setReferenceCounted(true);
-		        wifiLock.acquire();
-			}
-			else {
-				log.appendLog("Backup stopped, no wifi connection", Logger.TAG_BACKUP);
-				return;
-			}
-		}
-
 		DBHelper db = DBHelper.getHelper(getApplicationContext());
 		int dataModifed = db.GetLastModifiedDate();
 		boolean performBackup = true;
@@ -104,6 +81,16 @@ public class BackupHelper extends BackupAgent {
 				in.close();
 		}
 
+		//Wifi check
+		if (prefs.getBoolean(Application.PREF_BACKUP_WIFIONLY, false))
+		{
+			wifiLocked = BackupUtil.acquireWifiLock(this); 
+			if (!wifiLocked) {
+				log.appendLog("Backup stopped, no wifi connection", Logger.TAG_BACKUP);
+				return;
+			}
+		}
+		
 		//-----------------------Shared Preferences--------------------------	
 		ByteArrayOutputStream bufStream = null;
 		ObjectOutputStream out = null;		
@@ -176,9 +163,9 @@ public class BackupHelper extends BackupAgent {
 				finally {
 					fileStreamData.close();
 					//Upload to google drive (even if writing to manager fails)
-					if (wifiLock != null) {
+					if (wifiLocked) {
 						//Acquire again for service, will be released by service
-						wifiLock.acquire();
+						BackupUtil.extendWifiLock();
 					}
 					log.appendLog("Backup manager done, starting google drive service", Logger.TAG_BACKUP);
 					Intent intent = new Intent(getApplicationContext(), GoogleDriveService.class);
@@ -188,6 +175,10 @@ public class BackupHelper extends BackupAgent {
 		}
 		else {
 			log.appendLog("Backup not needed, no changes", Logger.TAG_BACKUP);
+		}
+		
+		if (wifiLocked) {
+			BackupUtil.releaseWifiLock(); //Release lock for agent
 		}
 		
 		//Write newstate
@@ -200,10 +191,6 @@ public class BackupHelper extends BackupAgent {
 		finally {
 			if (stateOut != null)
 				stateOut.close();
-		}
-		
-		if (wifiLock != null) {
-			wifiLock.release(); //Release lock for agent
 		}
 	}
 

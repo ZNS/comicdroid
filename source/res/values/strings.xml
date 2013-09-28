@@ -117,7 +117,7 @@
     <string name="settings_groupcountsub">If the number of comics for collections are incorrect you can fix it by pressing the button below.</string>
     <string name="settings_btnGroupCount">Update collection count</string>        
     <string name="settings_restorelabel">Restore data</string>
-    <string name="settings_restoresub">Tries to restore data from google backup. THIS WILL DELETE EVERYTHING!</string>
+    <string name="settings_restoresub">Tries to restore data from google backup. THIS WILL REPLACE EVERYTHING!</string>
     <string name="settings_btnRestore">Restore from google backup</string>    
     <string name="settings_linktext">View archive on google drive</string>
     <string name="settings_updateGroupCount_notification">Collection counts have been updated</string>
@@ -126,6 +126,7 @@
     <string name="settings_drivebackuplabel">Backup to drive</string>
     <string name="settings_drivebackupsub">Enable this to backup ComicDroid to your google drive account</string>
     <string name="settings_forcebackup">Enable backup</string>
+    <string name="settings_restoreconfirm">Are your sure you want to restore comics from google drive? This will replace your current comics.</string>
     <string name="drawer_open">Open</string>
     <string name="drawer_close">Close</string>
     <string name="group_delete_title">Delete collection?</string>
@@ -255,7 +256,7 @@
     ]]>    
     </string> 
     <string-array name="donation_google_catalog_values">
-        <item>1 Euro</item>
+        <item>2 Euro</item>
         <item>3 Euros</item>
         <item>5 Euros</item>
     </string-array>
