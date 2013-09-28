@@ -16,8 +16,24 @@ import com.zns.comicdroid.service.RevisionsByDateComparer;
 
 public class DriveUtil {
 	
-	//This tries to solve a google drive bug which can occur if you search both on parent and title
 	public static File getFile(Drive service, String parent, String title) throws UserRecoverableAuthException, IOException {
+		return getFile(service, null, parent, title);
+	}
+	
+	//This tries to solve a google drive bug which can occur if you search both on parent and title
+	public static File getFile(Drive service, String fileId, String parent, String title) throws UserRecoverableAuthException, IOException {
+		try {
+			if (fileId != null) {
+				File f = service.files().get(fileId).execute();
+				if (f != null) {
+					return f;
+				}
+			}
+		}
+		catch (IOException e) {
+			//Ignore this and try to get by searching instead...
+		}
+		
 		try
 		{
 			FileList files = service.files().list().setQ("'" + parent + "' in parents and title = '" + title + "'").execute();
