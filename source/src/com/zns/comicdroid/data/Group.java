@@ -10,6 +10,10 @@
  ******************************************************************************/
 package com.zns.comicdroid.data;
 
+import java.util.List;
+
+import com.zns.comicdroid.amazon.Book;
+
 public class Group {
 	private int mId;
 	private String mName;
@@ -19,7 +23,8 @@ public class Group {
 	private int mIsWatched;
 	private int mIsFinished;
 	private int mIsComplete;
-
+	private List<Book> mAmazonBooks;
+	
 	public Group(int id) {
 		this.mId = id;
 	}
@@ -89,6 +94,13 @@ public class Group {
 		this.mIsComplete = complete ? 1 : 0;
 	}
 
+	public List<Book> getAmazonBooks() {
+		return this.mAmazonBooks;
+	}
+	public void setAmazonBooks(List<Book> books) {
+		this.mAmazonBooks = books;
+	}
+	
 	@Override
 	public String toString() {
 		return getName();

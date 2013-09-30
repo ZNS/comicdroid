@@ -4,3 +4,6 @@
 [submodule "libraries/EventBus"]
 	path = libraries/EventBus
 	url = https://github.com/greenrobot/EventBus
+[submodule "libraries/Android-Universal-Image-Loader"]
+	path = libraries/Android-Universal-Image-Loader
+	url = https://github.com/nostra13/Android-Universal-Image-Loader/

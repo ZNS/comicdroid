@@ -13,4 +13,6 @@
     <color name="contentBg">#f0ffff</color>
     <color name="listViewBorrowed">#e0efef</color>
     <color name="altFg1">#0099CC</color>
+    <color name="amazonBg">#ff9900</color>
+    <color name="amazonFg">#e47911</color>
 </resources>

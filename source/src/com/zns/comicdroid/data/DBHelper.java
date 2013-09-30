@@ -323,6 +323,15 @@ public class DBHelper extends SQLiteOpenHelper {
 				"ORDER BY Issue", new String[] { Integer.toString(groupId) });
 	}
 
+	public Comic getLastIssue(int groupId)
+	{		
+		List<Comic> comics = getComicsBySql("SELECT _id, Title, Subtitle, Author, Illustrator, Publisher, PublishDate, " +
+				"AddedDate, PageCount, IsBorrowed, Borrower, Image, ISBN, Issue, GroupId, ImageUrl, BorrowedDate, IsRead, Rating, Issues FROM tblBooks " +
+				"WHERE GroupId = ? AND Issue = (SELECT MAX(Issue) FROM tblBooks Where GroupId = ?) " +
+				"ORDER BY Issue", new String[] { Integer.toString(groupId), Integer.toString(groupId) });
+		return comics.get(0);
+	}
+	
 	public List<Comic> getBorrowed()
 	{
 		return getComicsBySql("SELECT _id, Title, Subtitle, Author, Illustrator, Publisher, PublishDate, " +

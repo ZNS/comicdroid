@@ -17,6 +17,9 @@ import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
 
 import com.google.api.services.drive.DriveScopes;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.zns.comicdroid.task.BackupCheckTask;
 import com.zns.comicdroid.util.Logger;
 
@@ -61,6 +64,7 @@ public class Application extends android.app.Application {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 		Editor prefsEdit = null;
 		
+		//Create unique id for this installation
 		String appId = prefs.getString(PREF_APP_ID, null);
 		if (appId == null) {
 			prefsEdit = prefs.edit();
@@ -68,6 +72,7 @@ public class Application extends android.app.Application {
 			prefsEdit.putString(PREF_APP_ID, appId);		
 		}
 		
+		//Check first user
 		isFirstUse = prefs.getBoolean(PREF_FIRST_TIME_USE, true);
 		if (isFirstUse)
 		{
@@ -78,6 +83,15 @@ public class Application extends android.app.Application {
 		
 		if (prefsEdit != null)
 			prefsEdit.commit();
+
+		//Set up image loader
+		ImageLoaderConfiguration imgConfig = new ImageLoaderConfiguration.Builder(getApplicationContext())
+			.defaultDisplayImageOptions(new DisplayImageOptions.Builder()
+					.cacheInMemory(true)
+					.build())
+			.threadPoolSize(3)
+			.build();
+		ImageLoader.getInstance().init(imgConfig);
 		
 		//Backup check
 		if (prefs.getBoolean(PREF_DRIVE_BACKUP, false)) {
