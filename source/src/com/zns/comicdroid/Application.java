@@ -20,6 +20,7 @@ import com.google.api.services.drive.DriveScopes;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.zns.comicdroid.amazon.AmazonCacheTask;
 import com.zns.comicdroid.task.BackupCheckTask;
 import com.zns.comicdroid.util.Logger;
 
@@ -36,7 +37,9 @@ public class Application extends android.app.Application {
 	public final static String DRIVE_SCOPE_PUBLISH = DriveScopes.DRIVE_FILE;
 	public final static String DRIVE_SCOPE_BACKUP = DriveScopes.DRIVE_APPDATA;
 	public final static String DRIVE_WEBFOLDER_NAME = "ComicDroid";
-	public final static boolean DEBUG = false;
+	public final static int CACHE_AMAZONSEARCH_HOURS = 4;
+	public final static String AMAZON_APPLICATION_KEY = "0e75d7882aa145f1becfe11ced0cd02f";
+	public final static boolean DEBUG = false;	
 	
 	public boolean isFirstUse;
 	private String mImagePath = null;
@@ -92,6 +95,9 @@ public class Application extends android.app.Application {
 			.threadPoolSize(3)
 			.build();
 		ImageLoader.getInstance().init(imgConfig);
+		
+		//Clean cache
+		new AmazonCacheTask().execute(getExternalFilesDir(null).toString() + "/amazoncache");
 		
 		//Backup check
 		if (prefs.getBoolean(PREF_DRIVE_BACKUP, false)) {

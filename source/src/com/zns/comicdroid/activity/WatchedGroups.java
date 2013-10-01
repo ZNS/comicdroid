@@ -18,16 +18,23 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnChildClickListener;
 
+import com.amazon.device.associates.AssociatesAPI;
+import com.amazon.device.associates.LinkService;
+import com.amazon.device.associates.NotInitializedException;
+import com.amazon.device.associates.OpenProductPageRequest;
+import com.zns.comicdroid.Application;
 import com.zns.comicdroid.BaseFragmentActivity;
 import com.zns.comicdroid.R;
 import com.zns.comicdroid.adapter.ExpandableGroupAdapter;
 import com.zns.comicdroid.amazon.AmazonSearchTask;
+import com.zns.comicdroid.amazon.Book;
 import com.zns.comicdroid.data.Comic;
 import com.zns.comicdroid.data.Group;
 
 public class WatchedGroups extends BaseFragmentActivity
-implements OnItemClickListener {
+implements OnItemClickListener, OnChildClickListener {
 
 	private ExpandableGroupAdapter mAdapter;
 	private ExpandableListView mElvGroups;
@@ -47,11 +54,14 @@ implements OnItemClickListener {
 		super.onCreate(savedInstanceState);
 
 		mElvGroups = (ExpandableListView)findViewById(R.id.watched_elvGroups);
-		mElvGroups.setOnItemClickListener(this);
+		mElvGroups.setOnChildClickListener(this);
 
 		List<Group> groups = getDBHelper().getGroupsWatched();
 		mAdapter = new ExpandableGroupAdapter(this, groups, getImagePath(true));
 		mElvGroups.setAdapter(mAdapter);
+		
+		//Amazon
+		AssociatesAPI.initialize(new AssociatesAPI.Config(Application.AMAZON_APPLICATION_KEY, this));
 		
 		if (groups.size() == 0) {
 			findViewById(R.id.watched_tvEmpty).setVisibility(View.VISIBLE);
@@ -86,15 +96,9 @@ implements OnItemClickListener {
 			Group group = (Group)mAdapter.getGroup(i);
 			Comic last = getDBHelper().getLastIssue(group.getId());
 			if (last != null && last.getIssue() > 0) {
-				String author = last.getAuthor();
-				if (author != null && author.length() > 0) {
-					String[] parts = author.split(" ");
-					author = parts[parts.length - 1];
-				}
-				
 				AmazonSearchTask.AmazonSearchTaskRequest req = new AmazonSearchTask.AmazonSearchTaskRequest();
 				req.index = i;
-				req.query = (author != null && author.length() > 0 ? "author:" + author + " " : "") + "title:\"" + last.getTitle() + "\" " + (last.getIssue() + 1);
+				req.query = AmazonSearchTask.getNextIssueQuery(last);
 				req.issue = last.getIssue() + 1;
 				req.cachePath = cachePath;
 				new AmazonSearchTask() {
@@ -105,6 +109,24 @@ implements OnItemClickListener {
 					}
 				}.execute(req);
 			}
+			else {
+				updateList(groupCount);
+			}
 		}
+	}
+
+	@Override
+	public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+		Book book = (Book)mAdapter.getChild(groupPosition, childPosition);
+	    OpenProductPageRequest request = new OpenProductPageRequest(book.Id);
+        try {
+            LinkService linkService = AssociatesAPI.getLinkService();
+            linkService.openRetailPage(request);
+            return true;
+        }
+        catch (NotInitializedException e) {
+            e.printStackTrace();
+        }		
+		return false;
 	}
 }

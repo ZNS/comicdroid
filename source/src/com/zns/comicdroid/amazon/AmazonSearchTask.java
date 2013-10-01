@@ -3,6 +3,7 @@ package com.zns.comicdroid.amazon;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -18,6 +19,8 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import com.google.api.client.xml.Xml;
+import com.zns.comicdroid.Application;
+import com.zns.comicdroid.data.Comic;
 
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
@@ -29,8 +32,22 @@ public class AmazonSearchTask extends AsyncTask<AmazonSearchTask.AmazonSearchTas
     private static final String ENDPOINT = "ecs.amazonaws.com";
     private static final String ASSOCIATE_TAG = "COMICDROID-1";
     
+    public static String getNextIssueQuery(Comic comic) {
+		String author = comic.getAuthor();
+		if (author != null && author.length() > 0) {
+			String[] parts = author.split(" ");
+			author = parts[parts.length - 1];
+		}
+		return (author != null && author.length() > 0 ? "author:" + author + " and " : "") + "title:\"" + comic.getTitle() + "\" " + (comic.getIssue() + 1);    	
+    }
+    
+    public static String getAuthorQuery(String author) {
+    	return "author:" + author;
+    }
+    
     public static class AmazonSearchTaskRequest {
     	public String query;
+    	public String orderBy;
     	public int index;
     	public int issue;
     	public String cachePath;
@@ -56,7 +73,10 @@ public class AmazonSearchTask extends AsyncTask<AmazonSearchTask.AmazonSearchTas
 	        params.put("Operation", "ItemSearch");
 	        params.put("Power", arg0[0].query);
 	        params.put("ResponseGroup", "Images,ItemAttributes");
-	        params.put("IncludeReviewsSummary", "false");	        
+	        params.put("IncludeReviewsSummary", "false");	     
+	        if (arg0[0].orderBy != null) {
+	        	params.put("Sort", arg0[0].orderBy);
+	        }
 	        final String requestUrl = helper.sign(params);
 	        
 	        XmlPullParser parser = Xml.createParser();
@@ -105,17 +125,38 @@ public class AmazonSearchTask extends AsyncTask<AmazonSearchTask.AmazonSearchTas
 		//Read file
 		File cacheFile = new File(cachePath, "itemsearch" + Integer.toString(url.toLowerCase(Locale.ENGLISH).hashCode()));
 		long diff = new Date().getTime() - cacheFile.lastModified();		
-		if (diff < 12 * 60 * 60 * 1000) {
-			//Use cache file
-			return new BufferedInputStream(new FileInputStream(cacheFile));
-		}		
-		else {
+		if (diff >= Application.CACHE_AMAZONSEARCH_HOURS * 60 * 60 * 1000) {
 			//Delete cache
 			cacheFile.delete();
-			//Get data
-			return new URL(url).openStream();
-			//TODO:Save to cache
+			//Save to cache
+			BufferedInputStream in = null;
+			FileOutputStream out = null;
+			try
+			{
+				in = new BufferedInputStream(new URL(url).openStream());
+				out = new FileOutputStream(cacheFile);
+				byte[] data = new byte[1024];
+				int count = 0;
+				while ((count = in.read(data)) != -1) {
+					out.write(data, 0, count);
+				}
+			}
+			catch (IOException e) {
+				//Failed to write cache, try to web-stream
+				return new URL(url).openStream();
+			}			
+			finally {
+				if (out != null) {
+					out.flush();
+					out.close();
+				}
+				if (in != null) {
+					in.close();
+				}
+			}
 		}
+		//Use cache file
+		return new BufferedInputStream(new FileInputStream(cacheFile));
 	}
 	
 	private Book readItem(XmlPullParser parser) throws XmlPullParserException, IOException
