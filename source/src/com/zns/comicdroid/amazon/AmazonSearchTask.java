@@ -78,9 +78,10 @@ public class AmazonSearchTask extends AsyncTask<AmazonSearchTask.AmazonSearchTas
 	        	params.put("Sort", arg0[0].orderBy);
 	        }
 	        final String requestUrl = helper.sign(params);
+	        String key = params.get("Power").concat(params.containsKey("Sort") ? params.get("Sort") : "");
 	        
 	        XmlPullParser parser = Xml.createParser();
-	        stream = getXmlStream(requestUrl, arg0[0].cachePath);
+	        stream = getXmlStream(requestUrl, key, arg0[0].cachePath);
 	        parser.setInput(stream, null);
 	        parser.nextTag();
 	        parser.require(XmlPullParser.START_TAG, null, "ItemSearchResponse");
@@ -117,13 +118,13 @@ public class AmazonSearchTask extends AsyncTask<AmazonSearchTask.AmazonSearchTas
 	}
 	
 	@SuppressLint("DefaultLocale")
-	private InputStream getXmlStream(String url, String cachePath) throws MalformedURLException, IOException 
+	private InputStream getXmlStream(String url, String key, String cachePath) throws MalformedURLException, IOException 
 	{
 		//Create directories
 		File cachePathFile = new File(cachePath);
 		cachePathFile.mkdirs();
 		//Read file
-		File cacheFile = new File(cachePath, "itemsearch" + Integer.toString(url.toLowerCase(Locale.ENGLISH).hashCode()));
+		File cacheFile = new File(cachePath, "itemsearch" + Integer.toString(key.toLowerCase(Locale.ENGLISH).hashCode()) + ".xml");
 		long diff = new Date().getTime() - cacheFile.lastModified();		
 		if (diff >= Application.CACHE_AMAZONSEARCH_HOURS * 60 * 60 * 1000) {
 			//Delete cache

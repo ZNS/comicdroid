@@ -124,7 +124,7 @@
 	    android:visibility="gone" >
 
 		<View
-		    android:id="@+id/vComicAmazonSeparator"
+		    android:id="@+id/vComicAmazonSeparatorTop"
 	    	android:layout_width="fill_parent"
 	    	android:layout_height="1dp"
 	    	android:background="@color/abs__background_holo_light"
@@ -138,15 +138,22 @@
         	android:adjustViewBounds="true"
         	android:scaleType="fitXY"	        
         	android:layout_marginRight="5dp"
-        	android:layout_below="@id/vComicAmazonSeparator"
+        	android:layout_below="@id/vComicAmazonSeparatorTop"
 	        android:layout_alignParentLeft="true" />
 	   
 	    <TextView
 	        android:id="@+id/tvComicAmazon"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:layout_below="@id/vComicAmazonSeparator"
+	        android:layout_below="@id/vComicAmazonSeparatorTop"
 	        android:layout_toRightOf="@id/ivComicAmazon" />
 	    
 	</RelativeLayout>
+	
+	<View
+	    android:id="@+id/vSeparatorBottom"
+    	android:layout_width="fill_parent"
+    	android:layout_height="3dp"
+    	android:background="@color/abs__background_holo_light"
+		android:visibility="gone" />	
 </LinearLayout>

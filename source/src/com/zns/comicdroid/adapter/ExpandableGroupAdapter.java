@@ -36,6 +36,7 @@ public class ExpandableGroupAdapter extends BaseExpandableListAdapter {
 		RelativeLayout rlAmazon;
 		ImageView ivAmazon;
 		TextView tvAmazon;
+		View vSeparator;
 	}
 	
 	static class BookHolder
@@ -151,6 +152,7 @@ public class ExpandableGroupAdapter extends BaseExpandableListAdapter {
 			holder.ivGroupWatched = (ImageView)convertView.findViewById(R.id.ivGroupWatched);
 			holder.ivAmazon = (ImageView)convertView.findViewById(R.id.ivComicAmazon);
 			holder.tvAmazon = (TextView)convertView.findViewById(R.id.tvComicAmazon);
+			holder.vSeparator = convertView.findViewById(R.id.vSeparatorBottom);
 			convertView.setTag(holder);
 		}
 		else
@@ -159,6 +161,7 @@ public class ExpandableGroupAdapter extends BaseExpandableListAdapter {
 		}
 
 		Group group = (Group)getGroup(position);
+		holder.vSeparator.setVisibility(View.VISIBLE);
 		holder.tvTitle.setText(group.getName());
 		holder.ivGroupFinished.setVisibility(group.getIsFinished() ? View.VISIBLE : View.GONE);
 		holder.ivGroupCompleted.setVisibility(group.getIsComplete() ? View.VISIBLE : View.GONE);
@@ -198,6 +201,6 @@ public class ExpandableGroupAdapter extends BaseExpandableListAdapter {
 
 	@Override
 	public boolean isChildSelectable(int arg0, int arg1) {
-		return false;
+		return true;
 	}
 }

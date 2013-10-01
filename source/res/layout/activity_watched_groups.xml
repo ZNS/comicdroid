@@ -58,7 +58,7 @@
 	        android:layout_height="wrap_content"
 	        android:listSelector="@android:color/transparent"
 			android:divider="@android:color/transparent"
-	        android:dividerHeight="5dp"
+	        android:dividerHeight="2dp"
 	        android:childDivider="@color/amazonBg"
 	        android:groupIndicator="@null"
 	        android:childIndicator="@null" />    
