@@ -8,9 +8,12 @@ import com.zns.comicdroid.amazon.Book;
 import com.zns.comicdroid.data.Group;
 import com.zns.comicdroid.util.ImageWorker;
 
+import de.greenrobot.event.EventBus;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
@@ -22,8 +25,8 @@ public class ExpandableGroupAdapter extends BaseExpandableListAdapter {
 	private final ImageWorker mImageWorker = new ImageWorker();
 	private final LayoutInflater mInflater;
 	private final String mImagePath;
-		
-	static class GroupHolder
+			
+	class GroupHolder
 	{
 		TextView tvTitle;
 		TextView tvAuthor;
@@ -39,12 +42,20 @@ public class ExpandableGroupAdapter extends BaseExpandableListAdapter {
 		View vSeparator;
 	}
 	
-	static class BookHolder
+	class BookHolder
 	{
 		ImageView ivImage;
 		TextView tvTitle;
 		TextView tvDate;
 		TextView tvPrice;
+	}
+	
+	public class AmazonRowClickEvent {
+		public int position;
+		
+		public AmazonRowClickEvent(int position) {
+			this.position = position;
+		}
 	}
 	
 	public ExpandableGroupAdapter(Context context, List<Group> values, String imagePath) 
@@ -153,11 +164,31 @@ public class ExpandableGroupAdapter extends BaseExpandableListAdapter {
 			holder.ivAmazon = (ImageView)convertView.findViewById(R.id.ivComicAmazon);
 			holder.tvAmazon = (TextView)convertView.findViewById(R.id.tvComicAmazon);
 			holder.vSeparator = convertView.findViewById(R.id.vSeparatorBottom);
+			
+			//Event for amazon row
+			holder.rlAmazon.setTag(R.id.TAG_GROUP_POSITION, position); //Track position for click event
+			holder.rlAmazon.setTag(R.id.TAG_GROUP_EXPANDED, isExpanded); //Track if group is expanded
+			holder.rlAmazon.setOnClickListener(new OnClickListener() {	
+				@Override
+				public void onClick(View v) {
+					final ImageView img = (ImageView)v.findViewById(R.id.ivComicAmazonHandle);
+					if ((Boolean)v.getTag(R.id.TAG_GROUP_EXPANDED) == true) {
+						img.setImageResource(R.drawable.amazon_arrow_expand);
+					}
+					else {
+						img.setImageResource(R.drawable.amazon_arrow_collapse);
+					}
+					EventBus.getDefault().post(new AmazonRowClickEvent((Integer)v.getTag(R.id.TAG_GROUP_POSITION)));
+				}
+			});
+			
 			convertView.setTag(holder);
 		}
 		else
 		{
 			holder = (GroupHolder)convertView.getTag();
+			holder.rlAmazon.setTag(R.id.TAG_GROUP_POSITION, position); //Track position for click event
+			holder.rlAmazon.setTag(R.id.TAG_GROUP_EXPANDED, isExpanded); //Track if group is expanded
 		}
 
 		Group group = (Group)getGroup(position);

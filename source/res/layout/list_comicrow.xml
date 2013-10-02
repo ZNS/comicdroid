@@ -133,7 +133,7 @@
 			    	    
 	    <ImageView
 	        android:id="@+id/ivComicAmazon"
-        	android:layout_width="45px"
+        	android:layout_width="50px"
         	android:layout_height="wrap_content"
         	android:adjustViewBounds="true"
         	android:scaleType="fitXY"	        
@@ -144,9 +144,19 @@
 	    <TextView
 	        android:id="@+id/tvComicAmazon"
 	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"	        
+	        android:layout_toRightOf="@id/ivComicAmazon"
+	        android:layout_toLeftOf="@+id/ivComicAmazonHandle"
+	        android:layout_centerVertical="true"
+	        android:textStyle="bold" />
+	    
+	    <ImageView
+	        android:id="@+id/ivComicAmazonHandle"
+	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:layout_below="@id/vComicAmazonSeparatorTop"
-	        android:layout_toRightOf="@id/ivComicAmazon" />
+	        android:src="@drawable/amazon_arrow_expand"
+	        android:layout_alignParentRight="true"
+	        android:layout_centerVertical="true" />
 	    
 	</RelativeLayout>
 	

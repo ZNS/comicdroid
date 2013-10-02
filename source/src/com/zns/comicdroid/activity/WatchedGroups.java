@@ -12,13 +12,15 @@ package com.zns.comicdroid.activity;
 
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AdapterView;
+import android.view.View.OnLayoutChangeListener;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
+import android.widget.ExpandableListView.OnGroupClickListener;
 
 import com.amazon.device.associates.AssociatesAPI;
 import com.amazon.device.associates.LinkService;
@@ -33,8 +35,10 @@ import com.zns.comicdroid.amazon.Book;
 import com.zns.comicdroid.data.Comic;
 import com.zns.comicdroid.data.Group;
 
+import de.greenrobot.event.EventBus;
+
 public class WatchedGroups extends BaseFragmentActivity
-implements OnItemClickListener, OnChildClickListener {
+implements OnItemClickListener, OnChildClickListener, OnGroupClickListener {
 
 	private ExpandableGroupAdapter mAdapter;
 	private ExpandableListView mElvGroups;
@@ -48,12 +52,14 @@ implements OnItemClickListener, OnChildClickListener {
 		}
 	}
 	
+	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		setContentView(R.layout.activity_watched_groups);
 		super.onCreate(savedInstanceState);
 
 		mElvGroups = (ExpandableListView)findViewById(R.id.watched_elvGroups);
+		mElvGroups.setOnGroupClickListener(this);
 		mElvGroups.setOnChildClickListener(this);
 
 		List<Group> groups = getDBHelper().getGroupsWatched();
@@ -68,26 +74,6 @@ implements OnItemClickListener, OnChildClickListener {
 		}
 	}
 
-	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {		
-		if (parent == mElvGroups)
-		{
-			Group group = (Group)mAdapter.getGroup(pos);
-			if (group != null) {
-				Intent intent = new Intent(this, Comics.class);
-				intent.putExtra(Comics.INTENT_COMICS_TYPE, Comics.VIEWTYPE_GROUP);
-				intent.putExtra(Comics.INTENT_COMICS_VALUE, Integer.toString(group.getId()));
-				intent.putExtra(Comics.INTENT_COMICS_HEADING, group.getName());
-				intent.putExtra(Comics.INTENT_COMICS_ID, group.getId());
-				startActivity(intent);				
-			}
-		}
-		else
-		{
-			super.onItemClick(parent, view, pos, id);
-		}
-	}
-	
 	public void searchAmazon(View view) {
 		String cachePath = getExternalFilesDir(null).toString() + "/amazoncache";
 		final int groupCount = mAdapter.getGroupCount();
@@ -115,6 +101,33 @@ implements OnItemClickListener, OnChildClickListener {
 		}
 	}
 
+	@Override 
+	protected void onResume() {
+		EventBus.getDefault().register(this, "onAmazonRowClick", ExpandableGroupAdapter.AmazonRowClickEvent.class);
+		super.onResume();		
+	}
+
+	@Override 
+	protected void onPause() {
+		EventBus.getDefault().unregister(this, ExpandableGroupAdapter.AmazonRowClickEvent.class);
+		super.onPause();
+	}
+	
+	@Override
+	public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
+		Group group = (Group)mAdapter.getGroup(groupPosition);
+		if (group != null) {
+			Intent intent = new Intent(this, Comics.class);
+			intent.putExtra(Comics.INTENT_COMICS_TYPE, Comics.VIEWTYPE_GROUP);
+			intent.putExtra(Comics.INTENT_COMICS_VALUE, Integer.toString(group.getId()));
+			intent.putExtra(Comics.INTENT_COMICS_HEADING, group.getName());
+			intent.putExtra(Comics.INTENT_COMICS_ID, group.getId());
+			startActivity(intent);
+			return true;
+		}		
+		return false;
+	}
+	
 	@Override
 	public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
 		Book book = (Book)mAdapter.getChild(groupPosition, childPosition);
@@ -128,5 +141,13 @@ implements OnItemClickListener, OnChildClickListener {
             e.printStackTrace();
         }		
 		return false;
+	}
+	
+	public void onAmazonRowClickMainThread(ExpandableGroupAdapter.AmazonRowClickEvent result) {
+		if (!mElvGroups.expandGroup(result.position))
+		{
+			mElvGroups.collapseGroup(result.position);
+			//mElvGroups.setSelection(result.position);
+		}
 	}
 }

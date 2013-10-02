@@ -3,7 +3,7 @@
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
-	<classpathentry exported="true" kind="lib" path="C:/Dev/Android/projekt/comicdroid/libraries/Amazon-Mobile-Associates/amazon-mobile-associates-1.0.45.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="D:/Projekt/Android/ComicDroid/libraries/Amazon-Mobile-Associates/amazon-mobile-associates-1.0.45.0.jar"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.google.gdt.eclipse.managedapis.MANAGED_API_CONTAINER/drive-v2r100lv1.15.0-rc"/>
