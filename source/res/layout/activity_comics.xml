@@ -69,6 +69,27 @@
 	        android:text=""
 	        android:visibility="gone" /> 
 	        
+	    <Button
+	        android:id="@+id/comics_btnAmazonSearch"
+	        style="@style/ButtonText"
+	        android:layout_width="match_parent"
+	        android:layout_height="35dp"
+	        android:background="@drawable/button"
+	        android:onClick="searchAmazon"
+	        android:text="@string/common_search" />
+	    	    
+	    <ExpandableListView
+	        android:id="@+id/comics_elvBooks"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:listSelector="@android:color/transparent"
+			android:divider="@android:color/transparent"
+	        android:dividerHeight="2dp"
+	        android:childDivider="@color/amazonBg"
+	        android:groupIndicator="@null"
+	        android:childIndicator="@null"
+	        android:visibility="gone" />
+	    	    
 	    <ListView
 	        android:id="@+id/comics_lvComics"
 	        android:layout_width="match_parent"

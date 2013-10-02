@@ -16,7 +16,6 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.View.OnLayoutChangeListener;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
@@ -52,7 +51,6 @@ implements OnItemClickListener, OnChildClickListener, OnGroupClickListener {
 		}
 	}
 	
-	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		setContentView(R.layout.activity_watched_groups);
@@ -144,10 +142,11 @@ implements OnItemClickListener, OnChildClickListener, OnGroupClickListener {
 	}
 	
 	public void onAmazonRowClickMainThread(ExpandableGroupAdapter.AmazonRowClickEvent result) {
-		if (!mElvGroups.expandGroup(result.position))
-		{
+		if (mElvGroups.expandGroup(result.position)) {
+			mElvGroups.setSelectedGroup(result.position);
+		}
+		else {
 			mElvGroups.collapseGroup(result.position);
-			//mElvGroups.setSelection(result.position);
 		}
 	}
 }

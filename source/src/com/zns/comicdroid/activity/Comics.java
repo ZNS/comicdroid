@@ -26,6 +26,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -35,6 +36,8 @@ import com.commonsware.cwac.loaderex.acl.SQLiteCursorLoader;
 import com.zns.comicdroid.BaseFragmentActivity;
 import com.zns.comicdroid.R;
 import com.zns.comicdroid.adapter.ComicAdapter;
+import com.zns.comicdroid.adapter.ExpandableAmazonAdapter;
+import com.zns.comicdroid.amazon.AmazonSearchTask;
 import com.zns.comicdroid.data.Group;
 import com.zns.comicdroid.dialog.GroupDialogFragment;
 import com.zns.comicdroid.dialog.RenameDialogFragment;
@@ -69,6 +72,8 @@ OnCheckedChangeListener {
 	private CheckBox mCbIsFinished;
 	private CheckBox mCbIsComplete;
 	private TextView mTvEmpty;
+	private ExpandableAmazonAdapter mAmazonAdapter;
+	private ExpandableListView mElvAmazon;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +83,8 @@ OnCheckedChangeListener {
 		mLvComics = (ListView)findViewById(R.id.comics_lvComics);
 		mTvHeading = (TextView)findViewById(R.id.comics_txtHeading);
 		mTvEmpty = (TextView)findViewById(R.id.comics_tvEmpty);
-
+		mElvAmazon = (ExpandableListView)findViewById(R.id.comics_elvBooks);
+		
 		mAdapter = new ComicAdapter(this, getImagePath(true));
 		mLvComics.setAdapter(mAdapter);
 
@@ -291,5 +297,26 @@ OnCheckedChangeListener {
 			getDBHelper().setGroupIsWatched(mGroupId, isChecked);
 		else if (buttonView == mCbIsComplete)
 			getDBHelper().setGroupIsComplete(mGroupId, isChecked);		
+	}
+	
+	public void searchAmazon(View view) {
+		String cachePath = getExternalFilesDir(null).toString() + "/amazoncache";
+		AmazonSearchTask.AmazonSearchTaskRequest req = new AmazonSearchTask.AmazonSearchTaskRequest();
+		req.query = AmazonSearchTask.getAuthorQuery(mHeading);
+		req.orderBy = "daterank";		
+		req.cachePath = cachePath;
+		new AmazonSearchTask() {
+			@Override
+			protected void onPostExecute(AmazonSearchTask.AmazonSearchTaskResponse result) {
+				if (mAmazonAdapter == null) {
+					mAmazonAdapter = new ExpandableAmazonAdapter(Comics.this, result.books);
+					mElvAmazon.setAdapter(mAmazonAdapter);
+					mElvAmazon.setVisibility(View.VISIBLE);
+				}
+				else {
+					mAmazonAdapter.notifyDataSetChanged();
+				}
+			}
+		}.execute(req);		
 	}
 }
