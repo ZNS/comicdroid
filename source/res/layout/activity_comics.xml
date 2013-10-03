@@ -20,18 +20,27 @@
 		
 		<include layout="@layout/service_progress" />
 	    
-		<LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-			        
-	    			        
+		<LinearLayout 
+		    android:layout_width="fill_parent" 
+		    android:layout_marginBottom="2dp" 
+		    android:layout_height="wrap_content" 
+		    android:orientation="horizontal">
+			        	    			        
 	    <TextView
 	        android:id="@+id/comics_txtHeading"
 	        android:layout_width="0dp"
 	        android:layout_height="wrap_content"
 	        android:layout_weight="1"
-	        android:text="Brian K Vaugn"
+	        android:text=""
 			style="@style/TextViewLargeHeading" />
 
-	    <ImageView android:layout_width="wrap_content" android:layout_height="match_parent" android:scaleType="center" android:adjustViewBounds="true" android:src="@drawable/amazon_search_large" />
+	    <View 
+	        android:layout_width="80dp" 
+	        android:layout_height="match_parent"
+	         android:scaleType="fitXY" 
+	         android:adjustViewBounds="true" 
+	         android:background="@drawable/amazon_search_head_patch"
+	         android:onClick="searchAmazon" />
 	    
 	    </LinearLayout>
 	    
@@ -93,7 +102,7 @@
 			android:divider="@android:color/transparent"
 	        android:dividerHeight="2dp"
 	        android:childDivider="@color/amazonBg"
-	        android:groupIndicator="@null"
+	        android:groupIndicator="@drawable/expandablelistview_groupindicator_amazon"
 	        android:childIndicator="@null"
 	        android:visibility="gone" />
 	    	    

@@ -10,7 +10,9 @@
  ******************************************************************************/
 package com.zns.comicdroid.activity;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.app.backup.BackupManager;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,13 +20,14 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
+import android.util.DisplayMetrics;
 import android.view.ContextMenu;
-import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
@@ -74,6 +77,7 @@ OnCheckedChangeListener {
 	private TextView mTvEmpty;
 	private ExpandableAmazonAdapter mAmazonAdapter;
 	private ExpandableListView mElvAmazon;
+	private ProgressDialog mProgress;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +91,6 @@ OnCheckedChangeListener {
 		
 		mAdapter = new ComicAdapter(this, getImagePath(true));
 		mLvComics.setAdapter(mAdapter);
-
 		mLvComics.setOnItemClickListener(new android.widget.AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) 
 			{
@@ -134,6 +137,26 @@ OnCheckedChangeListener {
 			mAdapter.notifyDataSetChanged();
 	}
 
+	@SuppressLint("NewApi")
+	@Override
+	public void onWindowFocusChanged(boolean hasFocus) {
+	    super.onWindowFocusChanged(hasFocus);
+	    //Set indicator on the right side, it gets distorted but I have no idea why
+	    int margin = dpToPx(5);
+	    if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+	    	mElvAmazon.setIndicatorBounds(mElvAmazon.getRight() - (dpToPx(48) + margin), mElvAmazon.getRight() - margin);
+	    } 
+	    else {
+	    	mElvAmazon.setIndicatorBoundsRelative(mElvAmazon.getRight() - (dpToPx(48) + margin), mElvAmazon.getRight() - margin);
+	    }
+	}
+	
+	public int dpToPx(int dp) {
+	    DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+	    int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));       
+	    return px;
+	}    
+	
 	//Loader Implementation
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
@@ -318,6 +341,15 @@ OnCheckedChangeListener {
 		req.cachePath = cachePath;
 		new AmazonSearchTask() {
 			@Override
+			protected void onPreExecute() {
+				mProgress = new ProgressDialog(Comics.this);
+				mProgress.setTitle(R.string.amazon_search_progress);
+				mProgress.setCancelable(false);
+				mProgress.setIndeterminate(true);
+				mProgress.show();
+			}
+			
+			@Override
 			protected void onPostExecute(AmazonSearchTask.AmazonSearchTaskResponse result) {
 				if (mAmazonAdapter == null) {
 					mAmazonAdapter = new ExpandableAmazonAdapter(Comics.this, result.books);
@@ -326,6 +358,10 @@ OnCheckedChangeListener {
 				}
 				else {
 					mAmazonAdapter.notifyDataSetChanged();
+				}
+				
+				if (mProgress!= null) {
+					mProgress.dismiss();
 				}
 			}
 		}.execute(req);		

@@ -166,6 +166,7 @@
     <string name="error_playservices">Unable to login to google drive. Google play services may not be installed.</string>
     <string name="read_empty">Seems you\'ve alread read everything..</string>
     <string name="amazon_nohits">Could not find any comics..</string>
+    <string name="amazon_search_progress">Searching on amazon..</string>
 	<string name="help_adding">
 	<![CDATA[
 	<h2>Adding comics</h2>
