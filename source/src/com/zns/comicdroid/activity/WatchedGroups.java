@@ -12,7 +12,6 @@ package com.zns.comicdroid.activity;
 
 import java.util.List;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;

@@ -302,7 +302,18 @@ OnCheckedChangeListener {
 	public void searchAmazon(View view) {
 		String cachePath = getExternalFilesDir(null).toString() + "/amazoncache";
 		AmazonSearchTask.AmazonSearchTaskRequest req = new AmazonSearchTask.AmazonSearchTaskRequest();
-		req.query = AmazonSearchTask.getAuthorQuery(mHeading);
+		if (mViewType == VIEWTYPE_AUTHOR) {
+			req.query = AmazonSearchTask.getAuthorQuery(mHeading);
+		}
+		else if (mViewType == VIEWTYPE_GROUP) {
+			req.query = AmazonSearchTask.getGroupQuery(mHeading);
+		}
+		else if (mViewType == VIEWTYPE_ILLUSTRATOR) {
+			req.query = AmazonSearchTask.getIllustratorQuery(mHeading);
+		}		
+		else if (mViewType == VIEWTYPE_PUBLISHER) {
+			req.query = AmazonSearchTask.getPublisherQuery(mHeading);
+		}		
 		req.orderBy = "daterank";		
 		req.cachePath = cachePath;
 		new AmazonSearchTask() {

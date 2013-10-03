@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -40,9 +41,32 @@ public class AmazonSearchTask extends AsyncTask<AmazonSearchTask.AmazonSearchTas
 		}
 		return (author != null && author.length() > 0 ? "author:" + author + " and " : "") + "title:\"" + comic.getTitle() + "\" " + (comic.getIssue() + 1);    	
     }
+
+    private static String getSearchDate() {
+    	Calendar c = Calendar.getInstance();
+    	c.add(Calendar.DATE, 90);
+    	int year = c.get(Calendar.YEAR);
+    	int month = c.get(Calendar.MONTH) + 1;
+    	if (c.get(Calendar.DATE) > 15) {
+    		month += 1;
+    	}
+    	return month + "-" + year;
+    }
     
     public static String getAuthorQuery(String author) {
-    	return "author:" + author;
+    	return "author:" + author + " and pubdate:before " + getSearchDate();
+    }
+    
+    public static String getIllustratorQuery(String illustrator) {
+    	return "keywords:" + illustrator + " and pubdate:before " + getSearchDate();
+    }
+    
+    public static String getPublisherQuery(String publisher) {
+    	return "publisher:" + publisher + " and pubdate:before " + getSearchDate();
+    }
+    
+    public static String getGroupQuery(String groupName) {
+    	return "title:" + groupName + " and pubdate:before " + getSearchDate();
     }
     
     public static class AmazonSearchTaskRequest {
