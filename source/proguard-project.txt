@@ -19,6 +19,13 @@
 #   public *;
 #}
 
+#Amazon
+-libraryjars D:\Projekt\Android\ComicDroid\libraries\Amazon-Mobile-Associates\amazon-mobile-associates-1.0.45.0.jar
+-dontwarn com.amazon.**
+-keep class com.amazon.** {*;}
+#-keepattributes InnerClasses,*Annotation*
+
+#ComicDroid
 -keep class com.zns.comicdroid.** { *; }
 
 #Sherlock

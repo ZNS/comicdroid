@@ -186,7 +186,7 @@ public class AmazonSearchTask extends AsyncTask<AmazonSearchTask.AmazonSearchTas
 	
 	private Book readItem(XmlPullParser parser) throws XmlPullParserException, IOException
 	{
-		String image = "", id = "", author = "", title = "", date = "", price = "";
+		String image = "", id = "", author = "", title = "", date = "", price = "", url = "";
 		parser.require(XmlPullParser.START_TAG, null, "Item");
 	    while (parser.next() != XmlPullParser.END_DOCUMENT) {
 	        if (parser.getEventType() == XmlPullParser.START_TAG) {
@@ -209,13 +209,16 @@ public class AmazonSearchTask extends AsyncTask<AmazonSearchTask.AmazonSearchTas
 		        else if (name.equalsIgnoreCase("FormattedPrice")) {
 		        	price = readElementText(parser, "FormattedPrice");
 		        }
+		        else if (name.equalsIgnoreCase("DetailPageURL")) {
+		        	url = readElementText(parser, "DetailPageURL");
+		        }
 	        }
 	        else if (parser.getEventType() == XmlPullParser.END_TAG && parser.getName().equalsIgnoreCase("Item")) {
 	        	break;
 	        }
 	    }
 	    parser.require(XmlPullParser.END_TAG, null, "Item");
-	    return new Book(id, image, title, author, date, price);
+	    return new Book(id, image, title, author, date, price, url);
 	}
 	
 	private String readImage(XmlPullParser parser) throws XmlPullParserException, IOException

@@ -10,8 +10,8 @@
  ******************************************************************************/
 package com.zns.comicdroid.adapter;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.zns.comicdroid.R;
-import com.zns.comicdroid.util.ImageWorker;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -29,7 +29,6 @@ public class ComicAdapter extends SimpleCursorAdapter
 {
 	private final int mLayout;
 	private final LayoutInflater mLayoutInflater;
-	private final ImageWorker mImageWorker = new ImageWorker();
 	private final int mColorDefault;
 	private final int mColorIsBorrowed;
 	private final String mImagePath;
@@ -53,7 +52,7 @@ public class ComicAdapter extends SimpleCursorAdapter
 		Resources res = context.getResources();
 		mColorDefault = res.getColor(R.color.contentBg);
 		mColorIsBorrowed = res.getColor(R.color.listViewBorrowed);
-		mImagePath = imagePath;
+		mImagePath = "file://".concat(imagePath);
 	}
 
 	public int getComicId(int position)
@@ -130,7 +129,7 @@ public class ComicAdapter extends SimpleCursorAdapter
 				}
 
 				if (image != null && !image.equals("")) {
-					mImageWorker.load(mImagePath.concat(image), holder.ivImage);
+					ImageLoader.getInstance().displayImage(mImagePath.concat(image), holder.ivImage);
 					holder.ivImage.setVisibility(View.VISIBLE);
 				}
 				else {

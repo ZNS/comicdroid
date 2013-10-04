@@ -6,7 +6,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.zns.comicdroid.R;
 import com.zns.comicdroid.amazon.Book;
 import com.zns.comicdroid.data.Group;
-import com.zns.comicdroid.util.ImageWorker;
 
 import de.greenrobot.event.EventBus;
 
@@ -22,7 +21,6 @@ import android.widget.TextView;
 
 public class ExpandableGroupAdapter extends BaseExpandableListAdapter {
 	private final List<Group> mValues;
-	private final ImageWorker mImageWorker = new ImageWorker();
 	private final LayoutInflater mInflater;
 	private final String mImagePath;
 			
@@ -62,7 +60,7 @@ public class ExpandableGroupAdapter extends BaseExpandableListAdapter {
 	{
 		mInflater = LayoutInflater.from(context);		
 		this.mValues = values;
-		this.mImagePath = imagePath;
+		this.mImagePath = "file://".concat(imagePath);
 	}
 	
 	@Override
@@ -200,7 +198,7 @@ public class ExpandableGroupAdapter extends BaseExpandableListAdapter {
 		holder.ivGroupMark.setVisibility(View.VISIBLE);
 		holder.tvCount.setText("(" + group.getBookCount() + (group.getTotalBookCount() > 0 ? "/" + group.getTotalBookCount() : "") + ")");		
 		if (group.getImage() != null && !group.getImage().equals("")) {
-			mImageWorker.load(mImagePath.concat(group.getImage()), holder.ivImage);
+			ImageLoader.getInstance().displayImage(mImagePath.concat(group.getImage()), holder.ivImage);
 			holder.ivImage.setVisibility(View.VISIBLE);
 		}
 		else {

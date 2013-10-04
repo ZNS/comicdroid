@@ -21,12 +21,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.zns.comicdroid.R;
 import com.zns.comicdroid.data.Comic;
-import com.zns.comicdroid.util.ImageWorker;
 
 public class ComicArrayAdapter extends ArrayAdapter<Comic> {
-	private final ImageWorker mImageWorker = new ImageWorker();
 	private final List<Comic> mValues;
 	private final String mImagePath;
 
@@ -42,7 +41,7 @@ public class ComicArrayAdapter extends ArrayAdapter<Comic> {
 	{
 		super(context, R.layout.list_comicrow, values);
 		this.mValues = values;
-		this.mImagePath =imagePath; 
+		this.mImagePath = "file://".concat(imagePath); 
 	}
 
 	public Comic getComic(int position)
@@ -92,7 +91,7 @@ public class ComicArrayAdapter extends ArrayAdapter<Comic> {
 		}
 		if (comic.getImage() != null && !comic.getImage().equals(""))
 		{
-			mImageWorker.load(mImagePath.concat(comic.getImage()), holder.ivImage);			  
+			ImageLoader.getInstance().displayImage(mImagePath.concat(comic.getImage()), holder.ivImage);			  
 			holder.ivImage.setVisibility(View.VISIBLE);
 		}
 		else

@@ -10,6 +10,9 @@
  ******************************************************************************/
 package com.zns.comicdroid.activity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -28,19 +31,27 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.Toast;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.amazon.device.associates.AssociatesAPI;
+import com.amazon.device.associates.LinkService;
+import com.amazon.device.associates.NotInitializedException;
+import com.amazon.device.associates.OpenProductPageRequest;
 import com.commonsware.cwac.loaderex.acl.SQLiteCursorLoader;
+import com.zns.comicdroid.Application;
 import com.zns.comicdroid.BaseFragmentActivity;
 import com.zns.comicdroid.R;
 import com.zns.comicdroid.adapter.ComicAdapter;
 import com.zns.comicdroid.adapter.ExpandableAmazonAdapter;
 import com.zns.comicdroid.amazon.AmazonSearchTask;
+import com.zns.comicdroid.amazon.Book;
 import com.zns.comicdroid.data.Group;
 import com.zns.comicdroid.dialog.GroupDialogFragment;
 import com.zns.comicdroid.dialog.RenameDialogFragment;
@@ -48,7 +59,7 @@ import com.zns.comicdroid.dialog.RenameDialogFragment;
 public class Comics extends BaseFragmentActivity
 implements	LoaderCallbacks<Cursor>,
 RenameDialogFragment.OnRenameDialogListener,
-OnCheckedChangeListener {
+OnCheckedChangeListener, OnChildClickListener {
 
 	public static final String INTENT_COMICS_TYPE = "com.zns.comic.COMICS_TYPE";
 	public static final String INTENT_COMICS_VALUE = "com.zns.comic.COMICS_VALUE";
@@ -61,6 +72,8 @@ OnCheckedChangeListener {
 	public static final int VIEWTYPE_ILLUSTRATOR = 4;
 	public static final int VIEWTYPE_READ = 5;
 
+	private static final String STATE_BOOKS = "BOOKS";
+	
 	private SQLiteCursorLoader mLoader;
 	private ComicAdapter mAdapter;
 	private ListView mLvComics;
@@ -88,6 +101,7 @@ OnCheckedChangeListener {
 		mTvHeading = (TextView)findViewById(R.id.comics_txtHeading);
 		mTvEmpty = (TextView)findViewById(R.id.comics_tvEmpty);
 		mElvAmazon = (ExpandableListView)findViewById(R.id.comics_elvBooks);
+		mElvAmazon.setOnChildClickListener(this);
 		
 		mAdapter = new ComicAdapter(this, getImagePath(true));
 		mLvComics.setAdapter(mAdapter);
@@ -127,9 +141,34 @@ OnCheckedChangeListener {
 			registerForContextMenu(mLvComics);
 		}
 
+		//Amazon
+		AssociatesAPI.initialize(new AssociatesAPI.Config(Application.AMAZON_APPLICATION_KEY, this));
+		
+		//Restore State
+		if (savedInstanceState != null && savedInstanceState.containsKey(STATE_BOOKS)) {
+			ArrayList<Book> books = savedInstanceState.getParcelableArrayList(STATE_BOOKS);
+			if (books != null) {
+				mAmazonAdapter = new ExpandableAmazonAdapter(this, books);
+				mElvAmazon.setAdapter(mAmazonAdapter);
+				mElvAmazon.setVisibility(View.VISIBLE);
+			}
+		}
+		
 		getSupportLoaderManager().initLoader(0, null, this);
 	}
 
+	@Override
+	protected void onSaveInstanceState(Bundle state) {
+		super.onSaveInstanceState(state);		
+		if (mAmazonAdapter != null) 
+		{
+			List<Book> books = mAmazonAdapter.getAllChildren(0);
+			if (books != null) {
+				state.putParcelableArrayList(STATE_BOOKS, new ArrayList<Book>(books));
+			}
+		}
+	} 
+	
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -351,19 +390,38 @@ OnCheckedChangeListener {
 			
 			@Override
 			protected void onPostExecute(AmazonSearchTask.AmazonSearchTaskResponse result) {
-				if (mAmazonAdapter == null) {
-					mAmazonAdapter = new ExpandableAmazonAdapter(Comics.this, result.books);
-					mElvAmazon.setAdapter(mAmazonAdapter);
-					mElvAmazon.setVisibility(View.VISIBLE);
+				if (result.books != null && result.books.size() > 0) {
+					if (mAmazonAdapter == null) {
+						mAmazonAdapter = new ExpandableAmazonAdapter(Comics.this, result.books);
+						mElvAmazon.setAdapter(mAmazonAdapter);
+						mElvAmazon.setVisibility(View.VISIBLE);
+					}
+					else {
+						mAmazonAdapter.notifyDataSetChanged();
+					}
 				}
 				else {
-					mAmazonAdapter.notifyDataSetChanged();
-				}
-				
+					Toast.makeText(Comics.this, R.string.amazon_nohits, Toast.LENGTH_LONG).show();
+				}				
 				if (mProgress!= null) {
 					mProgress.dismiss();
 				}
 			}
 		}.execute(req);		
 	}
+	
+	@Override
+	public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+		Book book = (Book)mAmazonAdapter.getChild(groupPosition, childPosition);
+	    OpenProductPageRequest request = new OpenProductPageRequest(book.Id);
+        try {
+            LinkService linkService = AssociatesAPI.getLinkService();
+            linkService.openRetailPage(request);
+            return true;
+        }
+        catch (NotInitializedException e) {
+            e.printStackTrace();
+        }		
+		return false;
+	}	
 }

@@ -119,6 +119,7 @@
 	    android:id="@+id/rlAmazon"
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
+	    android:minHeight="@dimen/amazon_minheight"
 	    android:padding="5dp"
 	    android:background="@color/contentBg"
 	    android:visibility="gone" >

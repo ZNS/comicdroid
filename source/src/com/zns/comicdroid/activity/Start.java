@@ -73,7 +73,7 @@ ActionBar.TabListener {
 		mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 			@Override
 			public void onPageSelected(int position) {
-				getSupportActionBar().setSelectedNavigationItem(position);
+				getSupportActionBar().setSelectedNavigationItem(position); //TODO: TRACKED NULL EXCEPTION HERE, SOMETHING TO DO WITH RestoreInstanceState
 			}
 		});	
 		mViewPager.setAdapter(mFragmentAdapter);
@@ -248,7 +248,7 @@ ActionBar.TabListener {
 		
 		//Searchview
 		BaseListFragment fragment = getCurrentFragment();
-		if (fragment != null)
+		if (fragment != null && mMenuSearch != null && mSearchView != null)
 		{
 			if (fragment.getFilter() != null) {
 				mMenuSearch.expandActionView();
@@ -256,7 +256,7 @@ ActionBar.TabListener {
 				mSearchView.clearFocus();
 			}
 			else {
-				mMenuSearch.collapseActionView();
+				mMenuSearch.collapseActionView(); //TODO:THIS CAN THROW NULL EXCEPTION!!!
 				mSearchView.setQuery(null, false);				
 			}
 		}	
@@ -269,13 +269,11 @@ ActionBar.TabListener {
 	@Override
 	public void onTabUnselected(Tab tab, FragmentTransaction ft) {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void onTabReselected(Tab tab, FragmentTransaction ft) {
 		// TODO Auto-generated method stub
-
 	}		
 
 	private BaseListFragment getCurrentFragment() 

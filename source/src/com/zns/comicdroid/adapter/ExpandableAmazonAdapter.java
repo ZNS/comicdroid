@@ -145,4 +145,11 @@ public class ExpandableAmazonAdapter extends BaseExpandableListAdapter {
 	public boolean isChildSelectable(int arg0, int arg1) {
 		return true;
 	}
+	
+	public List<Book> getAllChildren(int groupPosition) {
+		if (groupPosition == 0 && mValues != null) {
+			return mValues;
+		}
+		return null;
+	}
 }

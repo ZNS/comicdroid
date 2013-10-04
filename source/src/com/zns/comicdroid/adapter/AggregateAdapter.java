@@ -22,14 +22,13 @@ import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.zns.comicdroid.R;
 import com.zns.comicdroid.data.Aggregate;
-import com.zns.comicdroid.util.ImageWorker;
 
 public class AggregateAdapter extends SimpleCursorAdapter {
 	private final int mLayout;
 	private final LayoutInflater mLayoutInflater;
-	private final ImageWorker mImageWorker = new ImageWorker();
 	private final int mColorDefault;
 	private final int mColorIsBorrowed;
 	private final String mImagePath;
@@ -56,7 +55,7 @@ public class AggregateAdapter extends SimpleCursorAdapter {
 		Resources res = context.getResources();
 		mColorDefault = res.getColor(R.color.contentBg);
 		mColorIsBorrowed = res.getColor(R.color.listViewBorrowed);	
-		mImagePath = imagePath;
+		mImagePath = "file://".concat(imagePath);
 	}
 
 	public Aggregate getAggregate(int position) {
@@ -131,7 +130,7 @@ public class AggregateAdapter extends SimpleCursorAdapter {
 			}
 			if (image != null && !image.equals(""))
 			{
-				mImageWorker.load(mImagePath.concat(image), holder.ivImage);
+				ImageLoader.getInstance().displayImage(mImagePath.concat(image), holder.ivImage);
 				holder.ivImage.setVisibility(View.VISIBLE);
 			}
 			else

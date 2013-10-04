@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">            
-      <item android:drawable="@drawable/amazon_arrow_expand_patch" android:state_empty="true">  </item>            
-      <item android:drawable="@drawable/amazon_arrow_collapse_patch" android:state_expanded="true"></item>                
-      <item android:drawable="@drawable/amazon_arrow_expand_patch"></item>
+      <item android:state_empty="true">
+          <nine-patch android:src="@drawable/amazon_arrow_expand_patch" />
+      </item>            
+      <item android:state_expanded="true">
+          <nine-patch android:src="@drawable/amazon_arrow_collapse_patch" />
+      </item>                
+      <item>
+          <nine-patch android:src="@drawable/amazon_arrow_expand_patch" />
+      </item>
 </selector>

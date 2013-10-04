@@ -91,6 +91,8 @@ public class Application extends android.app.Application {
 		ImageLoaderConfiguration imgConfig = new ImageLoaderConfiguration.Builder(getApplicationContext())
 			.defaultDisplayImageOptions(new DisplayImageOptions.Builder()
 					.cacheInMemory(true)
+					.showImageForEmptyUri(R.drawable.image_placeholder)
+					.showImageOnFail(R.drawable.image_placeholder)
 					.build())
 			.threadPoolSize(3)
 			.build();

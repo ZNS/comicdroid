@@ -26,21 +26,22 @@
 		    android:layout_height="wrap_content" 
 		    android:orientation="horizontal">
 			        	    			        
-	    <TextView
-	        android:id="@+id/comics_txtHeading"
-	        android:layout_width="0dp"
-	        android:layout_height="wrap_content"
-	        android:layout_weight="1"
-	        android:text=""
-			style="@style/TextViewLargeHeading" />
-
-	    <View 
-	        android:layout_width="80dp" 
-	        android:layout_height="match_parent"
-	         android:scaleType="fitXY" 
-	         android:adjustViewBounds="true" 
-	         android:background="@drawable/amazon_search_head_patch"
-	         android:onClick="searchAmazon" />
+		    <TextView
+		        android:id="@+id/comics_txtHeading"
+		        android:layout_width="0dp"
+		        android:layout_height="wrap_content"
+		        android:layout_weight="1"
+		        android:layout_marginBottom="0dp"
+				style="@style/TextViewLargeHeading" />
+	
+		    <ImageView 
+		        android:layout_width="80dp" 
+		        android:layout_height="match_parent"
+				android:scaleType="center" 
+				android:adjustViewBounds="true" 
+				android:src="@drawable/amazon_search"
+				android:background="@drawable/button_amazon_search"
+				android:onClick="searchAmazon" />
 	    
 	    </LinearLayout>
 	    

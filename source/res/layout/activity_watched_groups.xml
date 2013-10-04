@@ -20,27 +20,30 @@
 
 	    <include layout="@layout/service_progress" />
 	    
-	    <TextView
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:text="@string/watched_heading"
-			android:padding="10dp"
-	        android:paddingTop="5dp"
-	        android:layout_marginBottom="2dp"
-	        android:textColor="@color/altFg1"
-	        android:background="@color/contentBg"
-	        android:textSize="25sp"
-	        android:textStyle="bold" />
-
-	    <Button
-	        android:id="@+id/btnAmazonSearch"
-	        style="@style/ButtonText"
-	        android:layout_width="match_parent"
-	        android:layout_height="35dp"
-	        android:background="@drawable/button"
-	        android:onClick="searchAmazon"
-	        android:text="@string/common_search" />
-	    	    	    	    	
+		<LinearLayout 
+		    android:layout_width="fill_parent" 
+		    android:layout_marginBottom="2dp" 
+		    android:layout_height="wrap_content" 
+		    android:orientation="horizontal">
+		    
+		    <TextView
+		        android:layout_width="0dp"
+		        android:layout_height="wrap_content"
+		        android:layout_weight="1"
+		        android:text="@string/watched_heading"
+		        android:layout_marginBottom="0dp"
+				style="@style/TextViewLargeHeading" />
+	
+		    <View 
+				android:layout_width="80dp" 
+				android:layout_height="match_parent"
+				android:scaleType="fitXY" 
+				android:adjustViewBounds="true" 
+				android:background="@drawable/button_amazon_search"
+				android:onClick="searchAmazon" />
+	    
+	    </LinearLayout>
+	    	    
 	    <TextView 
 	        android:id="@+id/watched_tvEmpty"
 	        android:layout_width="match_parent"

@@ -22,12 +22,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.zns.comicdroid.R;
 import com.zns.comicdroid.data.Comic;
-import com.zns.comicdroid.util.ImageWorker;
 
 public class BorrowedAdapter extends ArrayAdapter<Comic> {
-	private final ImageWorker mImageWorker = new ImageWorker();  
 	private final List<Comic> mValues;
 	private final String mImagePath;
 	private final DateFormat mDateFormat;
@@ -44,7 +43,7 @@ public class BorrowedAdapter extends ArrayAdapter<Comic> {
 	{
 		super(context, R.layout.list_borrowedrow, values);
 		this.mValues = values;
-		this.mImagePath = imagePath;
+		this.mImagePath = "file://".concat(imagePath);
 		this.mDateFormat = android.text.format.DateFormat.getDateFormat(context);
 	}
 
@@ -89,7 +88,7 @@ public class BorrowedAdapter extends ArrayAdapter<Comic> {
 		holder.tvBorrowedDate.setText(mDateFormat.format(comic.getBorrowedDate()));
 		if (comic.getImage() != null && !comic.getImage().equals(""))
 		{
-			mImageWorker.load(mImagePath.concat(comic.getImage()), holder.ivImage);
+			ImageLoader.getInstance().displayImage(mImagePath.concat(comic.getImage()), holder.ivImage);
 			holder.ivImage.setVisibility(View.VISIBLE);
 		}
 		else

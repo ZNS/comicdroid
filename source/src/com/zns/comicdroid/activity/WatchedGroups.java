@@ -12,6 +12,7 @@ package com.zns.comicdroid.activity;
 
 import java.util.List;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -38,13 +39,19 @@ import de.greenrobot.event.EventBus;
 public class WatchedGroups extends BaseFragmentActivity
 implements OnItemClickListener, OnChildClickListener, OnGroupClickListener {
 
+	private static final String STATE_SEARCHING = "ISSEARCHING";
+	
 	private ExpandableGroupAdapter mAdapter;
 	private ExpandableListView mElvGroups;
 	private int mTaskCount = 0;
+	private ProgressDialog mProgress = null;
 	
 	private synchronized void updateList(int total) {
 		mTaskCount++;
 		if (mTaskCount == total) {
+			if (mProgress!= null && mProgress.isShowing()) {
+				mProgress.dismiss();
+			}			
 			mAdapter.notifyDataSetChanged();
 			mTaskCount = 0;
 		}
@@ -65,15 +72,40 @@ implements OnItemClickListener, OnChildClickListener, OnGroupClickListener {
 		
 		//Amazon
 		AssociatesAPI.initialize(new AssociatesAPI.Config(Application.AMAZON_APPLICATION_KEY, this));
+	
+		//State
+		if (savedInstanceState != null && savedInstanceState.containsKey(STATE_SEARCHING)) {
+			if (savedInstanceState.getBoolean(STATE_SEARCHING)) {
+				searchAmazon(null);
+			}
+		}
 		
 		if (groups.size() == 0) {
 			findViewById(R.id.watched_tvEmpty).setVisibility(View.VISIBLE);
 		}
 	}
 
+	@Override
+	protected void onSaveInstanceState(Bundle state) {
+		super.onSaveInstanceState(state);
+		state.putBoolean(STATE_SEARCHING, true);
+	} 
+	
 	public void searchAmazon(View view) {
 		String cachePath = getExternalFilesDir(null).toString() + "/amazoncache";
 		final int groupCount = mAdapter.getGroupCount();
+		//Show progress bar
+		if (view != null)
+		{
+			if (mProgress == null) {
+				mProgress = new ProgressDialog(this);
+				mProgress.setTitle(R.string.amazon_search_progress);
+				mProgress.setCancelable(false);
+				mProgress.setIndeterminate(true);
+			}
+			mProgress.show();
+		}
+		//Do a search for each groupd
 		for (int i = 0; i < groupCount; i++)
 		{
 			Group group = (Group)mAdapter.getGroup(i);
