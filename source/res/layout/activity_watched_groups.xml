@@ -34,11 +34,12 @@
 		        android:layout_marginBottom="0dp"
 				style="@style/TextViewLargeHeading" />
 	
-		    <View 
-				android:layout_width="80dp" 
-				android:layout_height="match_parent"
-				android:scaleType="fitXY" 
+		    <ImageView 
+		        android:layout_width="80dp" 
+		        android:layout_height="match_parent"
+				android:scaleType="center" 
 				android:adjustViewBounds="true" 
+				android:src="@drawable/amazon_search"
 				android:background="@drawable/button_amazon_search"
 				android:onClick="searchAmazon" />
 	    
