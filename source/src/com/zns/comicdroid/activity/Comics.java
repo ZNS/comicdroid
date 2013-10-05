@@ -364,6 +364,9 @@ OnCheckedChangeListener, OnChildClickListener {
 	public void searchAmazon(View view) {
 		String cachePath = getExternalFilesDir(null).toString() + "/amazoncache";
 		AmazonSearchTask.AmazonSearchTaskRequest req = new AmazonSearchTask.AmazonSearchTaskRequest();
+		req.associateTag = getString(R.string.key_amazon_associate_tag);
+		req.awsKey = getString(R.string.key_amazon_api_key);
+		req.awsSecret = getString(R.string.key_amazon_api_secret);		
 		if (mViewType == VIEWTYPE_AUTHOR) {
 			req.query = AmazonSearchTask.getAuthorQuery(mHeading);
 		}

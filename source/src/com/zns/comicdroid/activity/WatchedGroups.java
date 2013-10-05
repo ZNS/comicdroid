@@ -112,6 +112,9 @@ implements OnItemClickListener, OnChildClickListener, OnGroupClickListener {
 			Comic last = getDBHelper().getLastIssue(group.getId());
 			if (last != null && last.getIssue() > 0) {
 				AmazonSearchTask.AmazonSearchTaskRequest req = new AmazonSearchTask.AmazonSearchTaskRequest();
+				req.associateTag = getString(R.string.key_amazon_associate_tag);
+				req.awsKey = getString(R.string.key_amazon_api_key);
+				req.awsSecret = getString(R.string.key_amazon_api_secret);
 				req.index = i;
 				req.query = AmazonSearchTask.getNextIssueQuery(last);
 				req.issue = last.getIssue() + 1;

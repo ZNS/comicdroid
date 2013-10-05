@@ -28,10 +28,7 @@ import android.os.AsyncTask;
 
 public class AmazonSearchTask extends AsyncTask<AmazonSearchTask.AmazonSearchTaskRequest, Void, AmazonSearchTask.AmazonSearchTaskResponse> {
 
-    private static final String AWS_ACCESS_KEY_ID = "AKIAIXSWS4FEWXMGINOQ";
-    private static final String AWS_SECRET_KEY = "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";
     private static final String ENDPOINT = "ecs.amazonaws.com";
-    private static final String ASSOCIATE_TAG = "COMICDROID-1";
     
     public static String getNextIssueQuery(Comic comic) {
 		String author = comic.getAuthor();
@@ -40,17 +37,6 @@ public class AmazonSearchTask extends AsyncTask<AmazonSearchTask.AmazonSearchTas
 			author = parts[parts.length - 1];
 		}
 		return (author != null && author.length() > 0 ? "author:" + author + " and " : "") + "title:\"" + comic.getTitle() + "\" " + (comic.getIssue() + 1);    	
-    }
-
-    private static String getSearchDate() {
-    	Calendar c = Calendar.getInstance();
-    	c.add(Calendar.DATE, 90);
-    	int year = c.get(Calendar.YEAR);
-    	int month = c.get(Calendar.MONTH) + 1;
-    	if (c.get(Calendar.DATE) > 15) {
-    		month += 1;
-    	}
-    	return month + "-" + year;
     }
     
     public static String getAuthorQuery(String author) {
@@ -69,12 +55,26 @@ public class AmazonSearchTask extends AsyncTask<AmazonSearchTask.AmazonSearchTas
     	return "title:" + groupName + " and pubdate:before " + getSearchDate();
     }
     
+    private static String getSearchDate() {
+    	Calendar c = Calendar.getInstance();
+    	c.add(Calendar.DATE, 90);
+    	int year = c.get(Calendar.YEAR);
+    	int month = c.get(Calendar.MONTH) + 1;
+    	if (c.get(Calendar.DATE) > 15) {
+    		month += 1;
+    	}
+    	return month + "-" + year;
+    }
+    
     public static class AmazonSearchTaskRequest {
     	public String query;
     	public String orderBy;
     	public int index;
     	public int issue;
     	public String cachePath;
+    	public String awsKey;
+    	public String awsSecret;
+    	public String associateTag;
     }
     
     public static class AmazonSearchTaskResponse {
@@ -83,29 +83,31 @@ public class AmazonSearchTask extends AsyncTask<AmazonSearchTask.AmazonSearchTas
     }
     
 	@Override
-	protected AmazonSearchTaskResponse doInBackground(AmazonSearchTaskRequest... arg0) {
+	protected AmazonSearchTaskResponse doInBackground(AmazonSearchTaskRequest... req) {
 		List<Book> books = new ArrayList<Book>();
 		SignedRequestsHelper helper = null;
 		InputStream stream = null;
 		try
 		{
-			helper = SignedRequestsHelper.getInstance(ENDPOINT, AWS_ACCESS_KEY_ID, AWS_SECRET_KEY);
+			helper = SignedRequestsHelper.getInstance(ENDPOINT, req[0].awsKey, req[0].awsSecret);
 	        Map<String, String> params = new HashMap<String, String>();
 	        params.put("Service", "AWSECommerceService");
-	        params.put("AssociateTag", ASSOCIATE_TAG);
+	        params.put("AssociateTag", req[0].associateTag);
 	        params.put("SearchIndex", "Books");
 	        params.put("Operation", "ItemSearch");
-	        params.put("Power", arg0[0].query);
+	        params.put("Availability", "Available");
+	        params.put("MinimumPrice", "1");
+	        params.put("Power", req[0].query);
 	        params.put("ResponseGroup", "Images,ItemAttributes");
 	        params.put("IncludeReviewsSummary", "false");	     
-	        if (arg0[0].orderBy != null) {
-	        	params.put("Sort", arg0[0].orderBy);
+	        if (req[0].orderBy != null) {
+	        	params.put("Sort", req[0].orderBy);
 	        }
 	        final String requestUrl = helper.sign(params);
 	        String key = params.get("Power").concat(params.containsKey("Sort") ? params.get("Sort") : "");
 	        
 	        XmlPullParser parser = Xml.createParser();
-	        stream = getXmlStream(requestUrl, key, arg0[0].cachePath);
+	        stream = getXmlStream(requestUrl, key, req[0].cachePath);
 	        parser.setInput(stream, null);
 	        parser.nextTag();
 	        parser.require(XmlPullParser.START_TAG, null, "ItemSearchResponse");
@@ -116,7 +118,7 @@ public class AmazonSearchTask extends AsyncTask<AmazonSearchTask.AmazonSearchTas
 	            String name = parser.getName();
 	            if (name.equalsIgnoreCase("Item")) {
 	            	Book book = readItem(parser);
-	            	if (book != null && !book.Title.contains("#" + arg0[0].issue)) {
+	            	if (book != null && !book.Title.contains("#" + req[0].issue)) {
 	            		books.add(book);
 	            	}
 	            }
@@ -136,7 +138,7 @@ public class AmazonSearchTask extends AsyncTask<AmazonSearchTask.AmazonSearchTas
 		}
 		
 		AmazonSearchTaskResponse response = new AmazonSearchTaskResponse();
-		response.index = arg0[0].index;
+		response.index = req[0].index;
 		response.books = books;
 		return response;
 	}
