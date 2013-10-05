@@ -91,6 +91,18 @@ implements OnItemClickListener, OnChildClickListener, OnGroupClickListener {
 		state.putBoolean(STATE_SEARCHING, true);
 	} 
 	
+	@Override 
+	protected void onResume() {
+		EventBus.getDefault().register(this, "onAmazonRowClick", ExpandableGroupAdapter.AmazonRowClickEvent.class);
+		super.onResume();
+	}
+
+	@Override 
+	protected void onPause() {
+		EventBus.getDefault().unregister(this, ExpandableGroupAdapter.AmazonRowClickEvent.class);
+		super.onPause();
+	}
+	
 	public void searchAmazon(View view) {
 		String cachePath = getExternalFilesDir(null).toString() + "/amazoncache";
 		final int groupCount = mAdapter.getGroupCount();
@@ -131,18 +143,6 @@ implements OnItemClickListener, OnChildClickListener, OnGroupClickListener {
 				updateList(groupCount);
 			}
 		}
-	}
-
-	@Override 
-	protected void onResume() {
-		EventBus.getDefault().register(this, "onAmazonRowClick", ExpandableGroupAdapter.AmazonRowClickEvent.class);
-		super.onResume();		
-	}
-
-	@Override 
-	protected void onPause() {
-		EventBus.getDefault().unregister(this, ExpandableGroupAdapter.AmazonRowClickEvent.class);
-		super.onPause();
 	}
 	
 	@Override

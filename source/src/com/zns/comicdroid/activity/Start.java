@@ -61,6 +61,7 @@ ActionBar.TabListener {
 	private ViewPager mViewPager;
 	private TabFragmentAdapter mFragmentAdapter;
 	private TextView mTvEmpty;
+	private boolean mIsCreation;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -114,32 +115,35 @@ ActionBar.TabListener {
 
 		//Layout elements
 		mTvEmpty = (TextView)findViewById(R.id.start_tvEmpty);
+		
+		//Track creation
+		mIsCreation = true;
 	}	
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();		
 		//Refresh data
-		BaseListFragment fragment = getCurrentFragment();
-		if (fragment != null) {
-			fragment.update();
+		if (!mIsCreation) {
+			BaseListFragment fragment = getCurrentFragment();
+			if (fragment != null) {
+				fragment.update();
+			}
+		}
+		else {
+			mIsCreation = false;
 		}
 	}
-
+	
 	@Override
 	protected void onNewIntent(Intent intent) {
-		handleIntent(intent);
-	}
-
-	//SearchView Implementation
-	private void handleIntent(Intent intent) {
 		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
 			String query = intent.getStringExtra(SearchManager.QUERY);
 			BaseListFragment fragment = getCurrentFragment();
 			if (fragment != null) {
 				fragment.setFilter(query);
 			}
-		}
+		}		
 	}
 
 	//Menu Implementation

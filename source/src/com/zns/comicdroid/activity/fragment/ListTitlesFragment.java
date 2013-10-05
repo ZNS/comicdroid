@@ -64,7 +64,7 @@ public class ListTitlesFragment extends BaseListFragment {
 
 	@Override
 	public String getSQLFilter() {
-		return "SELECT _id, Title, Subtitle, Author, Image, Issue, IsBorrowed, IsRead, Rating FROM tblBooks WHERE Title LIKE ?";
+		return "SELECT _id, Title, Subtitle, Author, Image, Issue, IsBorrowed, IsRead, Rating FROM tblBooks WHERE Title LIKE ? OR Subtitle LIKE ?";
 	}
 
 	@Override

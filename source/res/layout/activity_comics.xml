@@ -35,6 +35,7 @@
 				style="@style/TextViewLargeHeading" />
 	
 		    <ImageView 
+		        android:id="@+id/comics_ivAmazonsearch"
 		        android:layout_width="80dp" 
 		        android:layout_height="match_parent"
 				android:scaleType="center" 

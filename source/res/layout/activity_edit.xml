@@ -214,7 +214,6 @@
 			        android:layout_height="wrap_content"
 			        android:text=""
 			        android:layout_marginTop="19dp"
-			        android:inputType="number"
 			        android:textSize="@dimen/text_medium" />				    		
 			    </RelativeLayout>
 			    			    

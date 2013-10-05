@@ -21,6 +21,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.util.DisplayMetrics;
@@ -72,6 +73,7 @@ OnCheckedChangeListener, OnChildClickListener {
 	public static final int VIEWTYPE_ILLUSTRATOR = 4;
 	public static final int VIEWTYPE_READ = 5;
 
+	private static final int LOADER_ID = 100;
 	private static final String STATE_BOOKS = "BOOKS";
 	
 	private SQLiteCursorLoader mLoader;
@@ -140,7 +142,10 @@ OnCheckedChangeListener, OnChildClickListener {
 			findViewById(R.id.comics_group_alts).setVisibility(View.VISIBLE);
 			registerForContextMenu(mLvComics);
 		}
-
+		else if (mViewType == VIEWTYPE_READ) {
+			findViewById(R.id.comics_ivAmazonsearch).setVisibility(View.GONE);
+		}
+		
 		//Amazon
 		AssociatesAPI.initialize(new AssociatesAPI.Config(Application.AMAZON_APPLICATION_KEY, this));
 		
@@ -153,8 +158,6 @@ OnCheckedChangeListener, OnChildClickListener {
 				mElvAmazon.setVisibility(View.VISIBLE);
 			}
 		}
-		
-		getSupportLoaderManager().initLoader(0, null, this);
 	}
 
 	@Override
@@ -172,15 +175,26 @@ OnCheckedChangeListener, OnChildClickListener {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		if (mAdapter != null)
-			mAdapter.notifyDataSetChanged();
+		//Load data
+		loadData();
 	}
 
+	private void loadData() {
+		final LoaderManager lm = getSupportLoaderManager();
+		if (lm.getLoader(LOADER_ID) == null) {
+			lm.initLoader(LOADER_ID, null, this);
+		}
+		else {
+			lm.restartLoader(LOADER_ID, null, this);
+		}
+	}
+	
 	@SuppressLint("NewApi")
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
 	    super.onWindowFocusChanged(hasFocus);
-	    //Set indicator on the right side, it gets distorted but I have no idea why
+	    //Set indicator on the right side.
+	    //TODO:Figure out why it gets distorted even though I use 9 patch
 	    int margin = dpToPx(5);
 	    if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
 	    	mElvAmazon.setIndicatorBounds(mElvAmazon.getRight() - (dpToPx(48) + margin), mElvAmazon.getRight() - margin);
@@ -190,7 +204,7 @@ OnCheckedChangeListener, OnChildClickListener {
 	    }
 	}
 	
-	public int dpToPx(int dp) {
+	private int dpToPx(int dp) {
 	    DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
 	    int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));       
 	    return px;
@@ -239,7 +253,9 @@ OnCheckedChangeListener, OnChildClickListener {
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
-		mAdapter.changeCursor(null);
+		if (mAdapter != null) {
+			mAdapter.changeCursor(null);
+		}
 	}	
 
 	@Override
@@ -362,6 +378,12 @@ OnCheckedChangeListener, OnChildClickListener {
 	}
 	
 	public void searchAmazon(View view) {
+		//Make sure we have something to search for
+		if (mHeading.equalsIgnoreCase(getString(R.string.list_name_na))) {
+			Toast.makeText(Comics.this, R.string.amazon_nohits, Toast.LENGTH_LONG).show();
+			return;
+		}
+		
 		String cachePath = getExternalFilesDir(null).toString() + "/amazoncache";
 		AmazonSearchTask.AmazonSearchTaskRequest req = new AmazonSearchTask.AmazonSearchTaskRequest();
 		req.associateTag = getString(R.string.key_amazon_associate_tag);
@@ -415,6 +437,7 @@ OnCheckedChangeListener, OnChildClickListener {
 	
 	@Override
 	public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+		//User clicked an amazon book
 		Book book = (Book)mAmazonAdapter.getChild(groupPosition, childPosition);
 	    OpenProductPageRequest request = new OpenProductPageRequest(book.Id);
         try {

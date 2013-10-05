@@ -78,11 +78,12 @@ implements	LoaderCallbacks<Cursor> {
 	@Override
 	public void onActivityCreated (Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-
-		if (getActivity().getSupportLoaderManager().getLoader(mIndex) == null)
+		if (getActivity().getSupportLoaderManager().getLoader(mIndex) == null) {
 			getActivity().getSupportLoaderManager().initLoader(mIndex,  null, this);
-		else
+		}
+		else {
 			getActivity().getSupportLoaderManager().restartLoader(mIndex,  null, this);
+		}
 	}
 
 	@Override
