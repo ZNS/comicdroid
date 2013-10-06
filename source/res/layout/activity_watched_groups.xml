@@ -16,7 +16,8 @@
 	    android:layout_width="match_parent"
 	    android:layout_height="match_parent"
 	    android:orientation="vertical"
-	    android:padding="5dp">
+	    android:padding="5dp"
+	    android:background="@color/abs__background_holo_light" >
 
 	    <include layout="@layout/service_progress" />
 	    

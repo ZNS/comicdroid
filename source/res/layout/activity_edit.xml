@@ -11,9 +11,10 @@
 <android.support.v4.widget.DrawerLayout
      xmlns:android="http://schemas.android.com/apk/res/android"
      xmlns:comicdroid="http://schemas.android.com/apk/res/com.zns.comicdroid"
- android:id="@+id/drawer_layout"
- android:layout_width="match_parent"
- android:layout_height="match_parent">
+	 android:id="@+id/drawer_layout"
+	 android:layout_width="match_parent"
+	 android:layout_height="match_parent">
+ 	
  	<FrameLayout 
  	    android:layout_width="match_parent" 
  	    android:layout_height="match_parent" >
@@ -22,14 +23,14 @@
 	    android:layout_width="match_parent"
 	    android:layout_height="match_parent"
 	    android:orientation="vertical"
-	    android:padding="5dp" >
+	    android:padding="5dp"
+	    android:background="@color/abs__background_holo_light" >
 		
 		<include layout="@layout/service_progress" />
 	
 	    <ScrollView
 	        android:layout_width="match_parent"
-	        android:layout_height="fill_parent"                
-	        android:padding="5dp" >
+	        android:layout_height="fill_parent" >
 	
 			<LinearLayout 
 			    android:layout_width="match_parent"
