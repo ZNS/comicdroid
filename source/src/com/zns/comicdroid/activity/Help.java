@@ -27,7 +27,6 @@ public class Help extends BaseFragmentActivity implements ActionBar.TabListener 
 	private static final String TAB_ABOUT = "TABABOUT";
 	private static final String TAB_STATS = "TABSTATS";
 	
-    private static final String GOOGLE_PUBKEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApX60N74KqgXjTljUw477SsjETTouXg16b2ANSY0JwpMx/kmSyYzVkWVQWksv0pxZFGvHPmojI3ezgQ9S6zKpLTfFxRrhJ8qkHB5HvU08kRu6hkLPK6I1dcCniyQRvvkwVEA4THLd0wOGUHE7ZCjI/AzAzI1BtMIxpbC2FZZcq+ZVYPfC8E3xLQS4pS8dao0PfDwfGc5wojO156DQjXVLSRrznFubgSdgwo+eDQ+AtQBZ4QAfhdxPWecreWHJtW7QSsXfM20ob6KLjc7FPanB1Bd4p1DBUPdswqlJuun7RDOC/AFLqYDRwRKBEO5xwyYqAkXNfAxCaRwTECMrlvJzYQIDAQAB";
     private static final String[] GOOGLE_CATALOG = new String[]{"comicdroid.donation.2","comicdroid.donation.3", "comicdroid.donation.5"};
 	private static final String FLATTR_PROJECT_URL = "https://github.com/ZNS/comicdroid/";
 	
@@ -100,7 +99,7 @@ public class Help extends BaseFragmentActivity implements ActionBar.TabListener 
 			}			
 			if (tag.equals(TAB_DONATE)) {
 				DonationsFragment fragment = DonationsFragment.newInstance(Application.DEBUG, 
-						true, GOOGLE_PUBKEY, GOOGLE_CATALOG, getResources().getStringArray(R.array.donation_google_catalog_values), false, null, null, null, true, FLATTR_PROJECT_URL, FLATTR_PROJECT_URL);
+						true, getString(R.string.key_google_pub), GOOGLE_CATALOG, getResources().getStringArray(R.array.donation_google_catalog_values), false, null, null, null, true, FLATTR_PROJECT_URL, FLATTR_PROJECT_URL);
 				return fragment;
 			}			
 			return null;
