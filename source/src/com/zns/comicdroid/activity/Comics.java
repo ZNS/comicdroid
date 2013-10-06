@@ -32,12 +32,12 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.Toast;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -46,7 +46,6 @@ import com.amazon.device.associates.LinkService;
 import com.amazon.device.associates.NotInitializedException;
 import com.amazon.device.associates.OpenProductPageRequest;
 import com.commonsware.cwac.loaderex.acl.SQLiteCursorLoader;
-import com.zns.comicdroid.Application;
 import com.zns.comicdroid.BaseFragmentActivity;
 import com.zns.comicdroid.R;
 import com.zns.comicdroid.adapter.ComicAdapter;
@@ -147,7 +146,7 @@ OnCheckedChangeListener, OnChildClickListener {
 		}
 		
 		//Amazon
-		AssociatesAPI.initialize(new AssociatesAPI.Config(Application.AMAZON_APPLICATION_KEY, this));
+		AssociatesAPI.initialize(new AssociatesAPI.Config(getString(R.string.key_amazon_appkey), this));
 		
 		//Restore State
 		if (savedInstanceState != null && savedInstanceState.containsKey(STATE_BOOKS)) {

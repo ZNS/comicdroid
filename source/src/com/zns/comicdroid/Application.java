@@ -38,7 +38,6 @@ public class Application extends android.app.Application {
 	public final static String DRIVE_SCOPE_BACKUP = DriveScopes.DRIVE_APPDATA;
 	public final static String DRIVE_WEBFOLDER_NAME = "ComicDroid";
 	public final static int CACHE_AMAZONSEARCH_HOURS = 4;
-	public final static String AMAZON_APPLICATION_KEY = "0e75d7882aa145f1becfe11ced0cd02f";
 	public final static boolean DEBUG = false;	
 	
 	public boolean isFirstUse;

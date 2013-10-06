@@ -25,7 +25,6 @@ import com.amazon.device.associates.AssociatesAPI;
 import com.amazon.device.associates.LinkService;
 import com.amazon.device.associates.NotInitializedException;
 import com.amazon.device.associates.OpenProductPageRequest;
-import com.zns.comicdroid.Application;
 import com.zns.comicdroid.BaseFragmentActivity;
 import com.zns.comicdroid.R;
 import com.zns.comicdroid.adapter.ExpandableGroupAdapter;
@@ -71,7 +70,7 @@ implements OnItemClickListener, OnChildClickListener, OnGroupClickListener {
 		mElvGroups.setAdapter(mAdapter);
 		
 		//Amazon
-		AssociatesAPI.initialize(new AssociatesAPI.Config(Application.AMAZON_APPLICATION_KEY, this));
+		AssociatesAPI.initialize(new AssociatesAPI.Config(getString(R.string.key_amazon_appkey), this));
 	
 		//State
 		if (savedInstanceState != null && savedInstanceState.containsKey(STATE_SEARCHING)) {
