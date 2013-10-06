@@ -31,7 +31,7 @@ import com.google.common.primitives.Ints;
 
 public class DBHelper extends SQLiteOpenHelper {
 
-	private static final int DB_VERSION = 	16;
+	private static final int DB_VERSION = 	20;
 	private static final String DB_NAME = 	"ComicDroid.db";
 
 	private static DBHelper mInstance;
@@ -160,23 +160,6 @@ public class DBHelper extends SQLiteOpenHelper {
 		//Just to make sure
 		if (oldVersion >= newVersion)
 			return;
-		if (oldVersion < 15) {			
-			db.execSQL("ALTER TABLE tblGroups ADD COLUMN ImageComicId INTEGER");
-		}
-		if (oldVersion < 16) {
-			db.execSQL("DROP TRIGGER IF EXISTS update_boook_groupid_image;" +
-					"CREATE TRIGGER update_boook_groupid_image AFTER UPDATE OF GroupId ON tblBooks " +
-					"WHEN new.Issue = 1 " +
-					"BEGIN " +
-					"UPDATE tblGroups SET Image = new.Image, ImageUrl = new.ImageUrl, ImageComicId = new._id WHERE new.GroupId <> 0 AND _id = new.GroupId; " +
-					"END;");
-			db.execSQL("DROP TRIGGER IF EXISTS insert_boook_groupid_image;" + 
-					"CREATE TRIGGER insert_boook_groupid_image AFTER INSERT ON tblBooks " +
-					"WHEN new.Issue = 1 " +
-					"BEGIN " +
-					"UPDATE tblGroups SET Image = new.Image, ImageUrl = new.ImageUrl, ImageComicId = new._id WHERE new.GroupId <> 0 AND _id = new.GroupId; " +
-					"END;");		
-		}
 	}
 
 	@Override
