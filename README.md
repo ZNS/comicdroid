@@ -15,5 +15,8 @@ ComicDroid is an app for Android that tries to provide a way to organize ones co
 ## Requirements
 A phone or tablet running Android 2.2 or later. ComicDroid will run on tablets but it has yet to be designed for tablets.
 
+##Get it on google play
+https://play.google.com/store/apps/details?id=com.zns.comicdroid
+
 ## License
 ComicDroid is released under GNU Public License v3.0. http://www.gnu.org/licenses/gpl.html
