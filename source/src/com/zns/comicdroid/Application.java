@@ -38,7 +38,9 @@ public class Application extends android.app.Application {
 	public final static String DRIVE_SCOPE_BACKUP = DriveScopes.DRIVE_APPDATA;
 	public final static String DRIVE_WEBFOLDER_NAME = "ComicDroid";
 	public final static int CACHE_AMAZONSEARCH_HOURS = 4;
+	public final static String COMIC_REGEX_BLACKLIST = "(TP|HC)(\\s+|$)";
 	public final static boolean DEBUG = false;	
+	public final static String GCD_API_BASEURL = "http://ec2-54-194-140-181.eu-west-1.compute.amazonaws.com";
 	
 	public boolean isFirstUse;
 	private String mImagePath = null;

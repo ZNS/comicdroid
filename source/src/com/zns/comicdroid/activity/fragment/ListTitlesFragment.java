@@ -29,7 +29,7 @@ public class ListTitlesFragment extends BaseListFragment {
 		Bundle b = new Bundle();
 		b.putInt("index", index);
 		fragment.setArguments(b);
-		fragment.mOrderBy = "Title, Issue";
+		fragment.mOrderBy = "Title COLLATE NOCASE, Issue";
 		return fragment;
 	}
 

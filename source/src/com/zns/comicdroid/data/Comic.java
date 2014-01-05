@@ -13,6 +13,7 @@ package com.zns.comicdroid.data;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -23,7 +24,11 @@ import com.google.api.services.books.model.Volume.VolumeInfo;
 import com.google.api.services.books.model.Volume.VolumeInfo.ImageLinks;
 import com.google.api.services.books.model.Volume.VolumeInfo.IndustryIdentifiers;
 import com.google.common.base.Joiner;
+import com.zns.comicdroid.Application;
+import com.zns.comicdroid.gcd.Issue;
 import com.zns.comicdroid.util.ImageHandler;
+import com.zns.comicdroid.util.StringUtil;
+import com.zns.openlibrary.Book;
 
 public class Comic
 implements Parcelable {
@@ -99,6 +104,131 @@ implements Parcelable {
 		this.mIssues = issues;
 	}
 
+	public static Comic fromGCDIssue(Issue issue, String imageDirectory, String isbn)
+	{
+		if (issue == null)
+			return null;
+		
+		Comic comic = new Comic();
+		if (issue.title != null)
+		{
+			if (StringUtil.nullOrEmpty(issue.volume)) {
+				comic.setTitle(issue.title);
+			}
+			else {
+				comic.setTitle(issue.feature);
+				comic.setSubTitle(issue.title);
+			}
+		}
+		
+		comic.setPageCount(issue.page_count);
+		
+		if (!StringUtil.nullOrEmpty(issue.volume) && issue.volume.matches("\\d+")) {
+			comic.setIssue(Integer.parseInt(issue.volume.replaceAll("[^\\d]", "")));
+		}
+		else if (!StringUtil.nullOrEmpty(issue.number) && issue.number.matches("\\d+")) {
+			comic.setIssue(Integer.parseInt(issue.number.replaceAll("[^\\d]", "")));
+		}
+		
+		if (!StringUtil.nullOrEmpty(issue.publisher)) {
+			comic.setPublisher(issue.publisher);
+		}
+		else if (!StringUtil.nullOrEmpty(issue.brand)) {
+			comic.setPublisher(issue.brand);
+		}
+		
+		if (issue.script != null) {
+			issue.script = issue.script.replaceAll(";", ",").replaceAll("\\([^)]*\\)", "");
+			issue.script = Joiner.on(",").join(toUniqueArray(issue.script, ","));
+			comic.setAuthor(issue.script);
+		}
+		
+		String illustrator = (issue.pencils != null ? issue.pencils : "") + "," + (issue.inks != null ? issue.inks : "");
+		if (!illustrator.equals(""))
+		{
+			illustrator = illustrator.replaceAll(";", ",").replaceAll("\\([^)]*\\)", "");
+			illustrator = Joiner.on(",").join(toUniqueArray(illustrator, ","));
+			comic.setIllustrator(illustrator);
+		}
+		
+		if (!StringUtil.nullOrEmpty(isbn)) {
+			comic.setISBN(isbn);
+		}
+		else if (!StringUtil.nullOrEmpty(issue.isbn)) {
+			comic.setISBN(issue.isbn);
+		}
+		else {
+			comic.setISBN("");
+		}
+
+		if (issue.images != null && issue.images.length > 0)
+		{
+			comic.setImageUrl(issue.images[0]);
+			try {
+				String imgUrl = issue.images[0];
+				if (imgUrl.charAt(0) == '/') {
+					imgUrl = Application.GCD_API_BASEURL + imgUrl;
+				}
+				URL url = new URL(imgUrl);
+				String fileName = ImageHandler.storeImage(url, imageDirectory);
+				ImageHandler.resizeOnDisk(imageDirectory + "/" + fileName);
+				comic.setImage(fileName);
+			} catch (Exception e) {
+				if (e != null)
+					System.out.println(e.getMessage());
+			}
+		}
+		
+		return comic;
+	}
+	
+	public static Comic fromOpenLibraryBook(Book book, String imageDirectory, String isbn)
+	{
+		if (book == null)
+			return null;
+		
+		Comic comic = new Comic();
+		if (book.title != null)
+			comic.setTitle(book.title.replaceAll(Application.COMIC_REGEX_BLACKLIST, "").trim());
+		if (book.subTitle != null)
+			comic.setSubTitle(book.subTitle.replaceAll(Application.COMIC_REGEX_BLACKLIST, "").trim());
+		if (book.authors != null && book.authors.length > 0)
+			comic.setAuthor(book.authors[0].name);
+		comic.setPageCount(book.numberOfPages);
+		if (book.publishers != null && book.publishers.length > 0)
+			comic.setPublisher(book.publishers[0].name);
+		if (book.covers != null && book.covers.medium != null)
+		{
+			comic.setImageUrl(book.covers.medium);
+			try {
+				URL url = new URL(book.covers.medium);
+				String fileName = ImageHandler.storeImage(url, imageDirectory);
+				ImageHandler.resizeOnDisk(imageDirectory + "/" + fileName);
+				comic.setImage(fileName);
+			} catch (Exception e) {
+				if (e != null)
+					System.out.println(e.getMessage());
+			}
+		}
+		if (!StringUtil.nullOrEmpty(isbn)) {
+			comic.setISBN(isbn);
+		}
+		else if (book.identifiers != null)
+		{
+			if (book.identifiers.isbn13 != null && book.identifiers.isbn13.length > 0) {
+				comic.setISBN(book.identifiers.isbn13[0]);
+			}
+			else if (book.identifiers.isbn10 != null && book.identifiers.isbn10.length > 0) {
+				comic.setISBN(book.identifiers.isbn10[0]);
+			}
+		}
+		else {
+			comic.setISBN("");
+		}
+		
+		return comic;
+	}
+	
 	public static Comic fromVolumeInfo(VolumeInfo info, String imageDirectory, String isbn)
 			throws ParseException
 			{
@@ -195,8 +325,37 @@ implements Parcelable {
 			}
 		}
 
+		if (comic.getTitle() != null) {
+			comic.setTitle(comic.getTitle().replaceAll(Application.COMIC_REGEX_BLACKLIST, "").trim());
+		}
+		if (comic.getSubTitle() != null) {
+			comic.setSubTitle(comic.getSubTitle().replaceAll(Application.COMIC_REGEX_BLACKLIST, "").trim());
+		}
+		
 		return comic;
+	}
+
+	public static String[] toUniqueArray(String values, String separator)
+	{
+		if (StringUtil.nullOrEmpty(values)) {
+			return new String[0];
+		}
+		
+		List<String> unique = new ArrayList<String>();
+		String[] arr = values.split(separator);
+		for (int i = 0; i < arr.length; i++) {
+			boolean found = false;
+			for (String val : unique) {
+				if (val.equalsIgnoreCase(arr[i].trim())) {
+					found = true;
+				}
 			}
+			if (!found) {
+				unique.add(arr[i].trim());
+			}
+		}
+		return unique.toArray(new String[unique.size()]);
+	}
 
 	public int getId() {
 		return mId;
@@ -354,6 +513,71 @@ implements Parcelable {
 		this.mIssues = issues;
 	}
 
+	public void extendFromOpenLibrary(Book book, String imageDirectory)
+	{
+		Comic comic = Comic.fromOpenLibraryBook(book, imageDirectory, null);
+		extend(comic);
+	}
+
+	public void extendFromGCD(Issue issue, String imageDirectory)
+	{
+		Comic comic = Comic.fromGCDIssue(issue, imageDirectory, null);
+		extend(comic);
+	}
+	
+	public void extendFromGoogleBooks(VolumeInfo info, String imageDirectory)
+			throws ParseException
+	{
+		Comic comic = Comic.fromVolumeInfo(info, imageDirectory, null);
+		extend(comic);
+	}
+	
+	public void extend(Comic comic) {
+		if (StringUtil.nullOrEmpty(mAuthor)) {
+			setAuthor(comic.getAuthor());
+		}
+		if (StringUtil.nullOrEmpty(mIllustrator)){
+			setIllustrator(comic.getIllustrator());
+		}
+		if (StringUtil.nullOrEmpty(mImageUrl) && StringUtil.nullOrEmpty(mImage)) {
+			setImageUrl(comic.getImageUrl());
+			setImage(comic.getImage());
+		}
+		if (StringUtil.nullOrEmpty(mPublisher)) {
+			setPublisher(comic.getPublisher());
+		}
+		if (StringUtil.nullOrEmpty(mSubTitle)) {
+			setSubTitle(comic.getSubTitle());
+		}
+		if (StringUtil.nullOrEmpty(mTitle)) {
+			setTitle(comic.getTitle());
+		}
+		if (mIssue == 0) {
+			setIssue(comic.getIssue());
+		}
+		if (mPageCount == 0) {
+			setPageCount(comic.getPageCount());
+		}
+	}
+	
+	public boolean hasInfo() {
+		return !StringUtil.nullOrEmpty(mAuthor) || 
+				!StringUtil.nullOrEmpty(mIllustrator) || 
+				!StringUtil.nullOrEmpty(mImageUrl) || 
+				!StringUtil.nullOrEmpty(mImage) || 
+				!StringUtil.nullOrEmpty(mPublisher) || 
+				!StringUtil.nullOrEmpty(mTitle) || 
+				!StringUtil.nullOrEmpty(mSubTitle); 
+	}
+	
+	public boolean isComplete()
+	{
+		if (StringUtil.nullOrEmpty(mTitle) || StringUtil.nullOrEmpty(mAuthor) || StringUtil.nullOrEmpty(mIllustrator) || StringUtil.nullOrEmpty(mPublisher) || StringUtil.nullOrEmpty(mImageUrl) || mIssue == 0) {
+			return false;
+		}
+		return true;
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) 

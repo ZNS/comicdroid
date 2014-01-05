@@ -1,0 +1,65 @@
+<!--
+  Copyright (c) 2013 Ulrik Andersson.
+  All rights reserved. This program and the accompanying materials
+  are made available under the terms of the GNU Public License v3.0
+  which accompanies this distribution, and is available at
+  http://www.gnu.org/licenses/gpl.html
+  
+  Contributors:
+      Ulrik Andersson - initial API and implementation
+-->
+<com.zns.comicdroid.widget.CheckableLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/gcdissue_llRow"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="5dp"
+    android:orientation="vertical"
+    android:background="@color/contentBg">
+	
+	<RelativeLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content">
+	
+	    <ImageView
+	        android:id="@+id/gcdissue_ivImage"
+	        style="@style/ComicListImage"
+	        android:layout_alignParentLeft="true" />
+	    
+		<LinearLayout 
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_toRightOf="@id/gcdissue_ivImage"
+		    android:orientation="vertical" >
+		    
+		    <TextView
+		        android:id="@+id/gcdissue_tvTitle"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+				style="@style/ComicListTitle" />
+			
+		    <TextView
+		    	android:id="@+id/gcdissue_tvAuthor"
+		    	android:layout_width="wrap_content"
+		    	android:layout_height="wrap_content"
+		    	android:textSize="13sp"
+			/>
+		        
+		</LinearLayout>
+	
+		<TextView
+		    android:id="@+id/gcdissue_tvIssue"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_alignParentRight="true"
+		    android:layout_alignParentBottom="true"
+		    android:layout_marginLeft="10dp"
+		    android:textSize="@dimen/text_small" />
+			
+	</RelativeLayout>	
+	
+	<View
+    	android:layout_width="fill_parent"
+    	android:layout_height="3dp"
+    	android:background="@color/abs__background_holo_light" />
+		
+</com.zns.comicdroid.widget.CheckableLinearLayout>

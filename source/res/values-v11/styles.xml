@@ -16,6 +16,7 @@
     -->
     <style name="AppBaseTheme" parent="Theme.Sherlock.Light.DarkActionBar">
         <!-- API 11 theme customizations can go here. -->
+        <item name="android:actionModeCloseDrawable">@drawable/ic_action_cancel</item>
     </style>
 
     <!-- Text for listboxes, non-inverted starting with Android 3.0 -->

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+	<TextView
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_marginBottom="-3dp"
+	    android:paddingLeft="5dp"
+	    android:paddingTop="5dp"
+	    android:paddingRight="5dp"
+	    android:text="@string/common_addtogroup" />
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+	    android:paddingLeft="5dp"
+	    android:paddingRight="5dp"        
+        android:layout_marginBottom="2dp" >
+		
+		<ImageView
+		    android:id="@+id/add_multiple_ivGroupAdd"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_alignParentRight="true"
+		    android:src="@drawable/ic_add" />
+				        
+		<Spinner
+		    android:id="@+id/add_multiple_spGroup"
+		    android:layout_width="fill_parent"
+		    android:layout_height="wrap_content"				    
+		    android:layout_toLeftOf="@id/add_multiple_ivGroupAdd" />
+		
+    </RelativeLayout>
+
+	<ListView
+	    android:id="@+id/add_multiple_lvIssues"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent" >
+	</ListView>
+</LinearLayout>

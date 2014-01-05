@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <View
+        android:id="@+id/vSeparatorBottom"
+        android:layout_width="fill_parent"
+        android:layout_height="3dp"
+        android:background="@color/abs__background_holo_light" />
+
+    <Button
+        android:id="@+id/add_multiple_btnMore"
+        style="@style/Widget.Sherlock.ActionButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/common_showmore"
+        android:textAlignment="center" />
+
+</LinearLayout>

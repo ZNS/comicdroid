@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+	<RelativeLayout
+	    android:id="@+id/gcdseries_row"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:padding="5dp"
+	    android:background="@color/contentBg" >
+	
+	    <RelativeLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_toLeftOf="@+id/gcdseries_issue_count">
+	    		    
+		    <TextView
+		        android:id="@+id/gcdseries_tvName"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+				style="@style/ComicListTitle" />
+			
+		    <TextView
+		    	android:id="@+id/gcdseries_tvPublisher"
+		    	android:layout_width="wrap_content"
+		    	android:layout_height="wrap_content"
+		    	android:layout_below="@id/gcdseries_tvName"
+		    	android:textSize="13sp" />
+		        
+		</RelativeLayout>
+		
+		<RelativeLayout 
+		    android:id="@id/gcdseries_issue_count"
+		    android:layout_width="wrap_content"
+		    android:layout_height="match_parent"
+		    android:layout_alignParentRight="true"
+		    android:background="@drawable/border_left"
+		    android:padding="15dp" >
+		    
+		    <TextView
+		        android:id="@+id/gcdseries_tvIssueCount"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:textSize="20sp"
+		        android:paddingBottom="12dp"
+		        android:layout_centerInParent="true" />
+		    
+		    <TextView
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_below="@id/gcdseries_tvIssueCount"
+		        android:text="@string/gcd_issue_count" />
+		    
+		</RelativeLayout>
+	</RelativeLayout>    
+	
+	<View
+	    android:id="@+id/vSeparatorBottom"
+    	android:layout_width="fill_parent"
+    	android:layout_height="3dp"
+    	android:background="@color/abs__background_holo_light" />	
+</LinearLayout>

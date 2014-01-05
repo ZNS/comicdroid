@@ -212,9 +212,7 @@ public class ComicView extends BaseFragmentActivity {
 					//Backup
 					BackupManager m = new BackupManager(ComicView.this);
 					m.dataChanged();
-					//Back to start
-					Intent intent2 = new Intent(ComicView.this, Start.class);
-					startActivity(intent2);
+					//Go back
 					finish();
 				}
 			})

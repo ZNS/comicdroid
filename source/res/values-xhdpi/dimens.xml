@@ -18,5 +18,6 @@
     <dimen name="comic_list_separator">5dp</dimen>
     <dimen name="text_small">13sp</dimen>
     <dimen name="text_medium">17sp</dimen>
+    <dimen name="text_smaller">12sp</dimen>
     <dimen name="amazon_minheight">45dp</dimen>
 </resources>

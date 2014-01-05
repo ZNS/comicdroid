@@ -290,6 +290,7 @@ OnCheckedChangeListener, OnChildClickListener {
 			}
 			return true;
 		case R.id.menu_delete:
+			mDeleteComics = false;
 			new AlertDialog.Builder(this)
 			.setTitle(R.string.group_delete_title)
 			.setMultiChoiceItems(new String[] {getString(R.string.group_delete_alt)}, null, new DialogInterface.OnMultiChoiceClickListener() {					
@@ -306,7 +307,7 @@ OnCheckedChangeListener, OnChildClickListener {
 					m.dataChanged();
 					//Back to start
 					Intent intent2 = new Intent(Comics.this, Start.class);
-					startActivity(intent2);
+					startActivity(intent2);					
 					finish();
 				}
 			})

@@ -174,6 +174,8 @@ GroupDialogFragment.OnGroupAddDialogListener {
 			BindComics();
 		}
 		else {
+			DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(this);
+			mEtAdded.setText(dateFormat.format(new Date()));
 			mIvImage.setOnClickListener(this);
 			drawer.setVisibility(View.GONE);
 		}
@@ -451,7 +453,7 @@ GroupDialogFragment.OnGroupAddDialogListener {
 			if (resultCode == RESULT_OK) {
 				try
 				{
-					ImageHandler.resizeOnDisk(mNewImage);
+					ImageHandler.resizeOnDisk(mNewImage, 4);
 				}
 				catch (Exception e) {
 					Toast.makeText(this, R.string.error_storeimage, Toast.LENGTH_SHORT).show();

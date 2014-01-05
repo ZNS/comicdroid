@@ -87,36 +87,14 @@
 			    	    
 			</RelativeLayout>
 		
-			<LinearLayout
-			    android:layout_width="fill_parent"
-			    android:layout_height="wrap_content"
-			    android:orientation="horizontal"
-			    android:weightSum="1"
-			    android:layout_marginBottom="10dp" >	
-			
-				<Button
-			        android:id="@+id/btnScan"
-			        style="@style/ButtonText"
-			        android:layout_width="0dip"
-			        android:layout_height="35dp"
-			        android:layout_weight=".65"
-			        android:layout_marginRight="2.5dp"
-			        android:background="@drawable/button"
-			        android:onClick="scanISBN"
-			        android:text="@string/add_btnscan" />
-					
-				<Button
-			        android:id="@+id/btnAdd"
-			        style="@style/ButtonText"
-			        android:layout_width="0dip"
-			        android:layout_height="35dp"
-			        android:layout_weight=".35"
-			        android:layout_marginLeft="2.5dp"
-			        android:background="@drawable/button"
-			        android:onClick="create"
-			        android:text="@string/add_btnadd" />
-							
-			</LinearLayout>
+			<Button
+		        android:id="@+id/btnScan"
+		        style="@style/ButtonText"
+		        android:layout_width="match_parent"
+		        android:layout_height="35dp"
+		        android:background="@drawable/button"
+		        android:onClick="scanISBN"
+		        android:text="@string/add_btnscan" />
 			
 			<ListView
 			    android:id="@+id/add_lvComics"

@@ -42,7 +42,10 @@
         <meta-data
             android:name="com.google.android.backup.api_key"
             android:value="AEdPqrEAAAAIiyMVCBSADUqYW_4cLdlakdFXkNHGSLwkPucGKA" />
-
+		<meta-data 
+		    android:name="com.google.android.gms.version" 
+		    android:value="@integer/google_play_services_version" />
+		
         <service
             android:name="com.zns.comicdroid.service.GoogleDriveService"
             android:exported="false" >
@@ -114,6 +117,14 @@
         <activity
             android:name="com.zns.comicdroid.activity.Help"
             android:label="@string/title_activity_help" >
+        </activity>        
+        <activity
+            android:name="com.zns.comicdroid.activity.AddMultiple"
+            android:label="@string/title_activity_add_multiple"
+            android:parentActivityName="com.zns.comicdroid.activity.Add" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.zns.comicdroid.activity.Add" />
         </activity>        
     </application>
 </manifest>

@@ -41,6 +41,7 @@
     <string name="menu_editall">Redigera alla</string>
     <string name="menu_help">Hjälp</string>
     <string name="menu_help_sub">Hur man använder, om och stats</string>    
+    <string name="menu_addcomic">Lägg till serier</string>
     <string name="common_readmore">Läs mer..</string>
     <string name="common_hide">Dölj</string>    
     <string name="common_addtogroup">Lägg tillagda serier till samling:</string>
@@ -57,6 +58,9 @@
     <string name="common_name">Namn</string>
     <string name="common_none">Ingen</string>
     <string name="common_close">Stäng</string>
+    <string name="common_share">Dela</string>
+    <string name="common_showmore">Visa fler</string>
+    <string name="common_searcing">Söker..</string>
     <string name="start_tab_aggregates">Serier</string>
     <string name="start_tab_comics">Titlar</string>
     <string name="start_tab_authors">Författare</string>
@@ -166,6 +170,11 @@
 	<string name="read_empty">Verkar som du har läst allt redan..</string>
 	<string name="amazon_nohits">Hittade inga serier..</string>
 	<string name="amazon_search_progress">Söker på amazon..</string>
+	<string name="gcd_issue_count">nummer</string>
+	<string name="gcd_link">Sök baserat på data från comics.org</string>
+	<string name="gcd_nohits">Hittade tyvärr ingenting..</string>
+	<string name="gcd_search_hint">Sök på titel..</string>
+	<string name="gcd_adding_comics">Lägger till serier till arkivet..</string>
     <string name="help_adding">
     <![CDATA[
 	<h2>Lägga till serier</h2>

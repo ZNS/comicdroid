@@ -109,7 +109,13 @@ public final class ImageHandler {
 		return fileName;
 	}
 
-	public static void resizeOnDisk(String path)
+	public static void resizeOnDisk(String path) 
+			throws IOException, MediaNotReadyException
+	{
+		resizeOnDisk(path, 1);
+	}
+	
+	public static void resizeOnDisk(String path, int sampleSize)
 			throws IOException, MediaNotReadyException {
 
 		if (!mediaReadyForWrite()) {
@@ -122,7 +128,8 @@ public final class ImageHandler {
 
 		try {
 			BitmapFactory.Options options = new Options();
-			options.inSampleSize = 4;
+			options.inSampleSize = sampleSize;
+			options.inScaled = false;
 			bmp = BitmapFactory.decodeFile(path, options);
 
 			int width = bmp.getWidth();

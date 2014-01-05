@@ -22,6 +22,7 @@
     <string name="title_activity_borrow">Lend Out</string>
     <string name="title_activity_borrowed">On loan</string>
     <string name="title_activity_help">Help</string>    
+    <string name="title_activity_add_multiple"></string>
     <string name="menu_start">The Archive</string>
     <string name="menu_start_sub">Browse your comics</string>
     <string name="menu_add">Add</string>
@@ -41,6 +42,7 @@
     <string name="menu_editall">Edit all</string>
     <string name="menu_help">Help</string>
     <string name="menu_help_sub">How to use, about and stats</string>
+    <string name="menu_addcomic">Add comics</string>
     <string name="common_readmore">Read more..</string>
     <string name="common_hide">Hide</string>
     <string name="common_addtogroup">Add added comics to collection:</string>
@@ -58,6 +60,8 @@
     <string name="common_none">None</string>
     <string name="common_close">Close</string>
     <string name="common_share">Share</string>
+    <string name="common_showmore">Show more</string>
+    <string name="common_searcing">Searching..</string>
     <string name="start_tab_aggregates">Comics</string>
     <string name="start_tab_comics">Titles</string>
     <string name="start_tab_authors">Authors</string>
@@ -167,6 +171,11 @@
     <string name="read_empty">Seems you\'ve already read everything..</string>
     <string name="amazon_nohits">Could not find any comics..</string>
     <string name="amazon_search_progress">Searching on amazon..</string>
+    <string name="gcd_issue_count">issues</string>
+    <string name="gcd_link">Search based on data from comics.org</string>
+    <string name="gcd_nohits">Sorry, didn\'t find anything..</string>
+    <string name="gcd_search_hint">Search on title..</string>
+    <string name="gcd_adding_comics">Adding comics to archive..</string>
 	<string name="help_adding">
 	<![CDATA[
 	<h2>Adding comics</h2>

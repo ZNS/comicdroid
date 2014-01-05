@@ -6,7 +6,7 @@
 	<classpathentry exported="true" kind="lib" path="D:/Projekt/Android/ComicDroid/libraries/Amazon-Mobile-Associates/amazon-mobile-associates-1.0.45.0.jar"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
-	<classpathentry kind="con" path="com.google.gdt.eclipse.managedapis.MANAGED_API_CONTAINER/drive-v2r100lv1.15.0-rc"/>
-	<classpathentry kind="con" path="com.google.gdt.eclipse.managedapis.MANAGED_API_CONTAINER/books-v1r36lv1.15.0-rc"/>
+	<classpathentry kind="con" path="com.google.gdt.eclipse.managedapis.MANAGED_API_CONTAINER/drive-v2r110lv1.16.0-rc"/>
+	<classpathentry kind="con" path="com.google.gdt.eclipse.managedapis.MANAGED_API_CONTAINER/books-v1r44lv1.16.0-rc"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

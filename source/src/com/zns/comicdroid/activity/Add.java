@@ -30,6 +30,8 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.zns.comicdroid.BaseFragmentActivity;
@@ -49,7 +51,6 @@ implements GroupDialogFragment.OnGroupAddDialogListener,
 AuthorIllustratorDialogFragment.OnAuthorIllustratorDialogListener {
 
 	private final static String STATE_COMICS = "COMICS";
-
 	private EditText mEtISBN;
 	private ComicArrayAdapter mAdapter;
 	private Spinner mSpGroup;
@@ -130,12 +131,31 @@ AuthorIllustratorDialogFragment.OnAuthorIllustratorDialogListener {
 		super.onStop();
 	}
 
-	public void create(View view)
-	{
-		Intent intent = new Intent(this, Edit.class);
-		startActivity(intent);		
+	//---------Menu----------
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		com.actionbarsherlock.view.MenuInflater inflater = getSupportMenuInflater();
+		inflater.inflate(R.menu.actionbar_add, (com.actionbarsherlock.view.Menu) menu);
+		return true;
 	}
 
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle item selection
+		switch (item.getItemId()) {
+			case R.id.menu_add_multiple:
+				Intent intent = new Intent(this, AddMultiple.class);
+				startActivity(intent);
+				return true;
+			case R.id.menu_add_manually:
+				intent = new Intent(this, Edit.class);
+				startActivity(intent);
+				return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+	
 	public void scanISBN(View view)
 	{
 		mIsScanning = true;
@@ -158,7 +178,7 @@ AuthorIllustratorDialogFragment.OnAuthorIllustratorDialogListener {
 	}
 
 	public void onBookQueryCompleteMainThread(BooksQueryResult result) {
-		if (result.mSuccess)
+		if (result.mSuccess && result.mComic != null && result.mComic.hasInfo())
 		{		
 			if (mSpGroup.getSelectedItemPosition() > 0) {
 				Group g = (Group)mSpGroup.getSelectedItem();
@@ -184,7 +204,8 @@ AuthorIllustratorDialogFragment.OnAuthorIllustratorDialogListener {
 					AuthorIllustratorDialogFragment dialog = AuthorIllustratorDialogFragment.newInstance(comicId, result.mComic.getAuthor());
 					dialog.show(getSupportFragmentManager(), "AUTHORILLUSTRATOR");
 				}
-			}			
+			}
+						
 			mAdapter.insert(result.mComic, 0);
 			mAdapter.notifyDataSetChanged();
 

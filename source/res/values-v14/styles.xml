@@ -17,6 +17,7 @@
     -->
     <style name="AppBaseTheme" parent="Theme.Sherlock.Light.DarkActionBar">
         <!-- API 14 theme customizations can go here. -->
+        <item name="android:actionModeCloseDrawable">@drawable/ic_action_cancel</item>
     </style>
         
 </resources>

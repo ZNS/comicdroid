@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+	<RelativeLayout
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content" >
+	
+	    <Button
+	        android:id="@+id/add_multiple_btnSearch"
+	        style="@style/ButtonText"
+	        android:layout_width="wrap_content"
+	        android:layout_height="35dp"
+	        android:layout_alignParentRight="true"
+	        android:background="@drawable/button"
+	        android:text="@string/common_search" />
+	    
+	    <EditText
+	        android:id="@+id/add_multiple_etSearch"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_toLeftOf="@id/add_multiple_btnSearch"
+	        android:hint="@string/gcd_search_hint"
+	        android:inputType="text"
+	        android:imeOptions="actionSearch" />
+	    	    
+	</RelativeLayout>
+ 
+	<TextView
+	    android:id="@+id/add_multiple_gcdlink"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_marginTop="-3dp"
+	    android:layout_marginBottom="5dp"
+	    android:textSize="@dimen/text_smaller" />
+	
+    <ListView
+        android:id="@+id/add_multiple_lvSeries"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:listSelector="@android:color/transparent"
+		android:divider="@android:color/transparent"
+        android:dividerHeight="5dp" />    
+    
+    <TextView 
+        android:id="@+id/add_multiple_tvNoHits"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/gcd_nohits"
+        android:textColor="#999999"
+        android:textSize="18sp"
+        android:textStyle="italic"
+        android:visibility="gone" />
+    	
+</LinearLayout>
