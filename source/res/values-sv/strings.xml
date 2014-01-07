@@ -175,6 +175,7 @@
 	<string name="gcd_nohits">Hittade tyvärr ingenting..</string>
 	<string name="gcd_search_hint">Sök på titel..</string>
 	<string name="gcd_adding_comics">Lägger till serier till arkivet..</string>
+	<string name="gcd_error_init">Sök mot comics.org är inte tillgängligt!</string>
     <string name="help_adding">
     <![CDATA[
 	<h2>Lägga till serier</h2>

@@ -10,6 +10,7 @@
  ******************************************************************************/
 package com.zns.comicdroid.task;
 
+import android.content.Context;
 import android.os.AsyncTask;
 
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -19,15 +20,28 @@ import com.google.api.services.books.Books;
 import com.google.api.services.books.BooksRequestInitializer;
 import com.google.api.services.books.model.Volume;
 import com.google.api.services.books.model.Volumes;
-import com.zns.comicdroid.Application;
 import com.zns.comicdroid.data.Comic;
-import com.zns.comicdroid.util.JsonUtil;
+import com.zns.comicdroid.gcd.Client;
+import com.zns.comicdroid.gcd.Issue;
 
 import de.greenrobot.event.EventBus;
 
 public class BooksQueryTask extends AsyncTask<String, Void, Void> {
 	public Exception mException = null;
+	private com.zns.comicdroid.gcd.Client mClientGCD = null;
+	private final com.zns.openlibrary.Client mClientOpenLib;
 
+	public BooksQueryTask(Context context) {
+		try
+		{
+			mClientGCD = new Client(context);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		mClientOpenLib = new com.zns.openlibrary.Client();
+	}
+	
 	protected Void doInBackground(String... param)
 	{
 		NetHttpTransport httpTransport = new NetHttpTransport();
@@ -51,11 +65,10 @@ public class BooksQueryTask extends AsyncTask<String, Void, Void> {
 				result.mSuccess = true;				
 			}
 			
-			if (!result.mSuccess || !result.mComic.isComplete())
+			if (!result.mSuccess || !result.mComic.isComplete() && mClientGCD != null)
 			{
 				//Try gcd
-				String gcdUrl = Application.GCD_API_BASEURL + "/isbn/" + param[2];
-				com.zns.comicdroid.gcd.Issue issue = JsonUtil.deserialize(gcdUrl, com.zns.comicdroid.gcd.Issue.class, 5000);
+				Issue issue = mClientGCD.queryISBN(param[2]);
 				if (issue != null)
 				{
 					if (result.mComic == null) {
@@ -71,8 +84,7 @@ public class BooksQueryTask extends AsyncTask<String, Void, Void> {
 			if (!result.mSuccess || !result.mComic.isComplete())
 			{
 				//Try open library
-				String openLibUrl = "https://openlibrary.org/api/books?bibkeys=" + param[0] + "&format=json&jscmd=data";
-				com.zns.openlibrary.Book book = JsonUtil.deserialize(openLibUrl, com.zns.openlibrary.Book.class, param[0], 5000);
+				com.zns.openlibrary.Book book = mClientOpenLib.queryISBN(param[2]);
 				if (book != null)
 				{
 					if (result.mComic == null) {

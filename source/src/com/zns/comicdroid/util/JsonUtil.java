@@ -4,7 +4,6 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 
@@ -13,20 +12,12 @@ import com.google.api.client.json.JsonParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
 
 public final class JsonUtil {
-	public static <T extends Object> T deserialize(String url, Class<T> type, int timeout)
-	{
-		return deserialize(url, type, null, timeout);
-	}
-		
-	public static <T extends Object> T deserialize(String url, Class<T> type, String skipToKey, int timeout)
+	public static <T extends Object> T deserialize(HttpURLConnection connection, Class<T> type, String skipToKey)
 	{
 		JsonFactory jsonFactory = new JacksonFactory();
 		InputStream stream = null;
-		HttpURLConnection connection = null;
 		try
 		{
-			connection = (HttpURLConnection)new URL(url).openConnection();
-			connection.setConnectTimeout(timeout);
 			int statusCode = connection.getResponseCode();
 			if (statusCode == HttpURLConnection.HTTP_OK) {
 				stream = new BufferedInputStream(connection.getInputStream());
@@ -37,7 +28,7 @@ public final class JsonUtil {
 				return parser.parseAndClose(type);
 			}
 		}
-		catch (IOException e) {
+		catch (Exception e) {
 			e.printStackTrace();			
 		}
 		finally {
@@ -57,20 +48,12 @@ public final class JsonUtil {
 		return null;
 	}
 	
-	public static <T extends Object> Collection<T> deserializeArray(String url, Class<T> type)
-	{
-		return deserializeArray(url, type, 15000);
-	}
-	
-	public static <T extends Object> Collection<T> deserializeArray(String url, Class<T> type, int timeout)
+	public static <T extends Object> Collection<T> deserializeArray(HttpURLConnection connection, Class<T> type)
 	{
 		JsonFactory jsonFactory = new JacksonFactory();
 		InputStream stream = null;
-		HttpURLConnection connection = null;
 		try
-		{
-			connection = (HttpURLConnection)new URL(url).openConnection();
-			connection.setConnectTimeout(timeout);
+		{			
 			int statusCode = connection.getResponseCode();
 			if (statusCode == HttpURLConnection.HTTP_OK) {
 				stream = new BufferedInputStream(connection.getInputStream());
@@ -78,7 +61,7 @@ public final class JsonUtil {
 				return parser.parseArrayAndClose(List.class, type);
 			}
 		}
-		catch (IOException e) {
+		catch (Exception e) {
 			e.printStackTrace();			
 		}
 		finally {

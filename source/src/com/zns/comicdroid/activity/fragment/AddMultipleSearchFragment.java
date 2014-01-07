@@ -1,9 +1,7 @@
 package com.zns.comicdroid.activity.fragment;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -24,13 +22,13 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.zns.comicdroid.Application;
 import com.zns.comicdroid.BaseFragment;
 import com.zns.comicdroid.R;
 import com.zns.comicdroid.adapter.GCDSeriesAdapter;
+import com.zns.comicdroid.gcd.Client;
 import com.zns.comicdroid.gcd.Series;
-import com.zns.comicdroid.util.JsonUtil;
 
 public class AddMultipleSearchFragment extends BaseFragment implements OnClickListener, OnItemClickListener {
 
@@ -45,6 +43,7 @@ public class AddMultipleSearchFragment extends BaseFragment implements OnClickLi
 	private TextView mTvNoHits;
 	private OnSeriesSelectedListener mSeriesSelectedCallback;
 	private String mQuery;
+	private Client mClientGCD;
 	
 	public interface OnSeriesSelectedListener {
 		public void onSeriesSelected(int seriesId);
@@ -59,7 +58,7 @@ public class AddMultipleSearchFragment extends BaseFragment implements OnClickLi
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_add_multiple_search, container, false);
-		
+				
 		mEtSearch = (EditText)view.findViewById(R.id.add_multiple_etSearch);
 		mEtSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {			
 			@Override
@@ -100,6 +99,15 @@ public class AddMultipleSearchFragment extends BaseFragment implements OnClickLi
 		}
 		mLvSeries.setOnItemClickListener(this);
 		
+		if (mClientGCD == null) {
+			try {
+				mClientGCD = new Client(getActivity());
+			}
+			catch (Exception e) {
+				Toast.makeText(getActivity(), getString(R.string.gcd_error_init), Toast.LENGTH_LONG).show();
+			}
+		}
+		
 		if (mQuery != null) {
 			mEtSearch.setText(mQuery);
 		}
@@ -136,7 +144,7 @@ public class AddMultipleSearchFragment extends BaseFragment implements OnClickLi
 	
 	private void search()
 	{
-		new AsyncTask<String, Void, Collection<Series>>() {
+		new AsyncTask<String, Void, List<Series>>() {
 			private ProgressDialog mDialog;
 			
 			@Override
@@ -148,19 +156,14 @@ public class AddMultipleSearchFragment extends BaseFragment implements OnClickLi
 			};
 			
 			@Override
-			protected Collection<Series> doInBackground(String... params) {
-				Collection<Series> result = null;
-				try 
-				{
-					result = JsonUtil.deserializeArray(Application.GCD_API_BASEURL + "/search?q=" + URLEncoder.encode(params[0], "utf-8") + "&p=" + mCurrentPage, Series.class);
-				} catch (UnsupportedEncodingException e) {
-					e.printStackTrace();
-				}
+			protected List<Series> doInBackground(String... params) {
+				List<Series> result = null;
+				result = mClientGCD.searchSeries(params[0], mCurrentPage);
 				return result;
 			}
 			
 			@Override
-			protected void onPostExecute(Collection<Series> result) {
+			protected void onPostExecute(List<Series> result) {
 				if (getActivity() == null) {
 					mDialog.dismiss();
 					return;

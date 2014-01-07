@@ -25,6 +25,7 @@ import com.google.api.services.books.model.Volume.VolumeInfo.ImageLinks;
 import com.google.api.services.books.model.Volume.VolumeInfo.IndustryIdentifiers;
 import com.google.common.base.Joiner;
 import com.zns.comicdroid.Application;
+import com.zns.comicdroid.gcd.Client;
 import com.zns.comicdroid.gcd.Issue;
 import com.zns.comicdroid.util.ImageHandler;
 import com.zns.comicdroid.util.StringUtil;
@@ -167,7 +168,7 @@ implements Parcelable {
 			try {
 				String imgUrl = issue.images[0];
 				if (imgUrl.charAt(0) == '/') {
-					imgUrl = Application.GCD_API_BASEURL + imgUrl;
+					imgUrl = Client.IMAGEURL + imgUrl;
 				}
 				URL url = new URL(imgUrl);
 				String fileName = ImageHandler.storeImage(url, imageDirectory);

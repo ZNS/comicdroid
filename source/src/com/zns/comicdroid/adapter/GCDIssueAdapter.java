@@ -16,8 +16,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.zns.comicdroid.Application;
 import com.zns.comicdroid.R;
+import com.zns.comicdroid.gcd.Client;
 import com.zns.comicdroid.gcd.Issue;
 import com.zns.comicdroid.util.StringUtil;
 import com.zns.comicdroid.widget.CheckableLinearLayout;
@@ -126,7 +126,7 @@ public class GCDIssueAdapter extends ArrayAdapter<Issue> {
 		{
 			String imgUrl = issue.images[0];
 			if (imgUrl.charAt(0) == '/') {
-				imgUrl = Application.GCD_API_BASEURL + imgUrl;
+				imgUrl = Client.IMAGEURL + imgUrl;
 			}
 			ImageLoader.getInstance().displayImage(imgUrl, holder.ivImage);			  
 			holder.ivImage.setVisibility(View.VISIBLE);

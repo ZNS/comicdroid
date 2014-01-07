@@ -3,7 +3,6 @@ package com.zns.comicdroid.activity.fragment;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import android.annotation.SuppressLint;
@@ -14,17 +13,18 @@ import android.support.v4.app.DialogFragment;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Checkable;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
@@ -37,15 +37,14 @@ import com.google.api.services.books.Books;
 import com.google.api.services.books.BooksRequestInitializer;
 import com.google.api.services.books.model.Volume;
 import com.google.api.services.books.model.Volumes;
-import com.zns.comicdroid.Application;
 import com.zns.comicdroid.BaseFragment;
 import com.zns.comicdroid.R;
 import com.zns.comicdroid.adapter.GCDIssueAdapter;
 import com.zns.comicdroid.data.Comic;
 import com.zns.comicdroid.data.Group;
 import com.zns.comicdroid.dialog.GroupDialogFragment;
+import com.zns.comicdroid.gcd.Client;
 import com.zns.comicdroid.gcd.Issue;
-import com.zns.comicdroid.util.JsonUtil;
 import com.zns.comicdroid.util.StringUtil;
 
 public class AddMultipleIssuesFragment extends BaseFragment implements OnItemClickListener, OnClickListener, GroupDialogFragment.OnGroupAddDialogListener {
@@ -64,6 +63,7 @@ public class AddMultipleIssuesFragment extends BaseFragment implements OnItemCli
 	private ArrayAdapter<Group> mAdapterGroups;
 	private int mCurrentPage;
 	private int mSeriesId;
+	private Client mClientGCD;
 	
 	public static AddMultipleIssuesFragment newInstance() {
 		return new AddMultipleIssuesFragment();
@@ -105,6 +105,15 @@ public class AddMultipleIssuesFragment extends BaseFragment implements OnItemCli
 		final float scale = getResources().getDisplayMetrics().density;
 		mPaddingInPx = (int) (5 * scale + 0.5f);
 		
+		if (mClientGCD == null) {
+			try {
+				mClientGCD = new Client(getActivity());
+			}
+			catch (Exception e) {
+				Toast.makeText(getActivity(), getString(R.string.gcd_error_init), Toast.LENGTH_LONG).show();
+			}
+		}
+		
 		if (savedInstanceState != null) {
 			mSeriesId = savedInstanceState.getInt(STATE_CURRENT_SERIES_ID);
 		}
@@ -125,15 +134,15 @@ public class AddMultipleIssuesFragment extends BaseFragment implements OnItemCli
 	
 	private void loadIssues()
 	{
-		new AsyncTask<Integer, Void, Collection<Issue>>() {
+		new AsyncTask<Integer, Void, List<Issue>>() {
 			@Override
-			protected Collection<Issue> doInBackground(Integer... params) {
-				Collection<Issue> result = JsonUtil.deserializeArray(Application.GCD_API_BASEURL + "/issues/" + Integer.toString(params[0]) + "/?p=" + mCurrentPage, Issue.class);
+			protected List<Issue> doInBackground(Integer... params) {
+				List<Issue> result = mClientGCD.getIssuesBySeries(params[0], mCurrentPage);
 				return result;
 			}
 			
 			@Override
-			protected void onPostExecute(Collection<Issue> result) {
+			protected void onPostExecute(List<Issue> result) {
 				if (result != null)
 				{
 					if (getActivity() != null)

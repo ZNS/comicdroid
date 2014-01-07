@@ -269,7 +269,7 @@ AuthorIllustratorDialogFragment.OnAuthorIllustratorDialogListener {
 		String q = "isbn:" + isbn;
 		if (isbn.contains(":"))
 			q = isbn;
-		new BooksQueryTask().execute(q, getImagePath(false), isbn);
+		new BooksQueryTask(this).execute(q, getImagePath(false), isbn);
 	}
 
 	@Override
