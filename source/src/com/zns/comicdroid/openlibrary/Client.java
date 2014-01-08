@@ -1,4 +1,4 @@
-package com.zns.openlibrary;
+package com.zns.comicdroid.openlibrary;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;

@@ -46,7 +46,10 @@ public class GroupDialogFragment extends DialogFragment {
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);	    
-		if (activity instanceof OnGroupAddDialogListener) {
+		if (getTargetFragment() instanceof OnGroupAddDialogListener) {
+			mGroupAddCallback = (OnGroupAddDialogListener)getTargetFragment();
+		}	
+		else if (activity instanceof OnGroupAddDialogListener) {
 			mGroupAddCallback = (OnGroupAddDialogListener)activity;
 		}
 	}

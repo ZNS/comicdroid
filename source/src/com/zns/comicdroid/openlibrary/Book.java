@@ -1,4 +1,4 @@
-package com.zns.openlibrary;
+package com.zns.comicdroid.openlibrary;
 
 import com.google.api.client.util.Key;
 

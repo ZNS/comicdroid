@@ -27,9 +27,9 @@ import com.google.common.base.Joiner;
 import com.zns.comicdroid.Application;
 import com.zns.comicdroid.gcd.Client;
 import com.zns.comicdroid.gcd.Issue;
+import com.zns.comicdroid.openlibrary.Book;
 import com.zns.comicdroid.util.ImageHandler;
 import com.zns.comicdroid.util.StringUtil;
-import com.zns.openlibrary.Book;
 
 public class Comic
 implements Parcelable {
@@ -139,16 +139,16 @@ implements Parcelable {
 		}
 		
 		if (issue.script != null) {
-			issue.script = issue.script.replaceAll(";", ",").replaceAll("\\([^)]*\\)", "");
-			issue.script = Joiner.on(",").join(toUniqueArray(issue.script, ","));
+			issue.script = issue.script.replaceAll(";", ",").replaceAll("\\([^)]*\\)|\\[[^)]*\\]|\\?", "");
+			issue.script = Joiner.on(",").skipNulls().join(toUniqueArray(issue.script, ","));
 			comic.setAuthor(issue.script);
 		}
 		
 		String illustrator = (issue.pencils != null ? issue.pencils : "") + "," + (issue.inks != null ? issue.inks : "");
 		if (!illustrator.equals(""))
 		{
-			illustrator = illustrator.replaceAll(";", ",").replaceAll("\\([^)]*\\)", "");
-			illustrator = Joiner.on(",").join(toUniqueArray(illustrator, ","));
+			illustrator = illustrator.replaceAll(";", ",").replaceAll("\\([^)]*\\)|\\[[^)]*\\]|\\?", "");
+			illustrator = Joiner.on(",").skipNulls().join(toUniqueArray(illustrator, ","));
 			comic.setIllustrator(illustrator);
 		}
 		
@@ -351,7 +351,7 @@ implements Parcelable {
 					found = true;
 				}
 			}
-			if (!found) {
+			if (!found && !arr[i].trim().equals("")) {
 				unique.add(arr[i].trim());
 			}
 		}

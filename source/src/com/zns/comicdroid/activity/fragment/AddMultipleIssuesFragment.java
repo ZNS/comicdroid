@@ -19,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.Checkable;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -56,6 +57,7 @@ public class AddMultipleIssuesFragment extends BaseFragment implements OnItemCli
 	private GCDIssueAdapter mAdapter;
 	private LinearLayout mListFooter;
 	private Button mBtnMore;
+	private CheckBox mCbIsRead;
 	private ActionMode mMode;
 	private final int mSdk = android.os.Build.VERSION.SDK_INT;
 	private int mPaddingInPx = 0;
@@ -73,6 +75,7 @@ public class AddMultipleIssuesFragment extends BaseFragment implements OnItemCli
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_add_multiple_issues, container, false);
 	
+		mCbIsRead = (CheckBox)view.findViewById(R.id.add_multiple_cbIsRead);
 		mListFooter = (LinearLayout)getSherlockActivity().getLayoutInflater().inflate(R.layout.fragment_add_multiple_search_footer, null);	
 		mBtnMore = (Button)mListFooter.findViewById(R.id.add_multiple_btnMore);
 		mBtnMore.setOnClickListener(this);
@@ -98,6 +101,7 @@ public class AddMultipleIssuesFragment extends BaseFragment implements OnItemCli
 			@Override
 			public void onClick(View v) {
 				DialogFragment dialogAddGroup = new GroupDialogFragment();
+				dialogAddGroup.setTargetFragment(AddMultipleIssuesFragment.this, 100);
 				dialogAddGroup.show(getSherlockActivity().getSupportFragmentManager(), "GROUPADD");
 			}
 		});		
@@ -314,6 +318,10 @@ public class AddMultipleIssuesFragment extends BaseFragment implements OnItemCli
 							catch (ParseException e) {
 								e.printStackTrace();
 							}
+						}
+						//Is Read?
+						if (mCbIsRead.isChecked()) {
+							comic.setIsRead(true);
 						}
 						//Add group
 						if (mSpGroup.getSelectedItemPosition() > 0) {

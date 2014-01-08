@@ -17,8 +17,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
 	    android:paddingLeft="5dp"
-	    android:paddingRight="5dp"        
-        android:layout_marginBottom="2dp" >
+	    android:paddingRight="5dp" >
 		
 		<ImageView
 		    android:id="@+id/add_multiple_ivGroupAdd"
@@ -35,6 +34,13 @@
 		
     </RelativeLayout>
 
+    <CheckBox
+		android:id="@+id/add_multiple_cbIsRead"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginBottom="2dp"
+		android:text="@string/add_isread" />
+		        
 	<ListView
 	    android:id="@+id/add_multiple_lvIssues"
 	    android:layout_width="match_parent"

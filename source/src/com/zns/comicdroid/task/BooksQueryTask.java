@@ -29,7 +29,7 @@ import de.greenrobot.event.EventBus;
 public class BooksQueryTask extends AsyncTask<String, Void, Void> {
 	public Exception mException = null;
 	private com.zns.comicdroid.gcd.Client mClientGCD = null;
-	private final com.zns.openlibrary.Client mClientOpenLib;
+	private final com.zns.comicdroid.openlibrary.Client mClientOpenLib;
 
 	public BooksQueryTask(Context context) {
 		try
@@ -39,7 +39,7 @@ public class BooksQueryTask extends AsyncTask<String, Void, Void> {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		mClientOpenLib = new com.zns.openlibrary.Client();
+		mClientOpenLib = new com.zns.comicdroid.openlibrary.Client();
 	}
 	
 	protected Void doInBackground(String... param)
@@ -84,7 +84,7 @@ public class BooksQueryTask extends AsyncTask<String, Void, Void> {
 			if (!result.mSuccess || !result.mComic.isComplete())
 			{
 				//Try open library
-				com.zns.openlibrary.Book book = mClientOpenLib.queryISBN(param[2]);
+				com.zns.comicdroid.openlibrary.Book book = mClientOpenLib.queryISBN(param[2]);
 				if (book != null)
 				{
 					if (result.mComic == null) {
